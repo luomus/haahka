@@ -1,49 +1,147 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(highcharter)
+library(scales)
+library(shinydashboard)
+library(tidyr)
 
-library(shiny)
+load("data/sp_yearly_1_2.RData")
 
-# Define UI for application that draws a histogram
-ui <- fluidPage(
+# FIXME: distinct shoulnd't be needed
+dat <- dat %>% 
+    dplyr::distinct()
 
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
+# Read species definition data
+sp_data <- readr::read_csv("data/Halias_sp_v1.2.csv") %>% 
+    dplyr::arrange(Species_code)
 
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
+spps <- sp_data$Sci_name
 
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
+ui <- dashboardPage(
+    dashboardHeader(title = "Halias observations"),
+    dashboardSidebar(),
+    dashboardBody(
+        fluidPage(
+            fluidRow(
+                column(4,
+                       box(
+                           width = 12,
+                           title = "Controls",
+                           selectInput("selector", "Select species", choices = spps),
+                           checkboxInput("fixy", "Fix y-axis")
+                       ),
+                       box(
+                           width = 12,
+                           textOutput("text1")
+                       )
+                ),
+                column(8,
+                       box(
+                           width = 12,
+                           highchartOutput("migration", height = "300px"),
+                           box(
+                               width = 12,
+                               highchartOutput("local", height = "300px"))
+                       )
+                )
+            )
         )
     )
 )
 
-# Define server logic required to draw a histogram
 server <- function(input, output) {
-
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    
+    output$text1 <- renderText({
+        paste("You have selected", input$selector,
+              ". Additional info goes here.")
+    })
+    
+    output$migration <- renderHighchart({
+        
+        sp_current <- sp_data %>% 
+            dplyr::filter(Sci_name == input$selector)
+        
+        sp_name <- sp_current$Sci_name
+        
+        obs_current <- dat %>% 
+            dplyr::filter(sp == sp_current$Species_Abb) 
+        
+        # Make a subselectiong of the data containing two different epochs:
+        # 1979-1999 and 2009-
+        epochs <- obs_current %>% 
+            dplyr::select(day, begin, end) %>% 
+            tidyr::gather(variable, value, -day)
+        #browser()
+        hc <- obs_current %>% 
+            hchart(type = "spline", 
+                   hcaes(x = day, y = muutto),
+                   color = c("#e5b13a", "#4bd5ee")) 
+        
+        return(hc)
+    })
+    
+    output$local <- renderHighchart({
+        
+        sp_current <- sp_data %>% 
+            dplyr::filter(Sci_name == input$selector)
+        
+        sp_name <- sp_current$Sci_name
+        
+        obs_current <- dat %>% 
+            dplyr::filter(sp == sp_current$Species_Abb) 
+        
+        # Make a subselectiong of the data containing two different epochs:
+        # 1979-1999 and 2009-
+        epochs <- obs_current %>% 
+            dplyr::select(day, begin, end) %>% 
+            tidyr::gather(variable, value, -day)
+        #browser()
+        hc <- obs_current %>% 
+            hchart(type = "spline", 
+                   hcaes(x = day, y = paik),
+                   color = c("#e5b13a", "#4bd5ee")) 
+        
+        return(hc)
+    })
+    
+    output$plot1 <- renderPlot({
+        
+        sp_current <- sp_data %>% 
+            dplyr::filter(Sci_name == input$selector)
+        
+        sp_name <- sp_current$Sci_name
+        
+        obs_current <- dat %>% 
+            dplyr::filter(sp == sp_current$Species_Abb)
+        
+        # Make a subselectiong of the data containing two different epochs:
+        # 1979-1999 and 2009-
+        epochs <- obs_current %>% 
+            dplyr::select(day, begin, end) %>% 
+            tidyr::gather(variable, value, -day)
+        
+        
+        p1 <- ggplot(obs_current, aes(x = day, y = paik)) +
+            geom_line() + xlab("Day of Year") + ylab("Yks./pvm - Ind./day") +
+            ggtitle(paste0(sp_name, ", Paikalliset / Lokal / Locals")) +
+            scale_x_date(labels = date_format('%e %b')) + theme_bw()
+        
+        p2 <- ggplot(obs_current, aes(x = day, y = muutto)) +
+            geom_line() + xlab("Day of Year") + ylab("Yks./pvm - Ind./day") +
+            ggtitle(paste0(sp_name, ", Muuttavat / Flyttande / Migrants")) +
+            scale_x_date(labels = date_format('%e %b')) + theme_bw()
+        
+        p3 <- ggplot(epochs, aes(x = day, y = value, color = variable)) +
+            geom_line() + xlab("Day of Year") + ylab("Yks./pvm - Ind./day") +
+            ggtitle("Muutos / Förändring / Change") +
+            scale_color_manual(values = c("red", "blue"),
+                               labels = c("1979-1999", "2009-")) +
+            scale_x_date(labels = date_format('%e %b')) +
+            theme_bw() + theme(legend.title = element_blank(), legend.position = c(0.9, 0.75))
+        
+        p4 <- grid.arrange(p1, p2, p3, nrow = 3, ncol = 1)
     })
 }
 
-# Run the application 
-shinyApp(ui = ui, server = server)
+shinyApp(ui, server)
