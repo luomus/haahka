@@ -26,7 +26,6 @@ sp_data <- readr::read_csv("data/Halias_sp_v1.2.csv") %>%
 
 spps <- sp_data$Sci_name
 
-
 # Global variables --------------------------------------------------------
 
 # How many milliseconds in a year?
@@ -108,8 +107,6 @@ server <- function(input, output) {
         sp_current <- sp_data %>% 
             dplyr::filter(Sci_name == input$selector)
         
-        sp_name <- sp_current$Sci_name
-        
         obs_current <- dat %>% 
             dplyr::filter(sp == sp_current$Species_Abb) 
         
@@ -131,7 +128,26 @@ server <- function(input, output) {
         sp_current <- sp_data %>% 
             dplyr::filter(Sci_name == input$selector)
         
-        sp_name <- sp_current$Sci_name
+        obs_current <- dat %>% 
+            dplyr::filter(sp == sp_current$Species_Abb) 
+        
+        hc <- obs_current %>% 
+            hchart(type = "spline", 
+                   hcaes(x = day, y = paik),
+                   color = c("#e5b13a", "#4bd5ee")) %>% 
+            hc_xAxis(title = list(text = ""),
+                     type = "datetime", 
+                     dateTimeLabelFormats = list(month = '%b'),
+                     tickInterval = X_AXIS_TIME_UNITS) %>% 
+            hc_title(text = "Locals")
+        
+        return(hc)
+    })
+    
+    output$change <- renderHighchart({
+        
+        sp_current <- sp_data %>% 
+            dplyr::filter(Sci_name == input$selector)
         
         obs_current <- dat %>% 
             dplyr::filter(sp == sp_current$Species_Abb) 
