@@ -1,8 +1,15 @@
 library(glue)
 library(highcharter)
 library(shiny)
+library(shinycssloaders)
 library(shinydashboard)
 library(tidyverse)
+
+# Helper functions --------------------------------------------------------
+
+
+
+# Load data ---------------------------------------------------------------
 
 load("data/sp_yearly_1_2.RData")
 
@@ -16,9 +23,12 @@ sp_data <- readr::read_csv("data/Halias_sp_v1.2.csv") %>%
 
 spps <- sp_data$Sci_name
 
-# Global variables
+
+# Global variables --------------------------------------------------------
+
 # How many milliseconds in a year?
 X_AXIS_TIME_UNITS = 30 * 24 * 3600 * 1000
+
 
 ui <- dashboardPage(
     dashboardHeader(title = "Halias observations"),
@@ -39,12 +49,14 @@ ui <- dashboardPage(
                        ),
                        box(
                            width = 12,
-                           highchartOutput("migration", height = "300px")
+                           withSpinner(highchartOutput("migration", height = "300px"),
+                                       type = 4, size = 0.8)
                            
                        ),
                        box(
                            width = 12,
-                           highchartOutput("local", height = "300px")
+                           withSpinner(highchartOutput("local", height = "300px"),
+                                       type = 4, size = 0.8)
                        )
                 ),
                 column(6,
