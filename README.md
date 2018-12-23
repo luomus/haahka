@@ -28,21 +28,27 @@ devtools::install_github("jbkunst/highcharter")
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+#### Release version
 
-Say what the step will be
+TBA.
 
-```
-Give the example
-```
+#### Development version
 
-And repeat
+Using git:
 
 ```
-until finished
+git clone https://gitlab.com/tringa-ry/halias-browser.git
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+Alternatively, [download](https://gitlab.com/tringa-ry/halias-browser/-/archive/master/halias-browser-master.zip) the repository as zip-file and decompress the zip-file. 
+
+Make sure you have the dependencies installed. Fire up R, navigate to the root of `halias-browser` project and start the Shiny app:
+
+```R
+shiny::runApp()
+```
+
+
 
 ## Updating the observation data
 
@@ -84,16 +90,15 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+* **Joona Lehtomäki** (<joona.lehtomaki@iki.fi>) - *Initial work* - https://gitlab.com/jlehtoma
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* Vilppu Välimäki
+* Aleksi Lehikoinen
