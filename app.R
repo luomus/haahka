@@ -1,10 +1,7 @@
-library(dplyr)
-library(ggplot2)
-library(gridExtra)
 library(highcharter)
-library(scales)
+library(shiny)
 library(shinydashboard)
-library(tidyr)
+library(tidyverse)
 
 load("data/sp_yearly_1_2.RData")
 
