@@ -21,19 +21,17 @@ ui <- dashboardPage(
     dashboardBody(
         fluidPage(
             fluidRow(
-                column(4,
+                column(6,
                        box(
                            width = 12,
-                           title = "Controls",
-                           selectInput("selector", "Select species", choices = spps),
-                           checkboxInput("fixy", "Fix y-axis")
+                           column(6,
+                                  selectInput("selector", "Select species", 
+                                              choices = spps)
+                           ),
+                           column(6
+                                  #checkboxInput("fixy", "Fix y-axis")
+                           )
                        ),
-                       box(
-                           width = 12,
-                           textOutput("text1")
-                       )
-                ),
-                column(8,
                        box(
                            width = 12,
                            highchartOutput("migration", height = "300px")
@@ -42,6 +40,12 @@ ui <- dashboardPage(
                        box(
                            width = 12,
                            highchartOutput("local", height = "300px")
+                       )
+                ),
+                column(6,
+                       box(
+                           width = 12,
+                           textOutput("text1")
                        )
                 )
             )
@@ -52,7 +56,7 @@ ui <- dashboardPage(
 server <- function(input, output) {
     
     output$text1 <- renderText({
-        paste("You have selected", input$selector,
+        paste0("You have selected", input$selector,
               ". Additional info goes here.")
     })
     
