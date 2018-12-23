@@ -52,23 +52,19 @@ shiny::runApp()
 
 ## Updating the observation data
 
-Explain how to run the automated tests for this system
+The data used by this Shiny app lives in the `data` subfolder and is based on [the long term data from the Hanko Bird Observatory](https://www.tringa.fi/hangon-lintuasema/hankodata/). However, all the data pre-processing is done by code living in a different repository called `halias-observations` (see [here](https://gitlab.com/tringa-ry/halias-observations)). Whenever the source data is updated, the updates must be manually migrated into this repository. Do the following:
 
-### Break down into end to end tests
+#### 1. Download the updated data and run the pre-processing scripts
 
-Explain what these tests test and why
+TBA
 
-```
-Give an example
-```
+#### 2. Download the generated RData file
 
-### And coding style tests
+TBA
 
-Explain what these tests test and why
+#### 3. Document the updated data in the Shiny app
 
-```
-Give an example
-```
+TBA
 
 ## Deployment
 
@@ -76,9 +72,8 @@ Add additional notes about how to deploy this on a live system
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [Shiny](https://shiny.rstudio.com) - The web framework used
+* [highcharter](http://jkunst.com/highcharter/) - Plotting library (NOTE: the underlying Highcharts JS library is not free for commercial or government use, see [here](https://github.com/jbkunst/highcharter#licence) for more information )
 
 ## Contributing
 
@@ -86,7 +81,7 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://gitlab.com/tringa-ry/halias-browser/tags). 
 
 ## Authors
 
