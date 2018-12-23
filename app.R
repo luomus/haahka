@@ -113,12 +113,6 @@ server <- function(input, output) {
         obs_current <- dat %>% 
             dplyr::filter(sp == sp_current$Species_Abb) 
         
-        # Make a subselectiong of the data containing two different epochs:
-        # 1979-1999 and 2009-
-        epochs <- obs_current %>% 
-            dplyr::select(day, begin, end) %>% 
-            tidyr::gather(variable, value, -day)
-        #browser()
         hc <- obs_current %>% 
             hchart(type = "spline", 
                    hcaes(x = day, y = muutto),
@@ -142,12 +136,6 @@ server <- function(input, output) {
         obs_current <- dat %>% 
             dplyr::filter(sp == sp_current$Species_Abb) 
         
-        # Make a subselectiong of the data containing two different epochs:
-        # 1979-1999 and 2009-
-        epochs <- obs_current %>% 
-            dplyr::select(day, begin, end) %>% 
-            tidyr::gather(variable, value, -day)
-        #browser()
         hc <- obs_current %>% 
             hchart(type = "spline", 
                    hcaes(x = day, y = paik),
