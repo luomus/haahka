@@ -1,0 +1,9 @@
+.skin-blue .main-header .navbar {
+  background-color: #f8dd38;
+} 
+
+.skin-blue .main-header .logo {
+    background-color: #f4b943;
+    color: #fff;
+    border-bottom: 0 solid transparent;
+}

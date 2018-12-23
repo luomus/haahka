@@ -35,13 +35,19 @@ METADATA <- parse_metadata()
 VERSION <- METADATA[["Version"]]
 
 ui <- dashboardPage(
-    dashboardHeader(title = tags$a(href = "https://www.tringa.fi/hangon-lintuasema/hankodata",
-                                   tags$img(src = "browser_logo.png", height = "40"))),
+    dashboardHeader(
+        title = tags$a(href = "https://www.tringa.fi/hangon-lintuasema/hankodata",
+                       tags$img(src = "browser_logo.png", height = "40")
+        )
+    ),
     dashboardSidebar(collapsed = TRUE,
                      div(style = "text-align: center",
                          h4(glue("version: {VERSION}"))
                      )),
     dashboardBody(
+        #tags$head(
+        #    tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+        #),
         fluidPage(
             fluidRow(
                 column(6,
