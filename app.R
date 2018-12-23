@@ -1,3 +1,4 @@
+library(glue)
 library(highcharter)
 library(shiny)
 library(shinydashboard)
@@ -45,7 +46,7 @@ ui <- dashboardPage(
                 column(6,
                        box(
                            width = 12,
-                           textOutput("text1")
+                           uiOutput("text1")
                        )
                 )
             )
@@ -55,9 +56,21 @@ ui <- dashboardPage(
 
 server <- function(input, output) {
     
-    output$text1 <- renderText({
-        paste0("You have selected", input$selector,
-              ". Additional info goes here.")
+    output$text1 <- renderUI ({
+        
+        current_sp <- sp_data %>% 
+            filter(Sci_name == input$selector)
+        common_name <- current_sp$ENG_name
+        sci_name <- current_sp$Sci_name
+        
+        withTags(
+            div(
+                h2(common_name),
+                h4(sci_name)
+            )
+        )
+        
+        
     })
     
     output$migration <- renderHighchart({
