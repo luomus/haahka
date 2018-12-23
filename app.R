@@ -17,7 +17,7 @@ spps <- sp_data$Sci_name
 
 ui <- dashboardPage(
     dashboardHeader(title = "Halias observations"),
-    dashboardSidebar(),
+    dashboardSidebar(disable = TRUE),
     dashboardBody(
         fluidPage(
             fluidRow(
