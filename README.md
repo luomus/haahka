@@ -1,6 +1,6 @@
 # Halias Browser
 
-One Paragraph of project description goes here
+[Shiny](https://shiny.rstudio.com)-based app for browsing bird observation data from [Hanko Bird Observatory](https://www.tringa.fi/hangon-lintuasema/hankodata/).
 
 ## Getting Started
 
@@ -10,8 +10,20 @@ These instructions will get you a copy of the project up and running on your loc
 
 What things you need to install the software and how to install them
 
-```
-Give examples
++ [R](https://cran.r-project.org) ( tested on versions >= 3.5.1)
++ [RStudio](https://www.rstudio.com) (optional, but useful for development)
+
+In addition, you will need the following R packages:
+
+```R
+install.packages(shiny)
+install.packages(shinydashboard)
+install.packages(tidyverse)
+
+# Needed to install the development versions of highcharter
+install.packages(devtools)
+# Highcharter >= 0.6.0 is needed for compatability with dplyr
+devtools::install_github("jbkunst/highcharter")
 ```
 
 ### Installing
