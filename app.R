@@ -16,6 +16,10 @@ sp_data <- readr::read_csv("data/Halias_sp_v1.2.csv") %>%
 
 spps <- sp_data$Sci_name
 
+# Global variables
+# How many milliseconds in a year?
+X_AXIS_TIME_UNITS = 30 * 24 * 3600 * 1000
+
 ui <- dashboardPage(
     dashboardHeader(title = "Halias observations"),
     dashboardSidebar(disable = TRUE),
@@ -92,7 +96,12 @@ server <- function(input, output) {
         hc <- obs_current %>% 
             hchart(type = "spline", 
                    hcaes(x = day, y = muutto),
-                   color = c("#e5b13a", "#4bd5ee")) 
+                   color = c("#e5b13a", "#4bd5ee")) %>% 
+            hc_xAxis(title = list(text = ""),
+                     type = "datetime", 
+                     dateTimeLabelFormats = list(month = '%b'),
+                     tickInterval = X_AXIS_TIME_UNITS) %>% 
+            hc_title(text = "Migrants")
         
         return(hc)
     })
@@ -116,7 +125,12 @@ server <- function(input, output) {
         hc <- obs_current %>% 
             hchart(type = "spline", 
                    hcaes(x = day, y = paik),
-                   color = c("#e5b13a", "#4bd5ee")) 
+                   color = c("#e5b13a", "#4bd5ee")) %>% 
+            hc_xAxis(title = list(text = ""),
+                     type = "datetime", 
+                     dateTimeLabelFormats = list(month = '%b'),
+                     tickInterval = X_AXIS_TIME_UNITS) %>% 
+            hc_title(text = "Locals")
         
         return(hc)
     })
