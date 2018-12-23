@@ -4,10 +4,13 @@ library(shiny)
 library(shinycssloaders)
 library(shinydashboard)
 library(tidyverse)
+library(yaml)
 
 # Helper functions --------------------------------------------------------
 
-
+parse_metadata <- function() {
+    return(yaml::yaml.load_file("DESCRIPTION"))    
+}
 
 # Load data ---------------------------------------------------------------
 
@@ -28,11 +31,15 @@ spps <- sp_data$Sci_name
 
 # How many milliseconds in a year?
 X_AXIS_TIME_UNITS = 30 * 24 * 3600 * 1000
-
+METADATA <- parse_metadata()
+VERSION <- METADATA[["Version"]]
 
 ui <- dashboardPage(
-    dashboardHeader(title = "Halias observations"),
-    dashboardSidebar(disable = TRUE),
+    dashboardHeader(title = glue::glue("Halias observations")),
+    dashboardSidebar(collapsed = TRUE,
+                     div(style = "text-align: center",
+                         h4(glue("version: {VERSION}"))
+                     )),
     dashboardBody(
         fluidPage(
             fluidRow(
