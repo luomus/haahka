@@ -48,7 +48,7 @@ Make sure you have the dependencies installed. Fire up R, navigate to the root o
 shiny::runApp()
 ```
 
-
+The development version of this app can also be found at https://jlehtoma.shinyapps.io/halias-browser/
 
 ## Updating the observation data
 
