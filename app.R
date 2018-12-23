@@ -36,10 +36,12 @@ ui <- dashboardPage(
                 column(8,
                        box(
                            width = 12,
-                           highchartOutput("migration", height = "300px"),
-                           box(
-                               width = 12,
-                               highchartOutput("local", height = "300px"))
+                           highchartOutput("migration", height = "300px")
+                           
+                       ),
+                       box(
+                           width = 12,
+                           highchartOutput("local", height = "300px")
                        )
                 )
             )
