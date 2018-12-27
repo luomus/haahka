@@ -136,7 +136,8 @@ server <- function(input, output) {
             hc_title(text = "Migrants") %>% 
             hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                        xDateFormat = "%b %d") %>% 
-            hc_exporting(enabled = TRUE)
+            hc_exporting(enabled = TRUE) %>% 
+            hc_chart(zoomType = "xy")
         
         return(hc)
     })
@@ -162,7 +163,8 @@ server <- function(input, output) {
             hc_title(text = "Locals") %>% 
             hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                        xDateFormat = "%b %d") %>% 
-            hc_exporting(enabled = TRUE)
+            hc_exporting(enabled = TRUE) %>% 
+            hc_chart(zoomType = "xy")
         
         return(hc)
     })
@@ -194,7 +196,8 @@ server <- function(input, output) {
             hc_title(text = "Change in all individuals") %>% 
             hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                        shared = TRUE, xDateFormat = "%b %d") %>% 
-            hc_exporting(enabled = TRUE)
+            hc_exporting(enabled = TRUE) %>% 
+            hc_chart(zoomType = "xy")
         
         return(hc)
     })
