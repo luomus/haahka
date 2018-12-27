@@ -1,6 +1,7 @@
 library(forcats)
 library(glue)
 library(highcharter)
+library(lubridate)
 library(shiny)
 library(shinycssloaders)
 library(shinydashboard)
@@ -18,8 +19,13 @@ parse_metadata <- function() {
 load("data/sp_yearly_1_2.RData")
 
 # FIXME: distinct shoulnd't be needed
+# FIXME: perhaps move all pre-processing to halias-observations
 dat <- dat %>% 
-    dplyr::distinct()
+    # Remove duplicate rows
+    dplyr::distinct() %>% 
+    # Round all numeric columns (numbers of observed individuals)
+    dplyr::mutate_if(is.numeric, round, digits = 2)
+    
 
 # Read species definition data
 sp_data <- readr::read_csv("data/Halias_sp_v1.2.csv") %>% 
