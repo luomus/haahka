@@ -1,9 +1,10 @@
-## 0.1.2 (2018-12-XX)
+## 0.1.2 (2018-12-27)
 
 - Exporting graphs as images or data (CSV and Excel) enabled.
 - Zooming in graphs enabled.
 - First version of loading text from a description docx. Includes further
-translation into HTML elements and associated CSS.
+translation into HTML elements and associated CSS
+- First version of displaying images in the app.
 
 ## 0.1.1 (2018-12-27)
 
