@@ -1,3 +1,7 @@
+## 0.1.2 (2018-12-27)
+
+- Implement graph 5 using highcharter; all graphs (3) now in initial state.
+
 ## 0.1.0 (2018-12-22)
 
 - New layout
