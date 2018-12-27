@@ -104,6 +104,10 @@ ui <- dashboardPage(
                 column(6,
                        box(
                            width = 12,
+                           uiOutput("image")
+                       ),
+                       box(
+                           width = 12,
                            uiOutput("description")
                        )
                 )
@@ -113,6 +117,29 @@ ui <- dashboardPage(
 )
 
 server <- function(input, output) {
+    
+    output$image <- renderUI({
+        current_sp <- sp_data %>% 
+            filter(Sci_name == input$selector)
+        common_name <- current_sp$ENG_name
+        sci_name <- current_sp$Sci_name
+        sp_abbr <- tolower(current_sp$Species_Abb)
+        
+        # The actual file path is needed to figure out if the file exists
+        img_file <- file.path("www", "img", "sp_images", paste0(sp_abbr, ".jpg"))
+        
+        if (file.exists(img_file)) {
+            # If the file does exist, use tags instead of rendering the image
+            # directly. This way the browser will cache the image.
+            payload <- shiny::div(shiny::img(src = glue::glue("img/sp_images/{sp_abbr}.jpg"),
+                                  width = "100%"),
+                                  shiny::p(""))
+        } else {
+            payload <- shiny::p("No image found")
+        }
+        return(payload)
+        
+    })
     
     output$description <- renderUI({
         
