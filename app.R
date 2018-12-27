@@ -18,6 +18,8 @@ parse_description <- function(style_name, text) {
         element <- shiny::p(text, class = "description")
     } else if (style_name == "Endnote Text" & text != "") {
         element <- shiny::p(text, class = "endnote")
+    } else if (style_name == "Heading 3" & text != "") {
+        element <- shiny::h4(text, class = "description")
     } else {
         element <- invisible(NULL)
     }
@@ -129,8 +131,8 @@ server <- function(input, output) {
             
             payload <- withTags(
                 div(
-                    h2(common_name),
-                    h4(sci_name),
+                    h2(common_name, class = "description"),
+                    h4(sci_name, class = "description"),
                     br(),
                     docx_content %>% 
                         dplyr::rowwise() %>% 
