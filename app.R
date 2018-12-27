@@ -134,7 +134,8 @@ server <- function(input, output) {
                      tickInterval = X_AXIS_TIME_UNITS) %>% 
             hc_title(text = "Migrants") %>% 
             hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
-                       xDateFormat = "%b %d")
+                       xDateFormat = "%b %d") %>% 
+            hc_exporting(enabled = TRUE)
         
         return(hc)
     })
@@ -159,7 +160,8 @@ server <- function(input, output) {
                      tickInterval = X_AXIS_TIME_UNITS) %>% 
             hc_title(text = "Locals") %>% 
             hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
-                       xDateFormat = "%b %d")
+                       xDateFormat = "%b %d") %>% 
+            hc_exporting(enabled = TRUE)
         
         return(hc)
     })
@@ -190,7 +192,8 @@ server <- function(input, output) {
                      tickInterval = X_AXIS_TIME_UNITS) %>% 
             hc_title(text = "Change in all individuals") %>% 
             hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
-                       shared = TRUE, xDateFormat = "%b %d")
+                       shared = TRUE, xDateFormat = "%b %d") %>% 
+            hc_exporting(enabled = TRUE)
         
         return(hc)
     })
