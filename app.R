@@ -102,7 +102,7 @@ ui <- dashboardPage(
                 ),
                 column(6,
                        box(
-                           width = 12,
+                           width = 12, collapsible = TRUE,
                            uiOutput("image")
                        ),
                        box(
