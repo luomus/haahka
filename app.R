@@ -53,6 +53,9 @@ X_AXIS_TIME_UNITS = 30 * 24 * 3600 * 1000
 METADATA <- yaml::yaml.load_file("DESCRIPTION")
 VERSION <- METADATA[["Version"]]
 
+# Get photo credits
+PHOTO_CREDITS <- yaml::yaml.load_file("www/img/sp_images/attribution.yaml")
+
 ui <- dashboardPage(
     dashboardHeader(
         title = tags$a(href = "https://www.tringa.fi/hangon-lintuasema/hankodata",
@@ -125,11 +128,13 @@ server <- function(input, output) {
         img_file <- file.path("www", "img", "sp_images", paste0(sp_abbr, ".jpg"))
         
         if (file.exists(img_file)) {
+            # Photo credit
+            photo_credit <- PHOTO_CREDITS[[sp_abbr]]
             # If the file does exist, use tags instead of rendering the image
             # directly. This way the browser will cache the image.
             payload <- shiny::div(shiny::img(src = glue::glue("img/sp_images/{sp_abbr}.jpg"),
                                   width = "100%"),
-                                  shiny::p(""))
+                                  shiny::p(glue::glue("Ⓒ {photo_credit}")))
         } else {
             payload <- shiny::p("No image found")
         }
