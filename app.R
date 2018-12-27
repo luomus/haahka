@@ -131,7 +131,9 @@ server <- function(input, output) {
                      type = "datetime", 
                      dateTimeLabelFormats = list(month = '%b'),
                      tickInterval = X_AXIS_TIME_UNITS) %>% 
-            hc_title(text = "Migrants")
+            hc_title(text = "Migrants") %>% 
+            hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
+                       xDateFormat = "%b %d")
         
         return(hc)
     })
@@ -153,7 +155,9 @@ server <- function(input, output) {
                      type = "datetime", 
                      dateTimeLabelFormats = list(month = '%b'),
                      tickInterval = X_AXIS_TIME_UNITS) %>% 
-            hc_title(text = "Locals")
+            hc_title(text = "Locals") %>% 
+            hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
+                       xDateFormat = "%b %d")
         
         return(hc)
     })
@@ -184,7 +188,7 @@ server <- function(input, output) {
                      tickInterval = X_AXIS_TIME_UNITS) %>% 
             hc_title(text = "Change in all individuals") %>% 
             hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
-                       shared = TRUE)
+                       shared = TRUE, xDateFormat = "%b %d")
         
         return(hc)
     })
