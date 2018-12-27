@@ -26,10 +26,6 @@ parse_description <- function(style_name, text) {
     return(element)
 }
 
-parse_metadata <- function() {
-    return(yaml::yaml.load_file("DESCRIPTION"))    
-}
-
 # Load data ---------------------------------------------------------------
 
 load("data/sp_yearly_1_2.RData")
@@ -54,7 +50,7 @@ spps <- sp_data$Sci_name
 # How many milliseconds in a year?
 X_AXIS_TIME_UNITS = 30 * 24 * 3600 * 1000
 # Get the app metadata from the DESCRIPTION file
-METADATA <- parse_metadata()
+METADATA <- yaml::yaml.load_file("DESCRIPTION")
 VERSION <- METADATA[["Version"]]
 
 ui <- dashboardPage(
