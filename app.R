@@ -11,6 +11,19 @@ library(yaml)
 
 # Helper functions --------------------------------------------------------
 
+parse_description <- function(style_name, text) {
+    # NOTE: style is hard coded and needs to be adjusted if the style changes
+    # Check both the element style and content
+    if (style_name == "No Spacing" & text != "") {
+        element <- shiny::p(text, class = "description")
+    } else if (style_name == "Endnote Text" & text != "") {
+        element <- shiny::p(text, class = "endnote")
+    } else {
+        element <- invisible(NULL)
+    }
+    return(element)
+}
+
 parse_metadata <- function() {
     return(yaml::yaml.load_file("DESCRIPTION"))    
 }
@@ -38,6 +51,7 @@ spps <- sp_data$Sci_name
 
 # How many milliseconds in a year?
 X_AXIS_TIME_UNITS = 30 * 24 * 3600 * 1000
+# Get the app metadata from the DESCRIPTION file
 METADATA <- parse_metadata()
 VERSION <- METADATA[["Version"]]
 
@@ -52,9 +66,9 @@ ui <- dashboardPage(
                          h4(glue("version: {VERSION}"))
                      )),
     dashboardBody(
-        #tags$head(
-        #    tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
-        #),
+        tags$head(
+            tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+        ),
         fluidPage(
             fluidRow(
                 column(6,
@@ -88,7 +102,7 @@ ui <- dashboardPage(
                 column(6,
                        box(
                            width = 12,
-                           uiOutput("text1")
+                           uiOutput("description")
                        )
                 )
             )
@@ -98,21 +112,44 @@ ui <- dashboardPage(
 
 server <- function(input, output) {
     
-    output$text1 <- renderUI({
+    output$description <- renderUI({
         
         current_sp <- sp_data %>% 
             filter(Sci_name == input$selector)
         common_name <- current_sp$ENG_name
         sci_name <- current_sp$Sci_name
+        sp_abbr <- current_sp$Species_Abb
         
-        withTags(
-            div(
-                h2(common_name),
-                h4(sci_name)
+        # Try reading the description docx file
+        docx_file <- file.path("data", "descriptions", paste0(tolower(sp_abbr), ".docx"))
+        #browser()
+        if (file.exists(docx_file)) {
+            
+            docx_content <- officer::docx_summary(officer::read_docx(docx_file))
+            
+            payload <- withTags(
+                div(
+                    h2(common_name),
+                    h4(sci_name),
+                    br(),
+                    docx_content %>% 
+                        dplyr::rowwise() %>% 
+                        do(row = parse_description(.$style_name, .$text)) %>% 
+                        as.list()
+                )
             )
-        )
+        } else {
+            payload <- withTags(
+                div(
+                    h2(common_name),
+                    h4(sci_name),
+                    br(),
+                    p("No description found.")
+                )
+            )
+        }
         
-        
+        return(payload)
     })
     
     output$migration <- renderHighchart({
