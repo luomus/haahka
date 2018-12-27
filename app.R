@@ -1,3 +1,4 @@
+library(forcats)
 library(glue)
 library(highcharter)
 library(shiny)
@@ -159,12 +160,15 @@ server <- function(input, output) {
         
         epochs <- obs_current %>% 
             dplyr::select(day, begin, med, end) %>% 
-            tidyr::gather(epoch, value, -day)
+            tidyr::gather(epoch, value, -day) %>% 
+            dplyr::mutate(epoch = forcats::fct_relevel(epoch, "begin", "med", "end"))
         
         hc <- epochs %>% 
             hchart(type = "spline", 
                    hcaes(x = day, y = value, group = epoch),
-                   color = c("#66c2a5", "#fc8d62", "#8da0cb")) %>% 
+                   # order of epochs c("begin", "end", "med")
+                   name = c("1979-1999", "2000-2010", "2011-2018"),
+                   color = c("#66c2a5", "#8da0cb", "#fc8d62")) %>% 
             hc_xAxis(title = list(text = ""),
                      type = "datetime", 
                      dateTimeLabelFormats = list(month = '%b'),
