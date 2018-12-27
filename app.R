@@ -70,6 +70,11 @@ ui <- dashboardPage(
                            width = 12,
                            withSpinner(highchartOutput("local", height = "300px"),
                                        type = 4, size = 0.8)
+                       ),
+                       box(
+                           width = 12,
+                           withSpinner(highchartOutput("change", height = "300px"),
+                                       type = 4, size = 0.8)
                        )
                 ),
                 column(6,
@@ -113,7 +118,7 @@ server <- function(input, output) {
         hc <- obs_current %>% 
             hchart(type = "spline", 
                    hcaes(x = day, y = muutto),
-                   color = c("#e5b13a", "#4bd5ee")) %>% 
+                   color = "#1f78b4") %>% 
             hc_xAxis(title = list(text = ""),
                      type = "datetime", 
                      dateTimeLabelFormats = list(month = '%b'),
@@ -134,7 +139,7 @@ server <- function(input, output) {
         hc <- obs_current %>% 
             hchart(type = "spline", 
                    hcaes(x = day, y = paik),
-                   color = c("#e5b13a", "#4bd5ee")) %>% 
+                   color = "#1f78b4") %>% 
             hc_xAxis(title = list(text = ""),
                      type = "datetime", 
                      dateTimeLabelFormats = list(month = '%b'),
@@ -152,15 +157,19 @@ server <- function(input, output) {
         obs_current <- dat %>% 
             dplyr::filter(sp == sp_current$Species_Abb) 
         
-        hc <- obs_current %>% 
+        epochs <- obs_current %>% 
+            dplyr::select(day, begin, med, end) %>% 
+            tidyr::gather(epoch, value, -day)
+        
+        hc <- epochs %>% 
             hchart(type = "spline", 
-                   hcaes(x = day, y = paik),
-                   color = c("#e5b13a", "#4bd5ee")) %>% 
+                   hcaes(x = day, y = value, group = epoch),
+                   color = c("#66c2a5", "#fc8d62", "#8da0cb")) %>% 
             hc_xAxis(title = list(text = ""),
                      type = "datetime", 
                      dateTimeLabelFormats = list(month = '%b'),
                      tickInterval = X_AXIS_TIME_UNITS) %>% 
-            hc_title(text = "Locals")
+            hc_title(text = "Change in all individuals")
         
         return(hc)
     })
