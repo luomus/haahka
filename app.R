@@ -97,7 +97,7 @@ ui <- dashboardPage(
 
 server <- function(input, output) {
     
-    output$text1 <- renderUI ({
+    output$text1 <- renderUI({
         
         current_sp <- sp_data %>% 
             filter(Sci_name == input$selector)
@@ -125,6 +125,7 @@ server <- function(input, output) {
         hc <- obs_current %>% 
             hchart(type = "spline", 
                    hcaes(x = day, y = muutto),
+                   name = "Migrating",
                    color = "#1f78b4") %>% 
             hc_yAxis(title = list(text = "Individuals")) %>% 
             hc_xAxis(title = list(text = ""),
@@ -149,6 +150,7 @@ server <- function(input, output) {
         hc <- obs_current %>% 
             hchart(type = "spline", 
                    hcaes(x = day, y = paik),
+                   name = "Locals",
                    color = "#1f78b4") %>% 
             hc_yAxis(title = list(text = "Individuals")) %>% 
             hc_xAxis(title = list(text = ""),
