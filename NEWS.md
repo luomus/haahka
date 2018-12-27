@@ -2,6 +2,8 @@
 
 - Exporting graphs as images or data (CSV and Excel) enabled.
 - Zooming in graphs enabled.
+- First version of loading text from a description docx. Includes further
+translation into HTML elements and associated CSS.
 
 ## 0.1.1 (2018-12-27)
 
