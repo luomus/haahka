@@ -176,7 +176,9 @@ server <- function(input, output) {
                      type = "datetime", 
                      dateTimeLabelFormats = list(month = '%b'),
                      tickInterval = X_AXIS_TIME_UNITS) %>% 
-            hc_title(text = "Change in all individuals")
+            hc_title(text = "Change in all individuals") %>% 
+            hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
+                       shared = TRUE)
         
         return(hc)
     })
