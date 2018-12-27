@@ -120,6 +120,7 @@ server <- function(input, output) {
             hchart(type = "spline", 
                    hcaes(x = day, y = muutto),
                    color = "#1f78b4") %>% 
+            hc_yAxis(title = list(text = "Individuals")) %>% 
             hc_xAxis(title = list(text = ""),
                      type = "datetime", 
                      dateTimeLabelFormats = list(month = '%b'),
@@ -141,6 +142,7 @@ server <- function(input, output) {
             hchart(type = "spline", 
                    hcaes(x = day, y = paik),
                    color = "#1f78b4") %>% 
+            hc_yAxis(title = list(text = "Individuals")) %>% 
             hc_xAxis(title = list(text = ""),
                      type = "datetime", 
                      dateTimeLabelFormats = list(month = '%b'),
@@ -169,6 +171,7 @@ server <- function(input, output) {
                    # order of epochs c("begin", "end", "med")
                    name = c("1979-1999", "2000-2010", "2011-2018"),
                    color = c("#66c2a5", "#8da0cb", "#fc8d62")) %>% 
+            hc_yAxis(title = list(text = "Individuals")) %>% 
             hc_xAxis(title = list(text = ""),
                      type = "datetime", 
                      dateTimeLabelFormats = list(month = '%b'),
