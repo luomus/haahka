@@ -2,10 +2,11 @@
 
 - Select only species, not species groups.
 - Use common names and scientific names in the species selector.
+- Move species image and description on the left side.
 - Translations updated.
-- Use an image slider, i.e. support multiple images for a single species.
-- Image box is collapsed if there are no images to show.
- 
+- Implement an image slider, i.e. support multiple images for a single species.
+  (Disabled for now)
+  
 ## 0.1.3 (2018-12-28)
 
 - Make more UI components reactive.
