@@ -145,6 +145,15 @@ server <- function(input, output, session) {
         }
     })
     
+    get_current_data <- reactive({
+        sp_current <- get_current_sp()
+        if (!is.null(sp_current)) {
+            return(dplyr::filter(dat, sp == sp_current$Species_Abb) )
+        } else {
+            return(NULL)
+        }
+    })
+    
     output$render_sidebar <- renderUI({
         tagList(
             div(style = "text-align: center",
@@ -246,89 +255,84 @@ server <- function(input, output, session) {
     
     output$migration <- renderHighchart({
         
-        sp_current <- sp_data %>% 
-            dplyr::filter(Sci_name == input$selector)
+        obs_current <- get_current_data()
         
-        obs_current <- dat %>% 
-            dplyr::filter(sp == sp_current$Species_Abb) 
-        
-        hc <- obs_current %>% 
-            hchart(type = "spline", 
-                   hcaes(x = day, y = muutto),
-                   name = "Migrating",
-                   color = "#1f78b4") %>% 
-            hc_yAxis(title = list(text = "Individuals")) %>% 
-            hc_xAxis(title = list(text = ""),
-                     type = "datetime", 
-                     dateTimeLabelFormats = list(month = '%b'),
-                     tickInterval = X_AXIS_TIME_UNITS) %>% 
-            hc_title(text = "Migrants") %>% 
-            hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
-                       xDateFormat = "%b %d") %>% 
-            hc_exporting(enabled = TRUE) %>% 
-            hc_chart(zoomType = "xy")
-        
-        return(hc)
+        if (!is.null(obs_current)) {
+            hc <- obs_current %>% 
+                hchart(type = "spline", 
+                       hcaes(x = day, y = muutto),
+                       name = "Migrating",
+                       color = "#1f78b4") %>% 
+                hc_yAxis(title = list(text = "Individuals")) %>% 
+                hc_xAxis(title = list(text = ""),
+                         type = "datetime", 
+                         dateTimeLabelFormats = list(month = '%b'),
+                         tickInterval = X_AXIS_TIME_UNITS) %>% 
+                hc_title(text = "Migrants") %>% 
+                hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
+                           xDateFormat = "%b %d") %>% 
+                hc_exporting(enabled = TRUE) %>% 
+                hc_chart(zoomType = "xy")
+            
+            return(hc)
+        }
     })
     
     output$local <- renderHighchart({
         
-        sp_current <- sp_data %>% 
-            dplyr::filter(Sci_name == input$selector)
-        
-        obs_current <- dat %>% 
-            dplyr::filter(sp == sp_current$Species_Abb) 
-        
-        hc <- obs_current %>% 
-            hchart(type = "spline", 
-                   hcaes(x = day, y = paik),
-                   name = "Locals",
-                   color = "#1f78b4") %>% 
-            hc_yAxis(title = list(text = "Individuals")) %>% 
-            hc_xAxis(title = list(text = ""),
-                     type = "datetime", 
-                     dateTimeLabelFormats = list(month = '%b'),
-                     tickInterval = X_AXIS_TIME_UNITS) %>% 
-            hc_title(text = "Locals") %>% 
-            hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
-                       xDateFormat = "%b %d") %>% 
-            hc_exporting(enabled = TRUE) %>% 
-            hc_chart(zoomType = "xy")
-        
-        return(hc)
+        obs_current <- get_current_data()
+
+        if (!is.null(obs_current)) {
+            hc <- obs_current %>% 
+                hchart(type = "spline", 
+                       hcaes(x = day, y = paik),
+                       name = "Locals",
+                       color = "#1f78b4") %>% 
+                hc_yAxis(title = list(text = "Individuals")) %>% 
+                hc_xAxis(title = list(text = ""),
+                         type = "datetime", 
+                         dateTimeLabelFormats = list(month = '%b'),
+                         tickInterval = X_AXIS_TIME_UNITS) %>% 
+                hc_title(text = "Locals") %>% 
+                hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
+                           xDateFormat = "%b %d") %>% 
+                hc_exporting(enabled = TRUE) %>% 
+                hc_chart(zoomType = "xy")
+            
+            return(hc)
+        }
     })
     
     output$change <- renderHighchart({
         
-        sp_current <- sp_data %>% 
-            dplyr::filter(Sci_name == input$selector)
+        obs_current <- get_current_data()
+
+        if (!is.null(obs_current)) {    
         
-        obs_current <- dat %>% 
-            dplyr::filter(sp == sp_current$Species_Abb) 
-        
-        epochs <- obs_current %>% 
-            dplyr::select(day, begin, med, end) %>% 
-            tidyr::gather(epoch, value, -day) %>% 
-            dplyr::mutate(epoch = forcats::fct_relevel(epoch, "begin", "med", "end"))
-        
-        hc <- epochs %>% 
-            hchart(type = "spline", 
-                   hcaes(x = day, y = value, group = epoch),
-                   # order of epochs c("begin", "end", "med")
-                   name = c("1979-1999", "2000-2010", "2011-2018"),
-                   color = c("#66c2a5", "#8da0cb", "#fc8d62")) %>% 
-            hc_yAxis(title = list(text = "Individuals")) %>% 
-            hc_xAxis(title = list(text = ""),
-                     type = "datetime", 
-                     dateTimeLabelFormats = list(month = '%b'),
-                     tickInterval = X_AXIS_TIME_UNITS) %>% 
-            hc_title(text = "Change in all individuals") %>% 
-            hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
-                       shared = TRUE, xDateFormat = "%b %d") %>% 
-            hc_exporting(enabled = TRUE) %>% 
-            hc_chart(zoomType = "xy")
-        
-        return(hc)
+            epochs <- obs_current %>% 
+                dplyr::select(day, begin, med, end) %>% 
+                tidyr::gather(epoch, value, -day) %>% 
+                dplyr::mutate(epoch = forcats::fct_relevel(epoch, "begin", "med", "end"))
+            
+            hc <- epochs %>% 
+                hchart(type = "spline", 
+                       hcaes(x = day, y = value, group = epoch),
+                       # order of epochs c("begin", "end", "med")
+                       name = c("1979-1999", "2000-2010", "2011-2018"),
+                       color = c("#66c2a5", "#8da0cb", "#fc8d62")) %>% 
+                hc_yAxis(title = list(text = "Individuals")) %>% 
+                hc_xAxis(title = list(text = ""),
+                         type = "datetime", 
+                         dateTimeLabelFormats = list(month = '%b'),
+                         tickInterval = X_AXIS_TIME_UNITS) %>% 
+                hc_title(text = "Change in all individuals") %>% 
+                hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
+                           shared = TRUE, xDateFormat = "%b %d") %>% 
+                hc_exporting(enabled = TRUE) %>% 
+                hc_chart(zoomType = "xy")
+            
+            return(hc)
+        }
     })
 }
 
