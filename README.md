@@ -66,6 +66,10 @@ TBA
 
 TBA
 
+## Using the translations system
+
+TBA
+
 ## Deployment
 
 Add additional notes about how to deploy this on a live system
