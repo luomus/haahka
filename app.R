@@ -112,7 +112,7 @@ ui <- dashboardPage(
                 column(6,
                        box(
                            width = 12, collapsible = TRUE,
-                           uiOutput("image_slider")
+                           uiOutput("image")
                        ),
                        box(
                            width = 12,
@@ -136,20 +136,14 @@ server <- function(input, output, session) {
     })
     
     get_current_sp <- reactive({
-        if (!is.null(input$selector)) {
-            return(dplyr::filter(sp_data, Sci_name == input$selector))
-        } else {
-            return(NULL)
-        }
+        shiny::req(input$selector)
+        
+        return(dplyr::filter(sp_data, Sci_name == input$selector))
     })
     
     get_current_data <- reactive({
         sp_current <- get_current_sp()
-        if (!is.null(sp_current)) {
-            return(dplyr::filter(dat, sp == sp_current$Species_Abb) )
-        } else {
-            return(NULL)
-        }
+        return(dplyr::filter(dat, sp == sp_current$Species_Abb) )
     })
     
     get_species_names <- function(lang) {
