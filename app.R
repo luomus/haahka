@@ -343,14 +343,14 @@ server <- function(input, output, session) {
             hc <- obs_current %>% 
                 hchart(type = "spline", 
                        hcaes(x = day, y = muutto),
-                       name = i18n()$t("Muuttavat"),
+                       name = i18n()$t("Muuttavien keskiarvot"),
                        color = "#1f78b4") %>% 
                 hc_yAxis(title = list(text = i18n()$t("Yksilölkm."))) %>% 
                 hc_xAxis(title = list(text = ""),
                          type = "datetime", 
                          dateTimeLabelFormats = list(month = '%b'),
                          tickInterval = X_AXIS_TIME_UNITS) %>% 
-                hc_title(text = i18n()$t("Muuttavat")) %>% 
+                hc_title(text = i18n()$t("Muuttavien keskiarvot")) %>% 
                 hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                            xDateFormat = "%b %d") %>% 
                 hc_exporting(enabled = TRUE) %>% 
@@ -368,14 +368,14 @@ server <- function(input, output, session) {
             hc <- obs_current %>% 
                 hchart(type = "spline", 
                        hcaes(x = day, y = paik),
-                       name = i18n()$t("Paikalliset"),
+                       name = i18n()$t("Paikallisten keskiarvot"),
                        color = "#1f78b4") %>% 
                 hc_yAxis(title = list(text = i18n()$t("Yksilölkm."))) %>% 
                 hc_xAxis(title = list(text = ""),
                          type = "datetime", 
                          dateTimeLabelFormats = list(month = '%b'),
                          tickInterval = X_AXIS_TIME_UNITS) %>% 
-                hc_title(text = i18n()$t("Paikalliset")) %>% 
+                hc_title(text = i18n()$t("Paikallisten keskiarvot")) %>% 
                 hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                            xDateFormat = "%b %d") %>% 
                 hc_exporting(enabled = TRUE) %>% 
@@ -407,7 +407,7 @@ server <- function(input, output, session) {
                          type = "datetime", 
                          dateTimeLabelFormats = list(month = '%b'),
                          tickInterval = X_AXIS_TIME_UNITS) %>% 
-                hc_title(text = i18n()$t("Kaikkien havaintojen muutos")) %>% 
+                hc_title(text = i18n()$t("Runsauksien muutokset")) %>% 
                 hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                            shared = TRUE, xDateFormat = "%b %d") %>% 
                 hc_exporting(enabled = TRUE) %>% 
