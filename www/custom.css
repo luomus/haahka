@@ -19,6 +19,10 @@ body
   margin-right: 20px;
 }
 
+.sci-name {
+  font-style: italic;  
+}
+
 h4.description {
   margin-top: 30px;
   margin-left: 20px;

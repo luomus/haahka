@@ -229,9 +229,9 @@ server <- function(input, output, session) {
                 
                 payload <- withTags(
                     div(
-                        h2(common_name, class = "description"),
-                        h4(sci_name, class = "description"),
-                        br(),
+                        shiny::h2(common_name, class = "description"),
+                        shiny::h4(sci_name, class = "description sci-name"),
+                        shiny::br(),
                         docx_content %>% 
                             dplyr::rowwise() %>% 
                             do(row = parse_description(.$style_name, .$text)) %>% 
@@ -240,11 +240,11 @@ server <- function(input, output, session) {
                 )
             } else {
                 payload <- withTags(
-                    div(
-                        h2(common_name),
-                        h4(sci_name),
-                        br(),
-                        p("No description found.")
+                    shiny::div(
+                        shiny::h2(common_name, class = "description"),
+                        shiny::h4(sci_name, class = "description sci-name"),
+                        shiny::br(),
+                        shiny::p("No description found.", class = "description")
                     )
                 )
             }
