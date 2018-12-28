@@ -21,20 +21,20 @@
       "en": "No description found"
     },
     {
-      "fi": "Muuttavat",
-      "en": "Migrating"
+      "fi": "Muuttavien keskiarvot",
+      "en": "Migration average"
     },
     {
-      "fi": "Paikalliset",
-      "en": "Locals"
+      "fi": "Paikallisten keskiarvot",
+      "en": "Local average"
     },
     {
       "fi": "Yksilölkm.",
       "en": "Individuals"
     },
     {
-      "fi": "Kaikkien havaintojen muutos",
-      "en": "Change in all observations"
+      "fi": "Runsauksien muutokset",
+      "en": "Change in abundance"
     }
     ]
 }
