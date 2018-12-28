@@ -347,6 +347,7 @@ server <- function(input, output, session) {
                         shiny::h2(common_name, class = "description"),
                         shiny::h3(sci_name, class = "description sci-name"),
                         shiny::br(),
+                        uiOutput("image"),
                         shiny::p(i18n()$t("Kuvausta ei löydy"), class = "description")
                     )
                 )
