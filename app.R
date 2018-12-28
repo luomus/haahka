@@ -93,25 +93,26 @@ ui <- dashboardPage(
                        #uiOutput("render_image"),
                        box(
                            width = 12,
-                           uiOutput("description")
+                           withSpinner(uiOutput("description"), type = 8, 
+                                       size = 0.5)
                        )
                 ),
                 column(6,
                        box(
                            width = 12,
                            withSpinner(highchartOutput("migration", height = "300px"),
-                                       type = 4, size = 0.8)
+                                       type = 8, size = 0.5)
                            
                        ),
                        box(
                            width = 12,
                            withSpinner(highchartOutput("local", height = "300px"),
-                                       type = 4, size = 0.8)
+                                       type = 8, size = 0.5)
                        ),
                        box(
                            width = 12,
                            withSpinner(highchartOutput("change", height = "300px"),
-                                       type = 4, size = 0.8)
+                                       type = 8, size = 0.5)
                        )
                 )
             )
