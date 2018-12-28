@@ -26,6 +26,14 @@ parse_description <- function(style_name, text) {
     return(element)
 }
 
+simple_cap <- Vectorize(
+    function(x) {
+        s <- strsplit(x, " ")[[1]]
+        s <- paste(toupper(substring(s, 1, 1)), substring(s, 2),
+                   sep = "", collapse = " ")
+        return(s)
+    }, SIMPLIFY = TRUE, USE.NAMES = FALSE)
+
 # Load data ---------------------------------------------------------------
 
 load("data/sp_yearly_1_2.RData")
@@ -41,7 +49,9 @@ dat <- dat %>%
 
 # Read species definition data
 sp_data <- readr::read_csv("data/Halias_sp_v1.2.csv") %>% 
-    dplyr::arrange(Species_code)
+    dplyr::arrange(Species_code) %>% 
+    dplyr::mutate(FIN_name = simple_cap(FIN_name),
+                  SWE_name = simple_cap(SWE_name))
 
 spps <- sp_data$Sci_name
 
@@ -193,6 +203,8 @@ server <- function(input, output, session) {
         if (!is.null(current_sp)) {
             # Define species names
             sp_abbr <- tolower(current_sp$Species_Abb)
+            sci_name <- current_sp$Sci_name
+            
             if (input$language == "en") {
                 common_name <- current_sp$ENG_name
             } else if (input$language == "fi") {
@@ -221,7 +233,7 @@ server <- function(input, output, session) {
                 payload <- withTags(
                     div(
                         h2(common_name),
-                        h4(current_sp$Sci_name),
+                        h4(sci_name),
                         br(),
                         p("No description found.")
                     )
