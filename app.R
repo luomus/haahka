@@ -45,6 +45,9 @@ sp_data <- readr::read_csv("data/Halias_sp_v1.2.csv") %>%
 
 spps <- sp_data$Sci_name
 
+# Translation data
+translator <- shiny.i18n::Translator$new(translation_json_path = "data/translation.json")
+
 # Global variables --------------------------------------------------------
 
 # How many milliseconds in a year?
@@ -63,9 +66,8 @@ ui <- dashboardPage(
         )
     ),
     dashboardSidebar(collapsed = TRUE,
-                     div(style = "text-align: center",
-                         h4(glue("version: {VERSION}"))
-                     )),
+                     uiOutput("render_sidebar")
+        ),
     dashboardBody(
         tags$head(
             tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
@@ -115,7 +117,38 @@ ui <- dashboardPage(
     )
 )
 
-server <- function(input, output) {
+server <- function(input, output, session) {
+    
+    i18n <- reactive({
+        selected <- input$language
+        if (length(selected) > 0 && selected %in% translator$languages) {
+            message("Language changed to: ", selected)
+            translator$set_translation_language(selected)
+        }
+        translator
+    })
+    
+    output$render_sidebar <- renderUI({
+        tagList(
+            div(style = "text-align: center",
+                h4(VERSION)
+            ),
+            selectInput("language",
+                        label = i18n()$t("Kieli"),
+                        choices = translator$languages, 
+                        selected = input$language)
+        )
+    })
+    
+    #output$render_body <- renderUI({
+    #    tagList(
+    #        
+    #    )
+    #})
+    
+    observeEvent(i18n(), {
+        updateSelectInput(session, "language", label =  i18n()$t("Kieli"), selected = input$language)
+    })
     
     output$image <- renderUI({
         current_sp <- sp_data %>% 

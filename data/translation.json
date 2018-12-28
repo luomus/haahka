@@ -1,0 +1,28 @@
+{
+  "cultural_date_format": "%d-%m-%Y",
+  "languages": ["fi", "en"],
+  "translation": [
+    {
+      "fi": "Kieli",
+      "en": "Language"
+      
+    },
+    {
+      "fi": "Valitse laji",
+      "en": "Select species"
+      
+    },
+    {
+      "en": "This is description of the plot.",
+      "fi": "To jest opis obrazka."
+    },
+    {
+      "en": "Histogram of x",
+      "fi": "Histogram x"
+    },
+    {
+      "en": "Frequency",
+      "fi": "Częstotliwość"
+    }
+    ]
+}
