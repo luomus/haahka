@@ -6,6 +6,7 @@ library(shiny)
 library(shiny.i18n)
 library(shinycssloaders)
 library(shinydashboard)
+library(slickR)
 library(tidyverse)
 library(yaml)
 
@@ -111,7 +112,7 @@ ui <- dashboardPage(
                 column(6,
                        box(
                            width = 12, collapsible = TRUE,
-                           uiOutput("image")
+                           uiOutput("image_slider")
                        ),
                        box(
                            width = 12,
@@ -211,6 +212,25 @@ server <- function(input, output, session) {
         updateSelectInput(session, "language", label =  i18n()$t("Kieli"), selected = input$language)
         updateSelectInput(session, "selector", label =  i18n()$t("Valitse laji"), 
                           choices = get_species_names(input$language), selected = input$selector)
+    })
+    
+    output$image_slider <- renderSlickR({
+        current_sp <- get_current_sp()    
+        
+        sp_abbr <- tolower(current_sp$Species_Abb)
+    
+        # The actual dir path is needed to figure out if the files exists
+        img_dir <- file.path("www", "img", "sp_images", sp_abbr)
+        browser()
+        if (file.exists(img_dir)) {
+            # Photo credit
+            #photo_credit <- PHOTO_CREDITS[[sp_abbr]]
+            imgs <- list.files(img_dir, pattern = ".jpg", full.names = TRUE)
+            payload <- slickR::slickR(imgs, width = "100%")
+        } else {
+            payload <- NULL
+        }
+        return(payload)
     })
     
     output$image <- renderUI({
