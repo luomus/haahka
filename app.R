@@ -110,10 +110,7 @@ ui <- dashboardPage(
                        )
                 ),
                 column(6,
-                       box(
-                           width = 12, collapsible = TRUE,
-                           uiOutput("image")
-                       ),
+                       uiOutput("render_carousel"),
                        box(
                            width = 12,
                            uiOutput("description")
@@ -126,6 +123,9 @@ ui <- dashboardPage(
 
 server <- function(input, output, session) {
     
+
+    # Reactives ---------------------------------------------------------------
+
     i18n <- reactive({
         selected <- input$language
         if (length(selected) > 0 && selected %in% translator$languages) {
@@ -145,6 +145,30 @@ server <- function(input, output, session) {
         sp_current <- get_current_sp()
         return(dplyr::filter(dat, sp == sp_current$Species_Abb) )
     })
+    
+    get_images <- reactive({
+        current_sp <- get_current_sp()    
+        
+        sp_abbr <- tolower(current_sp$Species_Abb)
+        
+        # The actual dir path is needed to figure out if the files exists
+        img_dir <- file.path("www", "img", "sp_images", sp_abbr)
+        #browser()
+        # Photo credit
+        #photo_credit <- PHOTO_CREDITS[[sp_abbr]]
+        imgs <- list.files(img_dir, pattern = ".jpg", full.names = TRUE)
+        return(imgs)
+    })
+    
+    # Helper functions ---------------------------------------------------------
+    
+    no_images <- function(files) {
+        if (length(files) == 0) {
+            i18n()$t("Ei kuvia tälle lajille")
+        } else {
+            NULL
+        }
+    }
     
     get_species_names <- function(lang) {
         if (!is.null(lang)) {
@@ -170,6 +194,8 @@ server <- function(input, output, session) {
             return(spps)
         }
     }
+    
+    # Outputs ------------------------------------------------------------------
     
     output$render_sidebar <- renderUI({
         tagList(
@@ -202,29 +228,34 @@ server <- function(input, output, session) {
         )
     })
     
-    observeEvent(i18n(), {
-        updateSelectInput(session, "language", label =  i18n()$t("Kieli"), selected = input$language)
-        updateSelectInput(session, "selector", label =  i18n()$t("Valitse laji"), 
-                          choices = get_species_names(input$language), selected = input$selector)
+    output$render_carousel <- renderUI({
+        
+        imgs <- get_images()
+        
+        if (length(imgs) == 0) {
+            collapsed = TRUE           
+        } else {
+            collapsed = FALSE
+        }
+        
+        payload <- tagList(
+            box(
+                width = 12, collapsible = TRUE, collapsed = collapsed,
+                slickROutput("image_slider")
+            )
+        )
+        return(payload)
     })
     
     output$image_slider <- renderSlickR({
-        current_sp <- get_current_sp()    
         
-        sp_abbr <- tolower(current_sp$Species_Abb)
-    
-        # The actual dir path is needed to figure out if the files exists
-        img_dir <- file.path("www", "img", "sp_images", sp_abbr)
-        browser()
-        if (file.exists(img_dir)) {
-            # Photo credit
-            #photo_credit <- PHOTO_CREDITS[[sp_abbr]]
-            imgs <- list.files(img_dir, pattern = ".jpg", full.names = TRUE)
-            payload <- slickR::slickR(imgs, width = "100%")
-        } else {
-            payload <- NULL
-        }
-        return(payload)
+        imgs <- get_images()
+        
+        shiny::validate(
+            no_images(imgs)
+        )
+        
+        slickR::slickR(imgs, width = "100%")
     })
     
     output$image <- renderUI({
@@ -380,6 +411,14 @@ server <- function(input, output, session) {
             
             return(hc)
         }
+    })
+
+    # Observers ----------------------------------------------------------------
+    
+    observeEvent(i18n(), {
+        updateSelectInput(session, "language", label =  i18n()$t("Kieli"), selected = input$language)
+        updateSelectInput(session, "selector", label =  i18n()$t("Valitse laji"), 
+                          choices = get_species_names(input$language), selected = input$selector)
     })
 }
 
