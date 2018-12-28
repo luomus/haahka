@@ -183,11 +183,15 @@ server <- function(input, output, session) {
                 dplyr::select(!!name_field) %>% 
                 purrr::pluck(1)
             
-            # Get also the scientific names; these will be used to subset the data
+            # Get also the scientific names; these will be used in the labels and
+            # to subset the data
             spps <- sp_data %>% 
                 dplyr::filter(Sp == 1) %>% 
                 dplyr::select(Sci_name) %>% 
                 purrr::pluck(1)
+            
+            sp_names <- paste0(sp_names, " (", spps, ")")
+            
             # Create a named character vector
             names(spps) <- sp_names
             
