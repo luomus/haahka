@@ -46,14 +46,11 @@ dat <- dat %>%
     # Round all numeric columns (numbers of observed individuals)
     dplyr::mutate_if(is.numeric, round, digits = 2)
     
-
 # Read species definition data
 sp_data <- readr::read_csv("data/Halias_sp_v1.2.csv") %>% 
     dplyr::arrange(Species_code) %>% 
     dplyr::mutate(FIN_name = simple_cap(FIN_name),
                   SWE_name = simple_cap(SWE_name))
-
-spps <- sp_data$Sci_name
 
 # Translation data
 translator <- shiny.i18n::Translator$new(translation_json_path = "data/translation.json")
@@ -154,6 +151,31 @@ server <- function(input, output, session) {
         }
     })
     
+    get_species_names <- function(lang) {
+        if (!is.null(lang)) {
+            if (lang == "fi") {
+                name_field = "FIN_name"
+            } else if (lang == "en") {
+                name_field == "ENG_name"
+            }
+            
+            sp_names <- sp_data %>% 
+                dplyr::filter(Sp == 1) %>% 
+                dplyr::select(!!name_field) %>% 
+                purrr::pluck(1)
+            
+            # Get also the scientific names; these will be used to subset the data
+            spps <- sp_data %>% 
+                dplyr::filter(Sp == 1) %>% 
+                dplyr::select(Sci_name) %>% 
+                purrr::pluck(1)
+            # Create a named character vector
+            names(spps) <- sp_names
+            
+            return(spps)
+        }
+    }
+    
     output$render_sidebar <- renderUI({
         tagList(
             div(style = "text-align: center",
@@ -167,6 +189,16 @@ server <- function(input, output, session) {
     })
     
     output$render_selector <- renderUI({
+        
+        if (is.null(input$language)) {
+            # By default, the names are Finnish
+            name_field <- "fi"            
+        } else {
+            name_field <- input$language
+        }
+        
+        spps <- get_species_names(name_field)
+        
         tagList(
             selectInput("selector", 
                         label = i18n()$t("Valitse laji"),
@@ -177,7 +209,8 @@ server <- function(input, output, session) {
     
     observeEvent(i18n(), {
         updateSelectInput(session, "language", label =  i18n()$t("Kieli"), selected = input$language)
-        updateSelectInput(session, "selector", label =  i18n()$t("Valitse laji"), selected = input$selector)
+        updateSelectInput(session, "selector", label =  i18n()$t("Valitse laji"), 
+                          choices = get_species_names(input$language), selected = input$selector)
     })
     
     output$image <- renderUI({
