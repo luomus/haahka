@@ -82,16 +82,21 @@ ui <- dashboardPage(
         ),
         fluidPage(
             fluidRow(
+                column(12,
+                       box(width = 12,
+                           uiOutput("render_selector")
+                       )
+                )
+            ),
+            fluidRow(
                 column(6,
+                       #uiOutput("render_image"),
                        box(
                            width = 12,
-                           column(6,
-                                  uiOutput("render_selector")
-                           ),
-                           column(6
-                                  #checkboxInput("fixy", "Fix y-axis")
-                           )
-                       ),
+                           uiOutput("description")
+                       )
+                ),
+                column(6,
                        box(
                            width = 12,
                            withSpinner(highchartOutput("migration", height = "300px"),
@@ -107,13 +112,6 @@ ui <- dashboardPage(
                            width = 12,
                            withSpinner(highchartOutput("change", height = "300px"),
                                        type = 4, size = 0.8)
-                       )
-                ),
-                column(6,
-                       uiOutput("render_carousel"),
-                       box(
-                           width = 12,
-                           uiOutput("description")
                        )
                 )
             )
@@ -262,6 +260,25 @@ server <- function(input, output, session) {
         slickR::slickR(imgs, width = "100%")
     })
     
+    output$render_image <- renderUI({
+        
+        imgs <- get_images()
+        
+        if (length(imgs) == 0) {
+            collapsed = TRUE           
+        } else {
+            collapsed = FALSE
+        }
+        
+        payload <- tagList(
+            box(
+                width = 12, collapsible = TRUE, collapsed = collapsed,
+                uiOutput("image")
+            )
+        )
+        return(payload)
+    })
+    
     output$image <- renderUI({
         
         current_sp <- get_current_sp()
@@ -270,16 +287,19 @@ server <- function(input, output, session) {
             sp_abbr <- tolower(current_sp$Species_Abb)
             
             # The actual file path is needed to figure out if the file exists
-            img_file <- file.path("www", "img", "sp_images", paste0(sp_abbr, ".jpg"))
+            img_file <- file.path("www", "img", "sp_images", sp_abbr, 
+                                  paste0(sp_abbr, ".jpg"))
             
             if (file.exists(img_file)) {
                 # Photo credit
                 photo_credit <- PHOTO_CREDITS[[sp_abbr]]
                 # If the file does exist, use tags instead of rendering the image
                 # directly. This way the browser will cache the image.
-                payload <- shiny::div(shiny::img(src = glue::glue("img/sp_images/{sp_abbr}.jpg"),
-                                                 width = "100%"),
-                                      shiny::p(glue::glue("Ⓒ {photo_credit}")))
+                payload <- shiny::div(shiny::img(src = glue::glue("img/sp_images/{sp_abbr}/{sp_abbr}.jpg"),
+                                                 width = "95%", class = "description"),
+                                      shiny::p(glue::glue("Ⓒ {photo_credit}"), 
+                                               class = "description"),
+                                      shiny::br())
             } else {
                 payload <- shiny::p(i18n()$t("Kuvaa ei löydy"), class = "description")
             }
@@ -312,8 +332,9 @@ server <- function(input, output, session) {
                 payload <- withTags(
                     div(
                         shiny::h2(common_name, class = "description"),
-                        shiny::h4(sci_name, class = "description sci-name"),
+                        shiny::h3(sci_name, class = "description sci-name"),
                         shiny::br(),
+                        uiOutput("image"),
                         docx_content %>% 
                             dplyr::rowwise() %>% 
                             do(row = parse_description(.$style_name, .$text)) %>% 
@@ -324,7 +345,7 @@ server <- function(input, output, session) {
                 payload <- withTags(
                     shiny::div(
                         shiny::h2(common_name, class = "description"),
-                        shiny::h4(sci_name, class = "description sci-name"),
+                        shiny::h3(sci_name, class = "description sci-name"),
                         shiny::br(),
                         shiny::p(i18n()$t("Kuvausta ei löydy"), class = "description")
                     )

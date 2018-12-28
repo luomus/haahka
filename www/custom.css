@@ -23,6 +23,10 @@ body
   font-style: italic;  
 }
 
+h3.description {
+  margin-top: 0; 
+}
+
 h4.description {
   margin-top: 30px;
   margin-left: 20px;
