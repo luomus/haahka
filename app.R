@@ -78,8 +78,7 @@ ui <- dashboardPage(
                        box(
                            width = 12,
                            column(6,
-                                  selectInput("selector", "Select species", 
-                                              choices = spps)
+                                  uiOutput("render_selector")
                            ),
                            column(6
                                   #checkboxInput("fixy", "Fix y-axis")
@@ -128,6 +127,14 @@ server <- function(input, output, session) {
         translator
     })
     
+    get_current_sp <- reactive({
+        if (!is.null(input$selector)) {
+            return(dplyr::filter(sp_data, Sci_name == input$selector))
+        } else {
+            return(NULL)
+        }
+    })
+    
     output$render_sidebar <- renderUI({
         tagList(
             div(style = "text-align: center",
@@ -140,79 +147,89 @@ server <- function(input, output, session) {
         )
     })
     
-    #output$render_body <- renderUI({
-    #    tagList(
-    #        
-    #    )
-    #})
+    output$render_selector <- renderUI({
+        tagList(
+            selectInput("selector", 
+                        label = i18n()$t("Valitse laji"),
+                        choices = spps,
+                        selected = input$selector)
+        )
+    })
     
     observeEvent(i18n(), {
         updateSelectInput(session, "language", label =  i18n()$t("Kieli"), selected = input$language)
+        updateSelectInput(session, "selector", label =  i18n()$t("Valitse laji"), selected = input$selector)
     })
     
     output$image <- renderUI({
-        current_sp <- sp_data %>% 
-            filter(Sci_name == input$selector)
-        common_name <- current_sp$ENG_name
-        sci_name <- current_sp$Sci_name
-        sp_abbr <- tolower(current_sp$Species_Abb)
         
-        # The actual file path is needed to figure out if the file exists
-        img_file <- file.path("www", "img", "sp_images", paste0(sp_abbr, ".jpg"))
-        
-        if (file.exists(img_file)) {
-            # Photo credit
-            photo_credit <- PHOTO_CREDITS[[sp_abbr]]
-            # If the file does exist, use tags instead of rendering the image
-            # directly. This way the browser will cache the image.
-            payload <- shiny::div(shiny::img(src = glue::glue("img/sp_images/{sp_abbr}.jpg"),
-                                  width = "100%"),
-                                  shiny::p(glue::glue("Ⓒ {photo_credit}")))
-        } else {
-            payload <- shiny::p("No image found")
-        }
-        return(payload)
-        
+        current_sp <- get_current_sp()
+
+        if (!is.null(current_sp)) {
+            sp_abbr <- tolower(current_sp$Species_Abb)
+            
+            # The actual file path is needed to figure out if the file exists
+            img_file <- file.path("www", "img", "sp_images", paste0(sp_abbr, ".jpg"))
+            
+            if (file.exists(img_file)) {
+                # Photo credit
+                photo_credit <- PHOTO_CREDITS[[sp_abbr]]
+                # If the file does exist, use tags instead of rendering the image
+                # directly. This way the browser will cache the image.
+                payload <- shiny::div(shiny::img(src = glue::glue("img/sp_images/{sp_abbr}.jpg"),
+                                                 width = "100%"),
+                                      shiny::p(glue::glue("Ⓒ {photo_credit}")))
+            } else {
+                payload <- shiny::p("No image found")
+            }
+            return(payload)
+        }        
     })
     
     output$description <- renderUI({
         
-        current_sp <- sp_data %>% 
-            filter(Sci_name == input$selector)
-        common_name <- current_sp$ENG_name
-        sci_name <- current_sp$Sci_name
-        sp_abbr <- current_sp$Species_Abb
+        current_sp <- get_current_sp()
         
-        # Try reading the description docx file
-        docx_file <- file.path("data", "descriptions", paste0(tolower(sp_abbr), ".docx"))
-        #browser()
-        if (file.exists(docx_file)) {
+        if (!is.null(current_sp)) {
+            # Define species names
+            sp_abbr <- tolower(current_sp$Species_Abb)
+            if (input$language == "en") {
+                common_name <- current_sp$ENG_name
+            } else if (input$language == "fi") {
+                common_name <- current_sp$FIN_name
+            }
             
-            docx_content <- officer::docx_summary(officer::read_docx(docx_file))
+            # Try reading the description docx file
+            docx_file <- file.path("data", "descriptions", paste0(tolower(sp_abbr), ".docx"))
+            #browser()
+            if (file.exists(docx_file)) {
+                
+                docx_content <- officer::docx_summary(officer::read_docx(docx_file))
+                
+                payload <- withTags(
+                    div(
+                        h2(common_name, class = "description"),
+                        h4(sci_name, class = "description"),
+                        br(),
+                        docx_content %>% 
+                            dplyr::rowwise() %>% 
+                            do(row = parse_description(.$style_name, .$text)) %>% 
+                            as.list()
+                    )
+                )
+            } else {
+                payload <- withTags(
+                    div(
+                        h2(common_name),
+                        h4(current_sp$Sci_name),
+                        br(),
+                        p("No description found.")
+                    )
+                )
+            }
             
-            payload <- withTags(
-                div(
-                    h2(common_name, class = "description"),
-                    h4(sci_name, class = "description"),
-                    br(),
-                    docx_content %>% 
-                        dplyr::rowwise() %>% 
-                        do(row = parse_description(.$style_name, .$text)) %>% 
-                        as.list()
-                )
-            )
-        } else {
-            payload <- withTags(
-                div(
-                    h2(common_name),
-                    h4(sci_name),
-                    br(),
-                    p("No description found.")
-                )
-            )
+            return(payload)            
         }
-        
-        return(payload)
     })
     
     output$migration <- renderHighchart({
