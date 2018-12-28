@@ -173,7 +173,7 @@ server <- function(input, output, session) {
             if (lang == "fi") {
                 name_field = "FIN_name"
             } else if (lang == "en") {
-                name_field == "ENG_name"
+                name_field = "ENG_name"
             }
             
             sp_names <- sp_data %>% 
