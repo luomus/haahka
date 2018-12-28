@@ -1,3 +1,9 @@
+## 0.1.3 (2018-12-28)
+
+- Make more UI components reactive.
+- Start using translations with package `shiny.i18n`.
+
+
 ## 0.1.2 (2018-12-27)
 
 - Exporting graphs as images or data (CSV and Excel) enabled.
