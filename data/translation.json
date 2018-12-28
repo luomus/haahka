@@ -13,16 +13,28 @@
       
     },
     {
-      "en": "This is description of the plot.",
-      "fi": "To jest opis obrazka."
+      "fi": "Kuvaa ei löydy",
+      "en": "No image found"
     },
     {
-      "en": "Histogram of x",
-      "fi": "Histogram x"
+      "fi": "Kuvausta ei löydy",
+      "en": "No description found"
     },
     {
-      "en": "Frequency",
-      "fi": "Częstotliwość"
+      "fi": "Muuttavat",
+      "en": "Migrating"
+    },
+    {
+      "fi": "Paikalliset",
+      "en": "Locals"
+    },
+    {
+      "fi": "Yksilölkm.",
+      "en": "Individuals"
+    },
+    {
+      "fi": "Kaikkien havaintojen muutos",
+      "en": "Change in all observations"
     }
     ]
 }

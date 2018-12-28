@@ -199,7 +199,7 @@ server <- function(input, output, session) {
                                                  width = "100%"),
                                       shiny::p(glue::glue("Ⓒ {photo_credit}")))
             } else {
-                payload <- shiny::p("No image found")
+                payload <- shiny::p(i18n()$t("Kuvaa ei löydy"), class = "description")
             }
             return(payload)
         }        
@@ -244,7 +244,7 @@ server <- function(input, output, session) {
                         shiny::h2(common_name, class = "description"),
                         shiny::h4(sci_name, class = "description sci-name"),
                         shiny::br(),
-                        shiny::p("No description found.", class = "description")
+                        shiny::p(i18n()$t("Kuvausta ei löydy"), class = "description")
                     )
                 )
             }
@@ -261,14 +261,14 @@ server <- function(input, output, session) {
             hc <- obs_current %>% 
                 hchart(type = "spline", 
                        hcaes(x = day, y = muutto),
-                       name = "Migrating",
+                       name = i18n()$t("Muuttavat"),
                        color = "#1f78b4") %>% 
-                hc_yAxis(title = list(text = "Individuals")) %>% 
+                hc_yAxis(title = list(text = i18n()$t("Yksilölkm."))) %>% 
                 hc_xAxis(title = list(text = ""),
                          type = "datetime", 
                          dateTimeLabelFormats = list(month = '%b'),
                          tickInterval = X_AXIS_TIME_UNITS) %>% 
-                hc_title(text = "Migrants") %>% 
+                hc_title(text = i18n()$t("Muuttavat")) %>% 
                 hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                            xDateFormat = "%b %d") %>% 
                 hc_exporting(enabled = TRUE) %>% 
@@ -286,14 +286,14 @@ server <- function(input, output, session) {
             hc <- obs_current %>% 
                 hchart(type = "spline", 
                        hcaes(x = day, y = paik),
-                       name = "Locals",
+                       name = i18n()$t("Paikalliset"),
                        color = "#1f78b4") %>% 
-                hc_yAxis(title = list(text = "Individuals")) %>% 
+                hc_yAxis(title = list(text = i18n()$t("Yksilölkm."))) %>% 
                 hc_xAxis(title = list(text = ""),
                          type = "datetime", 
                          dateTimeLabelFormats = list(month = '%b'),
                          tickInterval = X_AXIS_TIME_UNITS) %>% 
-                hc_title(text = "Locals") %>% 
+                hc_title(text = i18n()$t("Paikalliset")) %>% 
                 hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                            xDateFormat = "%b %d") %>% 
                 hc_exporting(enabled = TRUE) %>% 
@@ -320,12 +320,12 @@ server <- function(input, output, session) {
                        # order of epochs c("begin", "end", "med")
                        name = c("1979-1999", "2000-2010", "2011-2018"),
                        color = c("#66c2a5", "#8da0cb", "#fc8d62")) %>% 
-                hc_yAxis(title = list(text = "Individuals")) %>% 
+                hc_yAxis(title = list(text = i18n()$t("Yksilölkm."))) %>% 
                 hc_xAxis(title = list(text = ""),
                          type = "datetime", 
                          dateTimeLabelFormats = list(month = '%b'),
                          tickInterval = X_AXIS_TIME_UNITS) %>% 
-                hc_title(text = "Change in all individuals") %>% 
+                hc_title(text = i18n()$t("Kaikkien havaintojen muutos")) %>% 
                 hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                            shared = TRUE, xDateFormat = "%b %d") %>% 
                 hc_exporting(enabled = TRUE) %>% 
