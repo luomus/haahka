@@ -1,3 +1,11 @@
+## 0.1.4 (2018-12-28)
+
+- Select only species, not species groups.
+- Use common names and scientific names in the species selector.
+- Translations updated.
+- Use an image slider, i.e. support multiple images for a single species.
+- Image box is collapsed if there are no images to show.
+ 
 ## 0.1.3 (2018-12-28)
 
 - Make more UI components reactive.
