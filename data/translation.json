@@ -37,6 +37,22 @@
       "en": "Change in abundance"
     },
     {
+      "fi": "Runsauksien muutokset numeroina",
+      "en": "Change in abundance in numbers"
+    },
+    {
+      "fi": "Pitkänajan trendi",
+      "en": "Long term trend"
+    },
+    {
+      "fi": "Lyhyenajan trendi",
+      "en": "Short term trend"
+    },
+    {
+      "fi": "Keskirunsaus",
+      "en": "Average abundance"
+    },
+    {
       "fi": "Ei kuvia tälle lajille",
       "en": "No images found"
     }

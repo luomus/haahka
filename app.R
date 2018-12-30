@@ -123,7 +123,8 @@ ui <- dashboardPage(
                            width = 12,
                            withSpinner(highchartOutput("change", height = "300px"),
                                        type = 8, size = 0.5)
-                       )
+                       ),
+                       uiOutput("change_numbers")
                 )
             )
         )
@@ -153,6 +154,13 @@ server <- function(input, output, session) {
     get_current_data <- reactive({
         sp_current <- get_current_sp()
         return(dplyr::filter(dat, sp == sp_current$Species_Abb) )
+    })
+    
+    get_current_stats <- reactive({
+        sp_current <- get_current_sp()
+        current_stats <- abundance_stats %>% 
+            dplyr::filter(sp == sp_current$Species_Abb)
+        return(current_stats)
     })
     
     get_images <- reactive({
@@ -448,6 +456,104 @@ server <- function(input, output, session) {
             
             return(hc)
         }
+    })
+    
+    output$change_numbers <- renderUI({
+        
+        stats_current <- get_current_stats()
+        
+        # Sort out the the trend numbers and UI components
+        # Long term
+        if (!is.na(stats_current$slopeLong) & stats_current$slopeLong > 0) {
+            lt_number_color <- "green"
+            lt_number_icon <- "fa fa-caret-up"
+            lt_number <- paste0(stats_current$slopeLong, "%")
+        } else if (!is.na(stats_current$slopeLong) & stats_current$slopeLong < 0) {
+            lt_number_color <- "red"
+            lt_number_icon <- "fa fa-caret-down"
+            lt_number <- paste0(stats_current$slopeLong, "%")
+        } else if (is.na(stats_current$slopeLong)) {
+            lt_number_color <- "grey"
+            lt_number_icon <- NA
+            lt_number <- "-"
+        }
+        # Short term
+        if (!is.na(stats_current$slopeShort) & stats_current$slopeShort > 0) {
+            st_number_color <- "green"
+            st_number_icon <- "fa fa-caret-up"
+            st_number <- paste0(stats_current$slopeShort, "%")
+        } else if (!is.na(stats_current$slopeShort) & stats_current$slopeShort < 0) {
+            st_number_color <- "red"
+            st_number_icon <- "fa fa-caret-down"
+            st_number <- paste0(stats_current$slopeShort, "%")
+        } else if (is.na(stats_current$slopeShort)) {
+            st_number_color <- "grey"
+            st_number_icon <- NA
+            st_number <- "-"
+        }
+        
+        payload <- box(width = 12,
+                       solidHeader = FALSE,
+                       title = i18n()$t("Runsauksien muutokset numeroina"),
+                       background = NULL,
+                       status = "danger",
+                       footer = fluidRow(
+                           column(
+                               width = 6,
+                               descriptionBlock(
+                                   number = lt_number, 
+                                   number_color = lt_number_color, 
+                                   number_icon = lt_number_color,
+                                   header = "", 
+                                   text = paste(i18n()$t("Pitkänajan trendi"),
+                                                "1979-1999 → 2011-2017"), 
+                                   right_border = TRUE,
+                                   margin_bottom = FALSE
+                               )
+                           ),
+                           column(
+                               width = 6,
+                               descriptionBlock(
+                                   number = st_number, 
+                                   number_color = st_number_color, 
+                                   number_icon = st_number_color,
+                                   header = "", 
+                                   text = paste(i18n()$t("Lyhyenajan trendi"),
+                                                "2000-2010 → 2011-2017"), 
+                                   right_border = TRUE,
+                                   margin_bottom = FALSE
+                               )
+                           ),
+                           column(
+                               width = 4,
+                               descriptionBlock(
+                                   header = round(stats_current$Nbegin, 0),
+                                   text = paste(i18n()$t("Keskirunsaus"), "1970-1999"), 
+                                   right_border = TRUE,
+                                   margin_bottom = FALSE
+                               )
+                           ),
+                           column(
+                               width = 4,
+                               descriptionBlock(
+                                   header = round(stats_current$Nmed, 0), 
+                                   text = paste(i18n()$t("Keskirunsaus"), "2000-2010"), , 
+                                   right_border = FALSE,
+                                   margin_bottom = FALSE
+                               )
+                           ),
+                           column(
+                               width = 4,
+                               descriptionBlock(
+                                   header = round(stats_current$Nend, 0), 
+                                   text = paste(i18n()$t("Keskirunsaus"), "2011-2017"),
+                                   right_border = FALSE,
+                                   margin_bottom = FALSE
+                               )
+                           )
+                       )
+        )
+        return(payload)
     })
 
     # Observers ----------------------------------------------------------------
