@@ -6,6 +6,7 @@ library(shiny)
 library(shiny.i18n)
 library(shinycssloaders)
 library(shinydashboard)
+library(shinydashboardPlus)
 library(slickR)
 library(tidyverse)
 library(yaml)
@@ -54,7 +55,6 @@ sp_data <- readr::read_csv("data/Halias_sp_v1.2.csv") %>%
                   SWE_name = simple_cap(SWE_name))
 
 # Read pre-processed abundance and phenology stats
-
 abundance_stats <- readr::read_csv("data/Halias_trend20181230.csv") %>% 
     dplyr::select(-X1) %>% 
     dplyr::mutate(slopeShort = ifelse(is.infinite(slopeShort), NA, slopeShort))
