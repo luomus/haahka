@@ -53,6 +53,16 @@ sp_data <- readr::read_csv("data/Halias_sp_v1.2.csv") %>%
     dplyr::mutate(FIN_name = simple_cap(FIN_name),
                   SWE_name = simple_cap(SWE_name))
 
+# Read pre-processed abundance and phenology stats
+
+abundance_stats <- readr::read_csv("data/Halias_trend20181230.csv") %>% 
+    dplyr::select(-X1) %>% 
+    dplyr::mutate(slopeShort = ifelse(is.infinite(slopeShort), NA, slopeShort))
+
+# Read pre-processed record stats
+record_stats <- readr::read_csv("data/Halias_record20181230.csv") %>% 
+    dplyr::select(-X1)
+
 # Translation data
 translator <- shiny.i18n::Translator$new(translation_json_path = "data/translation.json")
 
