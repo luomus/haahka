@@ -467,7 +467,7 @@ server <- function(input, output, session) {
         if (!is.na(stats_current$slopeLong) & stats_current$slopeLong > 0) {
             lt_number_color <- "green"
             lt_number_icon <- "fa fa-caret-up"
-            lt_number <- paste0(stats_current$slopeLong, "%")
+            lt_number <- paste0("+", stats_current$slopeLong, "%")
         } else if (!is.na(stats_current$slopeLong) & stats_current$slopeLong < 0) {
             lt_number_color <- "red"
             lt_number_icon <- "fa fa-caret-down"
@@ -481,7 +481,7 @@ server <- function(input, output, session) {
         if (!is.na(stats_current$slopeShort) & stats_current$slopeShort > 0) {
             st_number_color <- "green"
             st_number_icon <- "fa fa-caret-up"
-            st_number <- paste0(stats_current$slopeShort, "%")
+            st_number <- paste0("+", stats_current$slopeShort, "%")
         } else if (!is.na(stats_current$slopeShort) & stats_current$slopeShort < 0) {
             st_number_color <- "red"
             st_number_icon <- "fa fa-caret-down"
