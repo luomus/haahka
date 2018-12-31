@@ -497,7 +497,7 @@ server <- function(input, output, session) {
                        title = i18n()$t("Runsauksien muutokset numeroina"),
                        background = NULL,
                        status = "danger",
-                       tagList(
+                       footer = tagList(
                            p(
                                strong("Pitkän aikavälin muutos"), "=",
                                " keskirunsausden muutos aikajaksolta 1979-1999",
@@ -508,7 +508,7 @@ server <- function(input, output, session) {
                                " aikajaksolle 2011-2017."
                            )
                        ),
-                       footer = fluidRow(
+                       fluidRow(
                            column(
                                width = 6,
                                descriptionBlock(
