@@ -9,6 +9,7 @@ library(shinydashboard)
 library(shinydashboardPlus)
 library(slickR)
 library(tidyverse)
+library(tsibble)
 library(yaml)
 
 # Helper functions --------------------------------------------------------
@@ -380,10 +381,21 @@ server <- function(input, output, session) {
         
         obs_current <- get_current_data()
         
-        if (!is.null(obs_current)) {
-            hc <- obs_current %>% 
-                hchart(type = "line", 
-                       hcaes(x = day, y = muutto),
+        plot_data <- obs_current %>% 
+            dplyr::select(sp, day, muutto)
+        
+        plot_data <- as_tsibble(plot_data, key = id(sp), index = day)
+        
+        day_index <- c(seq(3, nrow(plot_data), by = 5), 366)
+        plot_days <- plot_data$day[day_index]
+        day_avgs <- tsibble::tile_dbl(plot_data$muutto, ~ mean(., na.rm = TRUE), .size = 5)
+        
+        plot_data <- tibble::tibble(day = plot_days, muutto_avg = day_avgs)
+        
+        if (!is.null(plot_data)) {
+            hc <- plot_data %>% 
+                hchart(type = "spline", 
+                       hcaes(x = day, y = muutto_avg),
                        name = i18n()$t("Muuttavien keskiarvot"),
                        color = "#1f78b4") %>% 
                 hc_yAxis(title = list(text = i18n()$t("Yksilölkm."))) %>% 
