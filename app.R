@@ -497,6 +497,17 @@ server <- function(input, output, session) {
                        title = i18n()$t("Runsauksien muutokset numeroina"),
                        background = NULL,
                        status = "danger",
+                       tagList(
+                           p(
+                               strong("Pitkän aikavälin muutos"), "=",
+                               " keskirunsausden muutos aikajaksolta 1979-1999",
+                               " aikajaksolle 2011-2017.",
+                               br(),
+                               strong("Lyhyen aikavälin muutos"), "=",
+                               " keskirunsausden muutos aikajaksolta 2000-2010",
+                               " aikajaksolle 2011-2017."
+                           )
+                       ),
                        footer = fluidRow(
                            column(
                                width = 6,
@@ -505,8 +516,7 @@ server <- function(input, output, session) {
                                    number_color = lt_number_color, 
                                    number_icon = lt_number_icon,
                                    header = "", 
-                                   text = paste(i18n()$t("Pitkänajan trendi"),
-                                                "1979-1999 → 2011-2017"), 
+                                   text = paste(i18n()$t("Pitkän aikavälin muutos")), 
                                    right_border = TRUE,
                                    margin_bottom = FALSE
                                )
@@ -518,8 +528,7 @@ server <- function(input, output, session) {
                                    number_color = st_number_color, 
                                    number_icon = st_number_icon,
                                    header = "", 
-                                   text = paste(i18n()$t("Lyhyenajan trendi"),
-                                                "2000-2010 → 2011-2017"), 
+                                   text = paste(i18n()$t("Lyhyen aikavälin muutos")), 
                                    right_border = TRUE,
                                    margin_bottom = FALSE
                                )
