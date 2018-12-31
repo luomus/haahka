@@ -518,7 +518,7 @@ server <- function(input, output, session) {
                                    header = "", 
                                    text = paste(i18n()$t("Pitkän aikavälin muutos")), 
                                    right_border = TRUE,
-                                   margin_bottom = FALSE
+                                   margin_bottom = TRUE
                                )
                            ),
                            column(
@@ -530,14 +530,22 @@ server <- function(input, output, session) {
                                    header = "", 
                                    text = paste(i18n()$t("Lyhyen aikavälin muutos")), 
                                    right_border = TRUE,
-                                   margin_bottom = FALSE
+                                   margin_bottom = TRUE
                                )
+                           ),
+                           column(width = 12,
+                                  descriptionBlock(
+                                      header = paste(i18n()$t("Keskirunsaus tarkastelujaksolla")), 
+                                      right_border = TRUE,
+                                      margin_bottom = FALSE
+                                  )
                            ),
                            column(
                                width = 4,
                                descriptionBlock(
-                                   header = round(stats_current$Nbegin, 0),
-                                   text = paste(i18n()$t("Keskirunsaus"), "1970-1999"), 
+                                   header = format(round(stats_current$Nbegin, 0),
+                                                   big.mark = " "),
+                                   text = "1970-1999", 
                                    right_border = TRUE,
                                    margin_bottom = FALSE
                                )
@@ -545,8 +553,9 @@ server <- function(input, output, session) {
                            column(
                                width = 4,
                                descriptionBlock(
-                                   header = round(stats_current$Nmed, 0), 
-                                   text = paste(i18n()$t("Keskirunsaus"), "2000-2010"), 
+                                   header = format(round(stats_current$Nmed, 0),
+                                                   big.mark = " "),
+                                   text = "2000-2010", 
                                    right_border = FALSE,
                                    margin_bottom = FALSE
                                )
@@ -554,8 +563,9 @@ server <- function(input, output, session) {
                            column(
                                width = 4,
                                descriptionBlock(
-                                   header = round(stats_current$Nend, 0), 
-                                   text = paste(i18n()$t("Keskirunsaus"), "2011-2017"),
+                                   header = format(round(stats_current$Nend, 0),
+                                                   big.mark = " "), 
+                                   text = "2011-2017",
                                    right_border = FALSE,
                                    margin_bottom = FALSE
                                )
