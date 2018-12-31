@@ -382,7 +382,7 @@ server <- function(input, output, session) {
         
         if (!is.null(obs_current)) {
             hc <- obs_current %>% 
-                hchart(type = "spline", 
+                hchart(type = "line", 
                        hcaes(x = day, y = muutto),
                        name = i18n()$t("Muuttavien keskiarvot"),
                        color = "#1f78b4") %>% 
@@ -407,7 +407,7 @@ server <- function(input, output, session) {
 
         if (!is.null(obs_current)) {
             hc <- obs_current %>% 
-                hchart(type = "spline", 
+                hchart(type = "line", 
                        hcaes(x = day, y = paik),
                        name = i18n()$t("Paikallisten keskiarvot"),
                        color = "#1f78b4") %>% 
@@ -438,7 +438,7 @@ server <- function(input, output, session) {
                 dplyr::mutate(epoch = forcats::fct_relevel(epoch, "begin", "med", "end"))
             
             hc <- epochs %>% 
-                hchart(type = "spline", 
+                hchart(type = "line", 
                        hcaes(x = day, y = value, group = epoch),
                        # order of epochs c("begin", "end", "med")
                        name = c("1979-1999", "2000-2010", "2011-2018"),
