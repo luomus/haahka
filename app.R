@@ -472,7 +472,7 @@ server <- function(input, output, session) {
             lt_number_color <- "red"
             lt_number_icon <- "fa fa-caret-down"
             lt_number <- paste0(stats_current$slopeLong, "%")
-        } else if (is.na(stats_current$slopeLong)) {
+        } else if (is.na(stats_current$slopeLong) | stats_current$slopeLong == 0) {
             lt_number_color <- "grey"
             lt_number_icon <- NA
             lt_number <- "-"
@@ -486,7 +486,7 @@ server <- function(input, output, session) {
             st_number_color <- "red"
             st_number_icon <- "fa fa-caret-down"
             st_number <- paste0(stats_current$slopeShort, "%")
-        } else if (is.na(stats_current$slopeShort)) {
+        } else if (is.na(stats_current$slopeShort) | stats_current$slopeShort == 0) {
             st_number_color <- "grey"
             st_number_icon <- NA
             st_number <- "-"
@@ -503,7 +503,7 @@ server <- function(input, output, session) {
                                descriptionBlock(
                                    number = lt_number, 
                                    number_color = lt_number_color, 
-                                   number_icon = lt_number_color,
+                                   number_icon = lt_number_icon,
                                    header = "", 
                                    text = paste(i18n()$t("Pitkänajan trendi"),
                                                 "1979-1999 → 2011-2017"), 
@@ -516,7 +516,7 @@ server <- function(input, output, session) {
                                descriptionBlock(
                                    number = st_number, 
                                    number_color = st_number_color, 
-                                   number_icon = st_number_color,
+                                   number_icon = st_number_icon,
                                    header = "", 
                                    text = paste(i18n()$t("Lyhyenajan trendi"),
                                                 "2000-2010 → 2011-2017"), 
@@ -537,7 +537,7 @@ server <- function(input, output, session) {
                                width = 4,
                                descriptionBlock(
                                    header = round(stats_current$Nmed, 0), 
-                                   text = paste(i18n()$t("Keskirunsaus"), "2000-2010"), , 
+                                   text = paste(i18n()$t("Keskirunsaus"), "2000-2010"), 
                                    right_border = FALSE,
                                    margin_bottom = FALSE
                                )
