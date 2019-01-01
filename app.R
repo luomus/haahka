@@ -175,16 +175,20 @@ ui <- dashboardPage(
                        box(width = 12,
                            column(4,
                                   sliderInput("tile_selector", 
-                                              "Aikaikkuna havaintokeskiarvoille",
+                                              "Tile window (days) for averaging",
                                               min = 1, max = 7, step = 2, value = 5,
                                               ticks = TRUE)
                                   ),
                            column(4,
-                                  radioButtons("line_type", "", 
+                                  radioButtons("line_type", "Line type", 
                                                choiceNames = c("Line", "Spline"),
-                                               choiceValues = c("line", "spline")))
-                           )
-                       )
+                                               choiceValues = c("line", "spline"))
+                            ),
+                           column(4,
+                                  checkboxInput("show_markers", "Show line markers", value = FALSE)
+                                  )
+                        )
+                )
             ),
             fluidRow(
                 column(6,
@@ -483,6 +487,8 @@ server <- function(input, output, session) {
                          type = "datetime", 
                          dateTimeLabelFormats = list(month = '%b'),
                          tickInterval = X_AXIS_TIME_UNITS) %>% 
+                hc_plotOptions(line = list(marker = list(enabled = input$show_markers)),
+                               spline = list(marker = list(enabled = input$show_markers))) %>% 
                 hc_title(text = i18n()$t("Muuttavien keskiarvot")) %>% 
                 hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                            xDateFormat = "%b %d") %>% 
@@ -512,7 +518,9 @@ server <- function(input, output, session) {
                 hc_xAxis(title = list(text = ""),
                          type = "datetime", 
                          dateTimeLabelFormats = list(month = '%b'),
-                         tickInterval = X_AXIS_TIME_UNITS) %>% 
+                         tickInterval = X_AXIS_TIME_UNITS) %>%
+                hc_plotOptions(line = list(marker = list(enabled = input$show_markers)),
+                               spline = list(marker = list(enabled = input$show_markers))) %>% 
                 hc_title(text = i18n()$t("Paikallisten keskiarvot")) %>% 
                 hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                            xDateFormat = "%b %d") %>% 
@@ -568,6 +576,8 @@ server <- function(input, output, session) {
                          type = "datetime", 
                          dateTimeLabelFormats = list(month = '%b'),
                          tickInterval = X_AXIS_TIME_UNITS) %>% 
+                hc_plotOptions(line = list(marker = list(enabled = input$show_markers)),
+                               spline = list(marker = list(enabled = input$show_markers))) %>% 
                 hc_title(text = i18n()$t("Runsauksien muutokset")) %>% 
                 hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                            shared = TRUE, xDateFormat = "%b %d") %>% 
