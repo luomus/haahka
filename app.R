@@ -79,27 +79,33 @@ tile_observations <- function(x, day, value, size) {
     
     assertthat::assert_that(is_odd(size))
     
-    # NOTE: the number of days is hard coded here and include leap day
-    n_days <- 366
-    
-    # Construct a day index, i.e. index vector defining which days are to be
-    # kept. Staring point is the middle (median) value of the window.
-    day_index <- seq(median(1:size), nrow(x), by = size)
-    
-    # Find the remainder given the size
-    remainder <- n_days %% size
-    # If there is a remainder, the last tile is not the same size as the others
-    # and the index vector needs to be augmented. Simple add 366 as the
-    # last value in the index vector.
-    if (remainder != 0) {
-        day_index <- c(day_index, n_days)
+    # If size is 1, no need to calculate anything
+    if (size == 1) {
+        days <- x[[day]]
+        avgs <- x[[value]]
+    } else {
+        # NOTE: the number of days is hard coded here and include leap day
+        n_days <- 366
+        
+        # Construct a day index, i.e. index vector defining which days are to be
+        # kept. Staring point is the middle (median) value of the window.
+        day_index <- seq(median(1:size), nrow(x), by = size)
+        
+        # Find the remainder given the size
+        remainder <- n_days %% size
+        # If there is a remainder, the last tile is not the same size as the others
+        # and the index vector needs to be augmented. Simple add 366 as the
+        # last value in the index vector.
+        if (remainder != 0) {
+            day_index <- c(day_index, n_days)
+        }
+        
+        # Get correct days based on the index vector
+        days <- x[[day]][day_index]
+        # Calculate the averages
+        avgs <- tsibble::tile_dbl(x[[value]], ~ mean(., na.rm = TRUE), 
+                                  .size = size)
     }
-    
-    # Get correct days based on the index vector
-    days <- x[[day]][day_index]
-    # Calculate the averages
-    avgs <- tsibble::tile_dbl(x[[value]], ~ mean(., na.rm = TRUE), 
-                              .size = size)
     
     return(tibble::tibble(day = days, value_avgs = avgs))
 }
@@ -450,7 +456,7 @@ server <- function(input, output, session) {
         plot_data <- obs_current %>% 
             dplyr::select(sp, day, muutto) %>% 
             as_tsibble(key = id(sp), index = day) %>% 
-            tile_observations("day", "muutto", 5)
+            tile_observations("day", "muutto", 7)
         
         if (!is.null(plot_data)) {
             hc <- plot_data %>% 
