@@ -483,10 +483,15 @@ server <- function(input, output, session) {
         
         obs_current <- get_current_data()
 
-        if (!is.null(obs_current)) {
-            hc <- obs_current %>% 
+        plot_data <- obs_current %>% 
+            dplyr::select(sp, day, paik) %>% 
+            as_tsibble(key = id(sp), index = day) %>% 
+            tile_observations("day", "paik", 7)
+        
+        if (!is.null(plot_data)) {
+            hc <- plot_data %>% 
                 hchart(type = "line", 
-                       hcaes(x = day, y = paik),
+                       hcaes(x = day, y = value_avgs),
                        name = i18n()$t("Paikallisten keskiarvot"),
                        color = "#1f78b4") %>% 
                 hc_yAxis(title = list(text = i18n()$t("Yksilölkm."))) %>% 
