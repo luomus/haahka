@@ -166,11 +166,25 @@ ui <- dashboardPage(
         ),
         fluidPage(
             fluidRow(
-                column(12,
+                column(6,
                        box(width = 12,
                            uiOutput("render_selector")
                        )
-                )
+                ),
+                column(6,
+                       box(width = 12,
+                           column(4,
+                                  sliderInput("tile_selector", 
+                                              "Aikaikkuna havaintokeskiarvoille",
+                                              min = 1, max = 7, step = 2, value = 5,
+                                              ticks = TRUE)
+                                  ),
+                           column(4,
+                                  radioButtons("line_type", "", 
+                                               choiceNames = c("Line", "Spline"),
+                                               choiceValues = c("line", "spline")))
+                           )
+                       )
             ),
             fluidRow(
                 column(6,
@@ -456,11 +470,11 @@ server <- function(input, output, session) {
         plot_data <- obs_current %>% 
             dplyr::select(sp, day, muutto) %>% 
             as_tsibble(key = id(sp), index = day) %>% 
-            tile_observations("day", "muutto", 7)
+            tile_observations("day", "muutto", input$tile_selector)
         
         if (!is.null(plot_data)) {
             hc <- plot_data %>% 
-                hchart(type = "line", 
+                hchart(type = input$line_type, 
                        hcaes(x = day, y = value_avgs),
                        name = i18n()$t("Muuttavien keskiarvot"),
                        color = "#1f78b4") %>% 
@@ -486,11 +500,11 @@ server <- function(input, output, session) {
         plot_data <- obs_current %>% 
             dplyr::select(sp, day, paik) %>% 
             as_tsibble(key = id(sp), index = day) %>% 
-            tile_observations("day", "paik", 7)
+            tile_observations("day", "paik", input$tile_selector)
         
         if (!is.null(plot_data)) {
             hc <- plot_data %>% 
-                hchart(type = "line", 
+                hchart(type = input$line_type, 
                        hcaes(x = day, y = value_avgs),
                        name = i18n()$t("Paikallisten keskiarvot"),
                        color = "#1f78b4") %>% 
@@ -516,12 +530,35 @@ server <- function(input, output, session) {
         if (!is.null(obs_current)) {    
         
             epochs <- obs_current %>% 
-                dplyr::select(day, begin, med, end) %>% 
+                dplyr::select(day, begin, med, end)
+            
+            # Tile each variable
+            plot_data_begin <- obs_current %>% 
+                dplyr::select(sp, day, begin) %>% 
+                as_tsibble(key = id(sp), index = day) %>% 
+                tile_observations("day", "begin", input$tile_selector) %>% 
+                dplyr::rename(begin = value_avgs)
+            
+            plot_data_med <- obs_current %>% 
+                dplyr::select(sp, day, med) %>% 
+                as_tsibble(key = id(sp), index = day) %>% 
+                tile_observations("day", "med", input$tile_selector) %>% 
+                dplyr::rename(med = value_avgs)
+            
+            plot_data_end <- obs_current %>% 
+                dplyr::select(sp, day, end) %>% 
+                as_tsibble(key = id(sp), index = day) %>% 
+                tile_observations("day", "end", input$tile_selector) %>% 
+                dplyr::rename(end = value_avgs)
+            
+            plot_data <- plot_data_begin %>% 
+                dplyr::left_join(., plot_data_med, by = c("day" = "day")) %>% 
+                dplyr::left_join(., plot_data_end, by = c("day" = "day")) %>%
                 tidyr::gather(epoch, value, -day) %>% 
                 dplyr::mutate(epoch = forcats::fct_relevel(epoch, "begin", "med", "end"))
             
-            hc <- epochs %>% 
-                hchart(type = "line", 
+            hc <- plot_data %>% 
+                hchart(type = input$line_type, 
                        hcaes(x = day, y = value, group = epoch),
                        # order of epochs c("begin", "end", "med")
                        name = c("1979-1999", "2000-2010", "2011-2018"),
