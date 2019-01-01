@@ -1,12 +1,9 @@
 ## 0.1.5 (XXXX-XX-XX)
 
-### Functionality
-
 - New box giving information on long and short term trend changes, and average
 abundance numbers for each of the three time periods.
-
-## UI
-
+- Add (temporary) controls to show the effects of different series and line
+drawing options. 
 
 ## 0.1.4 (2018-12-28)
 
