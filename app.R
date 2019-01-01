@@ -1,3 +1,4 @@
+library(assertthat)
 library(forcats)
 library(glue)
 library(highcharter)
@@ -14,6 +15,13 @@ library(yaml)
 
 # Helper functions --------------------------------------------------------
 
+# Check that a value is odd numeric
+#
+is_odd <- function(x) {
+    assertthat::assert_that(is.numeric(x), length(x) == 1)
+    x %% 2 == 1
+}
+ 
 # Parse description file
 # 
 parse_description <- function(style_name, text) {
@@ -40,6 +48,61 @@ simple_cap <- Vectorize(
                    sep = "", collapse = " ")
         return(s)
     }, SIMPLIFY = TRUE, USE.NAMES = FALSE)
+
+# Calculate a tiled average (non-overlapping windows) for yearly observations. 
+# 
+# An average is calculated over a specified window and assigned to the day in
+# the middle of the windows. For example, if size is 5, then the average is 
+# assigned to day at index 3 etc. 
+# 
+# 
+# @param x a tsibble
+# @parame day string name of the variable containing datetime values
+# @param value string name of the variable containing numeric observation values
+# @param size numeric size of the window over which average is calculated. Must
+#             be an odd value.
+# 
+# @return a tibble with 
+# 
+tile_observations <- function(x, day, value, size) {
+    
+    # Coerce size to integer
+    size <- as.integer(size)
+    
+    # x must be a tsibble
+    assertthat::see_if(is(x) == "tbl_ts")
+    
+    # size must be an odd integer
+    assertthat::on_failure(is_odd) <- function(call, env) {
+        paste0(deparse(call$x), " is even. size must be odd.")
+    }
+    
+    assertthat::assert_that(is_odd(size))
+    
+    # NOTE: the number of days is hard coded here and include leap day
+    n_days <- 366
+    
+    # Construct a day index, i.e. index vector defining which days are to be
+    # kept. Staring point is the middle (median) value of the window.
+    day_index <- seq(median(1:size), nrow(x), by = size)
+    
+    # Find the remainder given the size
+    remainder <- n_days %% size
+    # If there is a remainder, the last tile is not the same size as the others
+    # and the index vector needs to be augmented. Simple add 366 as the
+    # last value in the index vector.
+    if (remainder != 0) {
+        day_index <- c(day_index, n_days)
+    }
+    
+    # Get correct days based on the index vector
+    days <- x[[day]][day_index]
+    # Calculate the averages
+    avgs <- tsibble::tile_dbl(x[[value]], ~ mean(., na.rm = TRUE), 
+                              .size = size)
+    
+    return(tibble::tibble(day = days, value_avgs = avgs))
+}
 
 # Load data ---------------------------------------------------------------
 
@@ -175,7 +238,6 @@ server <- function(input, output, session) {
         
         # The actual dir path is needed to figure out if the files exists
         img_dir <- file.path("www", "img", "sp_images", sp_abbr)
-        #browser()
         # Photo credit
         #photo_credit <- PHOTO_CREDITS[[sp_abbr]]
         imgs <- list.files(img_dir, pattern = ".jpg", full.names = TRUE)
@@ -348,7 +410,7 @@ server <- function(input, output, session) {
             
             # Try reading the description docx file
             docx_file <- file.path("data", "descriptions", paste0(tolower(sp_abbr), ".docx"))
-            #browser()
+            
             if (file.exists(docx_file)) {
                 
                 docx_content <- officer::docx_summary(officer::read_docx(docx_file))
@@ -386,20 +448,14 @@ server <- function(input, output, session) {
         obs_current <- get_current_data()
         
         plot_data <- obs_current %>% 
-            dplyr::select(sp, day, muutto)
-        
-        plot_data <- as_tsibble(plot_data, key = id(sp), index = day)
-        
-        day_index <- c(seq(3, nrow(plot_data), by = 5), 366)
-        plot_days <- plot_data$day[day_index]
-        day_avgs <- tsibble::tile_dbl(plot_data$muutto, ~ mean(., na.rm = TRUE), .size = 5)
-        
-        plot_data <- tibble::tibble(day = plot_days, muutto_avg = day_avgs)
+            dplyr::select(sp, day, muutto) %>% 
+            as_tsibble(key = id(sp), index = day) %>% 
+            tile_observations("day", "muutto", 5)
         
         if (!is.null(plot_data)) {
             hc <- plot_data %>% 
                 hchart(type = "line", 
-                       hcaes(x = day, y = muutto_avg),
+                       hcaes(x = day, y = value_avgs),
                        name = i18n()$t("Muuttavien keskiarvot"),
                        color = "#1f78b4") %>% 
                 hc_yAxis(title = list(text = i18n()$t("Yksilölkm."))) %>% 
