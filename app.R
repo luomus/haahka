@@ -14,6 +14,8 @@ library(yaml)
 
 # Helper functions --------------------------------------------------------
 
+# Parse description file
+# 
 parse_description <- function(style_name, text) {
     # NOTE: style is hard coded and needs to be adjusted if the style changes
     # Check both the element style and content
@@ -29,6 +31,8 @@ parse_description <- function(style_name, text) {
     return(element)
 }
 
+# Capitalize the first letter of a sentence.
+# 
 simple_cap <- Vectorize(
     function(x) {
         s <- strsplit(x, " ")[[1]]
