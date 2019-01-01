@@ -394,7 +394,7 @@ server <- function(input, output, session) {
         
         if (!is.null(plot_data)) {
             hc <- plot_data %>% 
-                hchart(type = "spline", 
+                hchart(type = "line", 
                        hcaes(x = day, y = muutto_avg),
                        name = i18n()$t("Muuttavien keskiarvot"),
                        color = "#1f78b4") %>% 
