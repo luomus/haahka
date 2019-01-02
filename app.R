@@ -69,7 +69,7 @@ simple_cap <- Vectorize(
 # @param size numeric size of the window over which average is calculated. Must
 #             be an odd value.
 # 
-# @return a tibble with 
+# @return a tibble with dates and corresponding (rounded) averages.
 # 
 tile_observations <- function(x, day, value, size) {
     
@@ -112,6 +112,7 @@ tile_observations <- function(x, day, value, size) {
         # Calculate the averages
         avgs <- tsibble::tile_dbl(x[[value]], ~ mean(., na.rm = TRUE), 
                                   .size = size)
+        avgs <- round(avgs, 2)
     }
     
     return(tibble::tibble(day = days, value_avgs = avgs))
