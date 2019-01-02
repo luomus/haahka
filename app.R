@@ -523,8 +523,12 @@ server <- function(input, output, session) {
             tile_observations("day", "muutto", input$tile_selector)
         
         if (!is.null(plot_data)) {
-            pb_list <- ifelse(input$show_plotbands,
-                              PB_LIST, NA)
+            
+            if (input$show_plotbands) {
+                pb_list <- PB_LIST
+            } else {
+                pb_list <- NA
+            }
             
             hc <- plot_data %>% 
                 hchart(type = input$line_type, 
@@ -562,6 +566,13 @@ server <- function(input, output, session) {
             tile_observations("day", "paik", input$tile_selector)
         
         if (!is.null(plot_data)) {
+            
+            if (input$show_plotbands) {
+                pb_list <- PB_LIST
+            } else {
+                pb_list <- NA
+            }
+            
             hc <- plot_data %>% 
                 hchart(type = input$line_type, 
                        hcaes(x = day, y = value_avgs),
@@ -573,7 +584,8 @@ server <- function(input, output, session) {
                          min = XMIN,
                          max = XMAX,
                          dateTimeLabelFormats = list(month = '%b'),
-                         tickInterval = X_AXIS_TIME_UNITS) %>%
+                         tickInterval = X_AXIS_TIME_UNITS,
+                         plotBands = pb_list) %>%
                 hc_plotOptions(line = list(marker = list(enabled = input$show_markers)),
                                spline = list(marker = list(enabled = input$show_markers))) %>% 
                 hc_title(text = i18n()$t("Paikallisten keskiarvot")) %>% 
@@ -621,6 +633,12 @@ server <- function(input, output, session) {
                 tidyr::gather(epoch, value, -day) %>% 
                 dplyr::mutate(epoch = forcats::fct_relevel(epoch, "begin", "med", "end"))
             
+            if (input$show_plotbands) {
+                pb_list <- PB_LIST
+            } else {
+                pb_list <- NA
+            }
+            
             hc <- plot_data %>% 
                 hchart(type = input$line_type, 
                        hcaes(x = day, y = value, group = epoch),
@@ -633,7 +651,8 @@ server <- function(input, output, session) {
                          min = XMIN,
                          max = XMAX,
                          dateTimeLabelFormats = list(month = '%b'),
-                         tickInterval = X_AXIS_TIME_UNITS) %>% 
+                         tickInterval = X_AXIS_TIME_UNITS,
+                         plotBands = pb_list) %>% 
                 hc_plotOptions(line = list(marker = list(enabled = input$show_markers)),
                                spline = list(marker = list(enabled = input$show_markers))) %>% 
                 hc_title(text = i18n()$t("Runsauksien muutokset")) %>% 
