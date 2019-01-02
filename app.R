@@ -149,8 +149,6 @@ translator <- shiny.i18n::Translator$new(translation_json_path = "data/translati
 
 # Global variables --------------------------------------------------------
 
-# How many milliseconds in a year?
-X_AXIS_TIME_UNITS = 30 * 24 * 3600 * 1000
 # Get the app metadata from the DESCRIPTION file
 METADATA <- yaml::yaml.load_file("DESCRIPTION")
 VERSION <- METADATA[["Version"]]
@@ -158,7 +156,13 @@ VERSION <- METADATA[["Version"]]
 # Get photo credits
 PHOTO_CREDITS <- yaml::yaml.load_file("www/img/sp_images/attribution.yaml")
 
-# plotBands options for highcharts graphs
+# Highcharts options
+
+# # How many milliseconds in a year?
+X_AXIS_TIME_UNITS = 30 * 24 * 3600 * 1000
+# Year x-axis limits
+XMIN <- datetime_to_timestamp(as.Date('2000-01-01', tz = 'UTC'))
+XMAX <- datetime_to_timestamp(as.Date('2000-12-31', tz = 'UTC'))
 
 # Color of the plotBands (background bars for months) 
 PB_COLOR <- "rgba(240, 240, 245, 0.4)"
@@ -522,6 +526,8 @@ server <- function(input, output, session) {
                 hc_yAxis(title = list(text = i18n()$t("Yksilölkm."))) %>% 
                 hc_xAxis(title = list(text = ""),
                          type = "datetime", 
+                         min = XMIN,
+                         max = XMAX,
                          dateTimeLabelFormats = list(month = '%b'),
                          tickInterval = X_AXIS_TIME_UNITS,
                          plotBands = pb_list) %>% 
@@ -532,8 +538,6 @@ server <- function(input, output, session) {
                            xDateFormat = "%b %d") %>% 
                 hc_exporting(enabled = TRUE) %>% 
                 hc_chart(zoomType = "xy")
-            
-            
             
             return(hc)
         }
@@ -557,6 +561,8 @@ server <- function(input, output, session) {
                 hc_yAxis(title = list(text = i18n()$t("Yksilölkm."))) %>% 
                 hc_xAxis(title = list(text = ""),
                          type = "datetime", 
+                         min = XMIN,
+                         max = XMAX,
                          dateTimeLabelFormats = list(month = '%b'),
                          tickInterval = X_AXIS_TIME_UNITS) %>%
                 hc_plotOptions(line = list(marker = list(enabled = input$show_markers)),
@@ -614,6 +620,8 @@ server <- function(input, output, session) {
                 hc_yAxis(title = list(text = i18n()$t("Yksilölkm."))) %>% 
                 hc_xAxis(title = list(text = ""),
                          type = "datetime", 
+                         min = XMIN,
+                         max = XMAX,
                          dateTimeLabelFormats = list(month = '%b'),
                          tickInterval = X_AXIS_TIME_UNITS) %>% 
                 hc_plotOptions(line = list(marker = list(enabled = input$show_markers)),
