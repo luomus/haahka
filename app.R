@@ -900,6 +900,11 @@ server <- function(input, output, session) {
                 res <- records_current %>%
                     dplyr::filter(Season == season & Type == type) %>% 
                     dplyr::pull(!!value)
+                
+                if (is.numeric(res)) {
+                    res <- format(res, big.mark = " ")
+                }
+                
                 if (length(res) == 0) {
                     res <- "-"
                 }
