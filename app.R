@@ -666,7 +666,7 @@ server <- function(input, output, session) {
                 hchart(type = input$line_type, 
                        hcaes(x = day, y = value, group = epoch),
                        # order of epochs c("begin", "end", "med")
-                       name = c("1979-1999", "2000-2010", "2011-2018"),
+                       name = c("1979-1999", "2000-2010", "2011-2017"),
                        color = c("#66c2a5", "#8da0cb", "#fc8d62")) %>% 
                 hc_yAxis(title = list(text = i18n()$t("Yksilölkm."))) %>% 
                 hc_xAxis(title = list(text = ""),
