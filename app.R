@@ -725,7 +725,7 @@ server <- function(input, output, session) {
         
         payload <- box(width = 12,
                        solidHeader = FALSE,
-                       title = i18n()$t("Runsauksien muutokset numeroina"),
+                       title = i18n()$t("Vuosittaiset keskirunsaudet tarkastelujaksoilla"),
                        background = NULL,
                        status = "danger",
                        footer = tagList(
