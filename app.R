@@ -261,7 +261,12 @@ ui <- dashboardPage(
                            withSpinner(highchartOutput("change", height = "300px"),
                                        type = 8, size = 0.5)
                        ),
-                       uiOutput("change_numbers")
+                       uiOutput("change_numbers"),
+                       box(
+                           width = 12,
+                           withSpinner(highchartOutput("migration_medians", height = "200px"),
+                                       type = 8, size = 0.5)
+                       )
                 )
             )
         )
@@ -788,6 +793,82 @@ server <- function(input, output, session) {
                        )
         )
         return(payload)
+    })
+    
+    # migration_medians --------------------------------------------------------
+    output$migration_medians <- renderHighchart({
+        
+        sp_current <- get_current_sp()
+        sp_abb <- sp_current$Species_Abb
+        
+        # Define origing date
+        origin <- as.Date("2000-01-01")
+        
+        # abundance_stats has already been loaded
+        plot_data <- abundance_stats %>%
+            # Filter with selected species
+            filter(sp == sp_abb) %>%
+            # Select only median values (Julian days) for i) the three epochs
+            # and ii) spring and autumn
+            select(sp, sphen_begin, sphen_med, sphen_end, aphen_begin, 
+                   aphen_med, aphen_end) %>% 
+            # Make data tidy (long)
+            gather(variable, value, -sp) %>%
+            # Split variables into two new columns
+            separate(col = "variable", into = c("season", "epoch"), sep = "_") %>% 
+            # Mutate new variables
+            mutate(
+                   # Replace "sphen" and "aphen" with more informative strings
+                   season = ifelse(season == "sphen", "spring", 
+                                   ifelse(season == "aphen", "autumn", NA)),
+                   # Make epochs factors
+                   epoch = factor(epoch, levels = rev(c("begin", "med", "end")),
+                                  labels = rev(c("1979-1999", "2000-2010", "2011-2017")),
+                                  ordered = TRUE),
+                   # Numeric value of the factors is needed so that highcharts
+                   # can plot the factors on y-axis. Note that Javascript
+                   # indexing starts from 0.
+                   epochnum = as.numeric(epoch) - 1, 
+                   # Convert Julian days into actual dates
+                   date = origin + value, 
+                   # Pretty version of the date for tooltips
+                   date_print = format(date, "%b %d"))
+        
+        if (input$show_plotbands) {
+            pb_list <- PB_LIST
+        } else {
+            pb_list <- NA
+        }
+        
+        hc <- plot_data %>% 
+            hchart(type = "scatter", 
+                   hcaes(x = date, y = epochnum, group = epoch),
+                   # order of epochs c("begin", "end", "med")
+                   name = c("1979-1999", "2000-2010", "2011-2017"),
+                   color = c("#66c2a5", "#8da0cb", "#fc8d62")) %>% 
+            hc_yAxis(title = list(text = "Time period"),
+                     min = 0,
+                     max = 2,
+                     categories = rev(levels(data$epoch))) %>% 
+            hc_xAxis(title = list(text = ""),
+                     type = "datetime", 
+                     min = xmin,
+                     max = xmax,
+                     dateTimeLabelFormats = list(month = '%b'),
+                     tickInterval = X_AXIS_TIME_UNITS,
+                     plotBands = pb_list) %>% 
+            hc_plotOptions(
+                scatter = list(marker = list(symbol = "circle",
+                                             radius = 8))
+            ) %>% 
+            hc_title(text = "Median observation date") %>% 
+            hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
+                       shared = TRUE, xDateFormat = "%b %d",
+                       pointFormat = "{point.season} migration median date:<br> {point.date_print}") %>% 
+            hc_exporting(enabled = TRUE) %>% 
+            hc_chart(zoomType = "xy")
+        
+        return(hc)
     })
 
     # Observers ----------------------------------------------------------------
