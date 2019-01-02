@@ -8,7 +8,11 @@ late than never-
 - Fix app title.
 - Median dates were in wrong order, fixed now.
 
-### New feature
+### New features
+
+- 3+3 species abbreviation can be passed as an URL parameter, e.g. 
+  https://jlehtoma.shinyapps.io/halias-browser?species=picpic will bring up 
+  the data for the Common Magpie (Pica pica). 
 
 
 ### UI changes
