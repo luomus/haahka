@@ -15,6 +15,13 @@ library(yaml)
 
 # Helper functions --------------------------------------------------------
 
+# Return numeric timestamp value based on a Date. Needed for highcharts 
+# x-axis settings and plotting.
+# 
+get_timestamp <- function(x) {
+    return(datetime_to_timestamp(as.Date(x, tz = "UTC")))
+}
+
 # Check that a value is odd numeric
 #
 is_odd <- function(x) {
