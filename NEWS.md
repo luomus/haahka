@@ -1,9 +1,10 @@
-## 0.1.5 (XXXX-XX-XX)
+## 0.1.5 (2019-01-02)
 
 - New box giving information on long and short term trend changes, and average
 abundance numbers for each of the three time periods.
 - New plot showing the median dates for spring and autumn migration for three
 different time periods.
+- New box showing the observer recors (sum and date) for each species.
 - Add (temporary) controls to show the effects of different series and line
 drawing options. Following options are supported:
   - The size of the (non-overlapping) averaging (tiling) window
