@@ -1,4 +1,5 @@
 library(assertthat)
+library(chron)
 library(forcats)
 library(glue)
 library(highcharter)
@@ -266,7 +267,8 @@ ui <- dashboardPage(
                            withSpinner(highchartOutput("migration_medians", height = "200px"),
                                        type = 8, size = 0.5)
                        ),
-                       uiOutput("change_numbers")
+                       uiOutput("change_numbers"),
+                       uiOutput("records")
                 )
             )
         )
@@ -296,6 +298,13 @@ server <- function(input, output, session) {
     get_current_data <- reactive({
         sp_current <- get_current_sp()
         return(dplyr::filter(dat, sp == sp_current$Species_Abb) )
+    })
+    
+    get_current_records <- reactive({
+        sp_current <- get_current_sp()
+        current_stats <- record_stats %>% 
+            dplyr::filter(sp == sp_current$Species_Abb)
+        return(current_stats)
     })
     
     get_current_stats <- reactive({
@@ -869,6 +878,125 @@ server <- function(input, output, session) {
             hc_chart(zoomType = "xy")
         
         return(hc)
+    })
+    
+    # records ------------------------------------------------------------------
+    output$records <- renderUI({
+        
+        records_current <- get_current_records() %>% 
+            dplyr::mutate(Date = lubridate::dmy(Date)) %>% 
+            dplyr::group_by(sp, Sum) %>% 
+            dplyr::mutate(date_string = paste0(Date, collapse = ", ")) %>% 
+            dplyr::select(-Date) %>% 
+            dplyr::distinct()
+        
+        get_value <- function(season, type, value) {
+            res <- records_current %>%
+                dplyr::filter(Season == season & Type == type) %>% 
+                dplyr::pull(!!value)
+            return(res)
+        }
+        
+        payload <- box(width = 12,
+                       solidHeader = FALSE,
+                       title = i18n()$t("Havaintoennätykset"),
+                       status = "info",
+                       fluidRow(
+                           column(
+                               width = 6,
+                               tagList(
+                                   h4("Kevät", class = "record")
+                               ),
+                               column(
+                                   width = 6,
+                                   tagList(
+                                       h5("Muuttavat", class = "record"),
+                                       div(class = "record",
+                                           column(width = 3,
+                                                  icon("trophy", class = "icon-record")
+                                           ),
+                                           column(width = 9,
+                                                  p(get_value("Spring", "Migr", "Sum"))                                 
+                                           ),
+                                           column(width = 3,
+                                                  icon("calendar", class = "icon-record")
+                                           ),
+                                           column(width = 9,
+                                                  p(get_value("Spring", "Migr", "date_string"))                                 
+                                           )
+                                       )
+                                   )
+                               ),
+                               column(
+                                   width = 6,
+                                   tagList(
+                                       h5("Paikalliset", class = "record"),
+                                       div(class = "record",
+                                           column(width = 3,
+                                                  icon("trophy", class = "icon-record")
+                                           ),
+                                           column(width = 9,
+                                                  p(get_value("Spring", "Local", "Sum"))                                 
+                                           ),
+                                           column(width = 3,
+                                                  icon("calendar", class = "icon-record")
+                                           ),
+                                           column(width = 9,
+                                                  p(get_value("Spring", "Local", "date_string"))                                 
+                                           )
+                                       )
+                                   )
+                               )
+                           ),
+                           column(
+                               width = 6,
+                               tagList(
+                                   h4("Syksy", class = "record")
+                               ),
+                               column(
+                                   width = 6,
+                                   tagList(
+                                       h5("Muuttavat", class = "record"),
+                                       div(class = "record",
+                                           column(width = 3,
+                                                  icon("trophy", class = "icon-record")
+                                           ),
+                                           column(width = 9,
+                                                  p(get_value("Autumn", "Migr", "Sum"))                                 
+                                           ),
+                                           column(width = 3,
+                                                  icon("calendar", class = "icon-record")
+                                           ),
+                                           column(width = 9,
+                                                  p(get_value("Autumn", "Migr", "date_string"))                                 
+                                           )
+                                       )
+                                   )
+                               ),
+                               column(
+                                   width = 6,
+                                   tagList(
+                                       h5("Paikalliset", class = "record"),
+                                       div(class = "record",
+                                           column(width = 3,
+                                                  icon("trophy", class = "icon-record")
+                                           ),
+                                           column(width = 9,
+                                                  p(get_value("Autumn", "Local", "Sum"))                                 
+                                           ),
+                                           column(width = 3,
+                                                  icon("calendar", class = "icon-record")
+                                           ),
+                                           column(width = 9,
+                                                  p(get_value("Autumn", "Local", "date_string"))                                 
+                                           )
+                                       )
+                                   )
+                               )
+                           )
+                       )
+        )
+        return(payload)
     })
 
     # Observers ----------------------------------------------------------------
