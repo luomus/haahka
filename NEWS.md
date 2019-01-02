@@ -6,12 +6,14 @@ late than never-
 ### Bug fixes
 
 - Fix app title.
+- Median dates were in wrong order, fixed now.
 
 ### New feature
 
 
 ### UI changes
 
+- Trophy icons are golden.
 
 ## 0.1.5 (2019-01-02)
 
