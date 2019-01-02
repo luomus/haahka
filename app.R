@@ -158,6 +158,32 @@ VERSION <- METADATA[["Version"]]
 # Get photo credits
 PHOTO_CREDITS <- yaml::yaml.load_file("www/img/sp_images/attribution.yaml")
 
+# plotBands options for highcharts graphs
+
+# Color of the plotBands (background bars for months) 
+PB_COLOR <- "rgba(240, 240, 245, 0.4)"
+# Define x-axis ranges for plotBands
+PB_LIST <- list(
+    list(from = get_timestamp("2000-02-01"), to = get_timestamp("2000-03-01"), 
+         color = PB_COLOR
+    ),
+    list(from = get_timestamp("2000-04-01"), to = get_timestamp("2000-05-01"), 
+         color = PB_COLOR
+    ),
+    list(from = get_timestamp("2000-06-01"), to = get_timestamp("2000-07-01"), 
+         color = PB_COLOR
+    ),
+    list(from = get_timestamp("2000-08-01"), to = get_timestamp("2000-09-01"), 
+         color = PB_COLOR
+    ),
+    list(from = get_timestamp("2000-10-01"), to = get_timestamp("2000-11-01"), 
+         color = PB_COLOR
+    ),
+    list(from = get_timestamp("2000-12-01"), to = get_timestamp("2000-12-31"), 
+         color = PB_COLOR
+    )
+)
+
 ui <- dashboardPage(
     dashboardHeader(
         title = tags$a(href = "https://www.tringa.fi/hangon-lintuasema/hankodata",
