@@ -215,7 +215,7 @@ ui <- dashboardPage(
             fluidRow(
                 column(6,
                        box(width = 12,
-                           uiOutput("render_selector")
+                           uiOutput("render_species")
                        )
                 ),
                 column(6,
@@ -292,9 +292,9 @@ server <- function(input, output, session) {
     })
     
     get_current_sp <- reactive({
-        shiny::req(input$selector)
+        shiny::req(input$species)
         
-        return(dplyr::filter(sp_data, Sci_name == input$selector))
+        return(dplyr::filter(sp_data, Sci_name == input$species))
     })
     
     get_current_data <- reactive({
@@ -383,8 +383,8 @@ server <- function(input, output, session) {
         )
     })
     
-    # render_selector ----------------------------------------------------------
-    output$render_selector <- renderUI({
+    # render_species ----------------------------------------------------------
+    output$render_species <- renderUI({
         
         if (is.null(input$language)) {
             # By default, the names are Finnish
@@ -396,10 +396,10 @@ server <- function(input, output, session) {
         spps <- get_species_names(name_field)
         
         tagList(
-            selectInput("selector", 
+            selectInput("species", 
                         label = i18n()$t("Valitse laji"),
                         choices = spps,
-                        selected = input$selector)
+                        selected = input$species)
         )
     })
     
@@ -1022,8 +1022,22 @@ server <- function(input, output, session) {
     
     observeEvent(i18n(), {
         updateSelectInput(session, "language", label =  i18n()$t("Kieli"), selected = input$language)
-        updateSelectInput(session, "selector", label =  i18n()$t("Valitse laji"), 
-                          choices = get_species_names(input$language), selected = input$selector)
+        updateSelectInput(session, "species", label =  i18n()$t("Valitse laji"), 
+                          choices = get_species_names(input$language), selected = input$species)
+        
+    })
+    
+    observe({
+        query <- parseQueryString(session$clientData$url_search)
+        
+        if (!is.null(query[['species']])) {
+            sp_abb <- toupper(query[['species']])
+            spps <- get_species_names("fi")
+            selected_sp <- sp_data %>% 
+                dplyr::filter(Species_Abb == sp_abb)
+            updateSelectInput(session, "species", 
+                              selected = spps[which(spps == selected_sp$Sci_name)])
+        }
     })
 }
 
