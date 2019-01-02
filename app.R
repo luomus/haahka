@@ -858,11 +858,11 @@ server <- function(input, output, session) {
             hc_yAxis(title = list(text = ""),
                      min = 0,
                      max = 2,
-                     categories = rev(levels(data$epoch))) %>% 
+                     categories = rev(levels(plot_data$epoch))) %>% 
             hc_xAxis(title = list(text = ""),
                      type = "datetime", 
-                     min = xmin,
-                     max = xmax,
+                     min = XMIN,
+                     max = XMAX,
                      dateTimeLabelFormats = list(month = '%b'),
                      tickInterval = X_AXIS_TIME_UNITS,
                      plotBands = pb_list) %>% 
