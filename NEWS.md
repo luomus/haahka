@@ -1,3 +1,18 @@
+## 0.2.0 (2019-XX-XX)
+
+- Minor number should've been increased already a while back, but it's better
+late than never-
+
+### Bug fixes
+
+- Fix app title.
+
+### New feature
+
+
+### UI changes
+
+
 ## 0.1.5 (2019-01-02)
 
 - New box giving information on long and short term trend changes, and average
