@@ -193,7 +193,9 @@ PB_LIST <- list(
 
 # UI ----------------------------------------------------------------------
 ui <- dashboardPage(
-
+    
+    title = "Halias Browser",
+    
     # ui-header ----------------------------------------------------------------
     dashboardHeader(
         title = tags$a(href = "https://www.tringa.fi/hangon-lintuasema/hankodata",
