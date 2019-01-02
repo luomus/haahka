@@ -218,7 +218,8 @@ ui <- dashboardPage(
                                                choiceValues = c("line", "spline"))
                             ),
                            column(4,
-                                  checkboxInput("show_markers", "Show line markers", value = FALSE)
+                                  checkboxInput("show_markers", "Show line markers", value = FALSE),
+                                  checkboxInput("show_plotbands", "Show month plot bands", value = FALSE)
                                   )
                         )
                 )
@@ -510,6 +511,9 @@ server <- function(input, output, session) {
             tile_observations("day", "muutto", input$tile_selector)
         
         if (!is.null(plot_data)) {
+            pb_list <- ifelse(input$show_plotbands,
+                              PB_LIST, NA)
+            
             hc <- plot_data %>% 
                 hchart(type = input$line_type, 
                        hcaes(x = day, y = value_avgs),
@@ -519,7 +523,8 @@ server <- function(input, output, session) {
                 hc_xAxis(title = list(text = ""),
                          type = "datetime", 
                          dateTimeLabelFormats = list(month = '%b'),
-                         tickInterval = X_AXIS_TIME_UNITS) %>% 
+                         tickInterval = X_AXIS_TIME_UNITS,
+                         plotBands = pb_list) %>% 
                 hc_plotOptions(line = list(marker = list(enabled = input$show_markers)),
                                spline = list(marker = list(enabled = input$show_markers))) %>% 
                 hc_title(text = i18n()$t("Muuttavien keskiarvot")) %>% 
@@ -527,6 +532,8 @@ server <- function(input, output, session) {
                            xDateFormat = "%b %d") %>% 
                 hc_exporting(enabled = TRUE) %>% 
                 hc_chart(zoomType = "xy")
+            
+            
             
             return(hc)
         }
