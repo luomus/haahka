@@ -2,6 +2,8 @@
 
 - New box giving information on long and short term trend changes, and average
 abundance numbers for each of the three time periods.
+- New plot showing the median dates for spring and autumn migration for three
+different time periods.
 - Add (temporary) controls to show the effects of different series and line
 drawing options. Following options are supported:
   - The size of the (non-overlapping) averaging (tiling) window
