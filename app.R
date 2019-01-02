@@ -346,7 +346,8 @@ server <- function(input, output, session) {
     }
     
     # Outputs ------------------------------------------------------------------
-    
+
+    # render_sidebar -----------------------------------------------------------    
     output$render_sidebar <- renderUI({
         tagList(
             div(style = "text-align: center",
@@ -359,6 +360,7 @@ server <- function(input, output, session) {
         )
     })
     
+    # render_selector ----------------------------------------------------------
     output$render_selector <- renderUI({
         
         if (is.null(input$language)) {
@@ -378,6 +380,7 @@ server <- function(input, output, session) {
         )
     })
     
+    # render_carousel ----------------------------------------------------------
     output$render_carousel <- renderUI({
         
         imgs <- get_images()
@@ -397,6 +400,7 @@ server <- function(input, output, session) {
         return(payload)
     })
     
+    # image_slider -------------------------------------------------------------
     output$image_slider <- renderSlickR({
         
         imgs <- get_images()
@@ -408,6 +412,7 @@ server <- function(input, output, session) {
         slickR::slickR(imgs, width = "100%")
     })
     
+    # render_image -------------------------------------------------------------
     output$render_image <- renderUI({
         
         imgs <- get_images()
@@ -427,6 +432,7 @@ server <- function(input, output, session) {
         return(payload)
     })
     
+    # image --------------------------------------------------------------------
     output$image <- renderUI({
         
         current_sp <- get_current_sp()
@@ -455,6 +461,7 @@ server <- function(input, output, session) {
         }        
     })
     
+    # description --------------------------------------------------------------
     output$description <- renderUI({
         
         current_sp <- get_current_sp()
@@ -505,6 +512,7 @@ server <- function(input, output, session) {
         }
     })
     
+    # migration ----------------------------------------------------------------
     output$migration <- renderHighchart({
         
         obs_current <- get_current_data()
@@ -543,6 +551,7 @@ server <- function(input, output, session) {
         }
     })
     
+    # local --------------------------------------------------------------------
     output$local <- renderHighchart({
         
         obs_current <- get_current_data()
@@ -577,6 +586,7 @@ server <- function(input, output, session) {
         }
     })
     
+    # change -------------------------------------------------------------------
     output$change <- renderHighchart({
         
         obs_current <- get_current_data()
@@ -636,6 +646,7 @@ server <- function(input, output, session) {
         }
     })
     
+    # change_numbers -----------------------------------------------------------
     output$change_numbers <- renderUI({
         
         stats_current <- get_current_stats()
