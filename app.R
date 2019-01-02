@@ -189,15 +189,21 @@ PB_LIST <- list(
     )
 )
 
+
+# UI ----------------------------------------------------------------------
 ui <- dashboardPage(
+
+    # ui-header ----------------------------------------------------------------
     dashboardHeader(
         title = tags$a(href = "https://www.tringa.fi/hangon-lintuasema/hankodata",
                        tags$img(src = "browser_logo.png", height = "40")
         )
     ),
+    # ui-sidebar ---------------------------------------------------------------
     dashboardSidebar(collapsed = TRUE,
                      uiOutput("render_sidebar")
         ),
+    # ui-body ------------------------------------------------------------------
     dashboardBody(
         tags$head(
             tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
@@ -262,11 +268,11 @@ ui <- dashboardPage(
     )
 )
 
+
+# Server ------------------------------------------------------------------
 server <- function(input, output, session) {
     
-
     # Reactives ---------------------------------------------------------------
-
     i18n <- reactive({
         selected <- input$language
         if (length(selected) > 0 && selected %in% translator$languages) {
