@@ -261,12 +261,12 @@ ui <- dashboardPage(
                            withSpinner(highchartOutput("change", height = "300px"),
                                        type = 8, size = 0.5)
                        ),
-                       uiOutput("change_numbers"),
                        box(
                            width = 12,
                            withSpinner(highchartOutput("migration_medians", height = "200px"),
                                        type = 8, size = 0.5)
-                       )
+                       ),
+                       uiOutput("change_numbers")
                 )
             )
         )
@@ -846,7 +846,7 @@ server <- function(input, output, session) {
                    # order of epochs c("begin", "end", "med")
                    name = c("1979-1999", "2000-2010", "2011-2017"),
                    color = c("#66c2a5", "#8da0cb", "#fc8d62")) %>% 
-            hc_yAxis(title = list(text = "Time period"),
+            hc_yAxis(title = list(text = ""),
                      min = 0,
                      max = 2,
                      categories = rev(levels(data$epoch))) %>% 
