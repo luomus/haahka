@@ -45,6 +45,10 @@ div.record {
   display:inline; 
 }
 
+.icon-gold {
+  color: #DAA520;  
+}
+
 h4.record {
   font-weight: bold;
   text-align: center;

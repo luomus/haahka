@@ -922,7 +922,8 @@ server <- function(input, output, session) {
                                            h5("Muuttavat", class = "record"),
                                            div(class = "record",
                                                column(width = 3,
-                                                      icon("trophy", class = "icon-record")
+                                                      icon("trophy", 
+                                                           class = "icon-record icon-gold")
                                                ),
                                                column(width = 9,
                                                       p(get_value("Spring", "Migr", "Sum"))                                 
@@ -942,7 +943,8 @@ server <- function(input, output, session) {
                                            h5("Paikalliset", class = "record"),
                                            div(class = "record",
                                                column(width = 3,
-                                                      icon("trophy", class = "icon-record")
+                                                      icon("trophy", 
+                                                           class = "icon-record icon-gold")
                                                ),
                                                column(width = 9,
                                                       p(get_value("Spring", "Local", "Sum"))                                 
@@ -968,7 +970,8 @@ server <- function(input, output, session) {
                                            h5("Muuttavat", class = "record"),
                                            div(class = "record",
                                                column(width = 3,
-                                                      icon("trophy", class = "icon-record")
+                                                      icon("trophy", 
+                                                           class = "icon-record icon-gold")
                                                ),
                                                column(width = 9,
                                                       p(get_value("Autumn", "Migr", "Sum"))                                 
@@ -988,7 +991,8 @@ server <- function(input, output, session) {
                                            h5("Paikalliset", class = "record"),
                                            div(class = "record",
                                                column(width = 3,
-                                                      icon("trophy", class = "icon-record")
+                                                      icon("trophy", 
+                                                           class = "icon-record icon-gold")
                                                ),
                                                column(width = 9,
                                                       p(get_value("Autumn", "Local", "Sum"))                                 
