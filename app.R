@@ -833,7 +833,7 @@ server <- function(input, output, session) {
                    season = ifelse(season == "sphen", "spring", 
                                    ifelse(season == "aphen", "autumn", NA)),
                    # Make epochs factors
-                   epoch = factor(epoch, levels = rev(c("begin", "med", "end")),
+                   epoch = factor(epoch, levels = c("begin", "med", "end"),
                                   labels = rev(c("1979-1999", "2000-2010", "2011-2017")),
                                   ordered = TRUE),
                    # Numeric value of the factors is needed so that highcharts
