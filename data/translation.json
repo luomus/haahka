@@ -1,60 +1,60 @@
 {
   "cultural_date_format": "%d-%m-%Y",
-  "languages": ["Suomi", "English"],
+  "languages": ["fi", "en"],
   "translation": [
     {
-      "Suomi": "Kieli",
-      "English": "Language"
+      "fi": "Kieli",
+      "en": "Language"
       
     },
     {
-      "Suomi": "Valitse laji",
-      "English": "Select species"
+      "fi": "Valitse laji",
+      "en": "Select species"
       
     },
     {
-      "Suomi": "Kuvaa ei löydy",
-      "English": "No image found"
+      "fi": "Kuvaa ei löydy",
+      "en": "No image found"
     },
     {
-      "Suomi": "Kuvausta ei löydy",
-      "English": "No description found"
+      "fi": "Kuvausta ei löydy",
+      "en": "No description found"
     },
     {
-      "Suomi": "MuuttaviEnglish keskiarvot",
-      "English": "Migration average"
+      "fi": "Muuttavien keskiarvot",
+      "en": "Migration average"
     },
     {
-      "Suomi": "PaikallistEnglish keskiarvot",
-      "English": "Local average"
+      "fi": "Paikallisten keskiarvot",
+      "en": "Local average"
     },
     {
-      "Suomi": "Yksilölkm.",
-      "English": "Individuals"
+      "fi": "Yksilölkm.",
+      "en": "Individuals"
     },
     {
-      "Suomi": "RunsauksiEnglish muutokset",
-      "English": "Change in abundance"
+      "fi": "Runsauksien muutokset",
+      "en": "Change in abundance"
     },
     {
-      "Suomi": "RunsauksiEnglish muutokset numeroina",
-      "English": "Change in abundance in numbers"
+      "fi": "Runsauksien muutokset numeroina",
+      "en": "Change in abundance in numbers"
     },
     {
-      "Suomi": "Pitkänajan trEnglishdi",
-      "English": "Long term trEnglishd"
+      "fi": "Pitkänajan trendi",
+      "en": "Long term trend"
     },
     {
-      "Suomi": "LyhyEnglishajan trEnglishdi",
-      "English": "Short term trEnglishd"
+      "fi": "Lyhyenajan trendi",
+      "en": "Short term trend"
     },
     {
-      "Suomi": "Keskirunsaus",
-      "English": "Average abundance"
+      "fi": "Keskirunsaus",
+      "en": "Average abundance"
     },
     {
-      "Suomi": "Ei kuvia tälle lajille",
-      "English": "No images found"
+      "fi": "Ei kuvia tälle lajille",
+      "en": "No images found"
     }
     ]
 }
