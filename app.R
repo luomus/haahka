@@ -215,9 +215,18 @@ ui <- dashboardPage(
         ),
         fluidPage(
             fluidRow(
-                column(6,
+                column(12,
                        box(width = 12,
-                           uiOutput("render_species")
+                           column(width = 6,
+                                  uiOutput("render_species")
+                           ),
+                           column(width = 6,
+                                  column(width = 6
+                                  ),
+                                  column(width = 6,
+                                         uiOutput("render_language")
+                                  )
+                           )
                        )
                 )
             ),
@@ -379,6 +388,15 @@ server <- function(input, output, session) {
                         choices = spps,
                         selected = input$species)
         )
+    })
+    
+    # render_species ----------------------------------------------------------
+    output$render_language <- renderUI({
+        payload <- selectInput("language",
+                               label = i18n()$t("Kieli"),
+                               choices = translator$languages, 
+                               selected = input$language)
+        return(payload)
     })
     
     # render_carousel ----------------------------------------------------------
