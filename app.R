@@ -323,9 +323,9 @@ server <- function(input, output, session) {
     
     get_species_names <- function(lang) {
         if (!is.null(lang)) {
-            if (lang == "fi") {
+            if (lang == "Suomi") {
                 name_field = "FIN_name"
-            } else if (lang == "en") {
+            } else if (lang == "English") {
                 name_field = "ENG_name"
             }
             
@@ -357,11 +357,7 @@ server <- function(input, output, session) {
         tagList(
             div(style = "text-align: center",
                 h4(VERSION)
-            ),
-            selectInput("language",
-                        label = i18n()$t("Kieli"),
-                        choices = translator$languages, 
-                        selected = input$language)
+            )
         )
     })
     
@@ -370,7 +366,7 @@ server <- function(input, output, session) {
         
         if (is.null(input$language)) {
             # By default, the names are Finnish
-            name_field <- "fi"            
+            name_field <- "Suomi"            
         } else {
             name_field <- input$language
         }
@@ -476,9 +472,9 @@ server <- function(input, output, session) {
             sp_abbr <- tolower(current_sp$Species_Abb)
             sci_name <- current_sp$Sci_name
             
-            if (input$language == "en") {
+            if (input$language == "English") {
                 common_name <- current_sp$ENG_name
-            } else if (input$language == "fi") {
+            } else if (input$language == "Suomi") {
                 common_name <- current_sp$FIN_name
             }
             
@@ -987,7 +983,7 @@ server <- function(input, output, session) {
         
         if (!is.null(query[['species']])) {
             sp_abb <- toupper(query[['species']])
-            spps <- get_species_names("fi")
+            spps <- get_species_names("Suomi")
             selected_sp <- sp_data %>% 
                 dplyr::filter(Species_Abb == sp_abb)
             updateSelectInput(session, "species", 
