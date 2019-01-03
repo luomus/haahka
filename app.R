@@ -157,6 +157,9 @@ VERSION <- METADATA[["Version"]]
 # Get photo credits
 PHOTO_CREDITS <- yaml::yaml.load_file("www/img/sp_images/attribution.yaml")
 
+# Define the size of the tiling window for data averaging
+WINDOW_SIZE <- 5
+
 # Highcharts options
 
 # # How many milliseconds in a year?
@@ -216,30 +219,10 @@ ui <- dashboardPage(
                        box(width = 12,
                            uiOutput("render_species")
                        )
-                ),
-                column(6,
-                       box(width = 12,
-                           column(4,
-                                  sliderInput("tile_selector", 
-                                              "Tile window (days) for averaging",
-                                              min = 1, max = 7, step = 2, value = 5,
-                                              ticks = TRUE)
-                                  ),
-                           column(4,
-                                  radioButtons("line_type", "Line type", 
-                                               choiceNames = c("Line", "Spline"),
-                                               choiceValues = c("line", "spline"))
-                            ),
-                           column(4,
-                                  checkboxInput("show_markers", "Show line markers", value = FALSE),
-                                  checkboxInput("show_plotbands", "Show month plot bands", value = FALSE)
-                                  )
-                        )
                 )
             ),
             fluidRow(
                 column(6,
-                       #uiOutput("render_image"),
                        box(
                            width = 12,
                            withSpinner(uiOutput("description"), type = 8, 
@@ -542,18 +525,12 @@ server <- function(input, output, session) {
         plot_data <- obs_current %>% 
             dplyr::select(sp, day, muutto) %>% 
             as_tsibble(key = id(sp), index = day) %>% 
-            tile_observations("day", "muutto", input$tile_selector)
+            tile_observations("day", "muutto", WINDOW_SIZE)
         
         if (!is.null(plot_data)) {
             
-            if (input$show_plotbands) {
-                pb_list <- PB_LIST
-            } else {
-                pb_list <- NA
-            }
-            
             hc <- plot_data %>% 
-                hchart(type = input$line_type, 
+                hchart(type = "line", 
                        hcaes(x = day, y = value_avgs),
                        name = i18n()$t("Muuttavien keskiarvot"),
                        color = "#1f78b4") %>% 
@@ -564,7 +541,7 @@ server <- function(input, output, session) {
                          max = XMAX,
                          dateTimeLabelFormats = list(month = '%b'),
                          tickInterval = X_AXIS_TIME_UNITS,
-                         plotBands = pb_list) %>% 
+                         plotBands = PB_LIST) %>% 
                 hc_plotOptions(line = list(marker = list(enabled = input$show_markers)),
                                spline = list(marker = list(enabled = input$show_markers))) %>% 
                 hc_title(text = i18n()$t("Muuttavien keskiarvot")) %>% 
@@ -585,18 +562,12 @@ server <- function(input, output, session) {
         plot_data <- obs_current %>% 
             dplyr::select(sp, day, paik) %>% 
             as_tsibble(key = id(sp), index = day) %>% 
-            tile_observations("day", "paik", input$tile_selector)
+            tile_observations("day", "paik", WINDOW_SIZE)
         
         if (!is.null(plot_data)) {
             
-            if (input$show_plotbands) {
-                pb_list <- PB_LIST
-            } else {
-                pb_list <- NA
-            }
-            
             hc <- plot_data %>% 
-                hchart(type = input$line_type, 
+                hchart(type = "line", 
                        hcaes(x = day, y = value_avgs),
                        name = i18n()$t("Paikallisten keskiarvot"),
                        color = "#1f78b4") %>% 
@@ -607,9 +578,7 @@ server <- function(input, output, session) {
                          max = XMAX,
                          dateTimeLabelFormats = list(month = '%b'),
                          tickInterval = X_AXIS_TIME_UNITS,
-                         plotBands = pb_list) %>%
-                hc_plotOptions(line = list(marker = list(enabled = input$show_markers)),
-                               spline = list(marker = list(enabled = input$show_markers))) %>% 
+                         plotBands = PB_LIST) %>%
                 hc_title(text = i18n()$t("Paikallisten keskiarvot")) %>% 
                 hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                            xDateFormat = "%b %d") %>% 
@@ -634,19 +603,19 @@ server <- function(input, output, session) {
             plot_data_begin <- obs_current %>% 
                 dplyr::select(sp, day, begin) %>% 
                 as_tsibble(key = id(sp), index = day) %>% 
-                tile_observations("day", "begin", input$tile_selector) %>% 
+                tile_observations("day", "begin", WINDOW_SIZE) %>% 
                 dplyr::rename(begin = value_avgs)
             
             plot_data_med <- obs_current %>% 
                 dplyr::select(sp, day, med) %>% 
                 as_tsibble(key = id(sp), index = day) %>% 
-                tile_observations("day", "med", input$tile_selector) %>% 
+                tile_observations("day", "med", WINDOW_SIZE) %>% 
                 dplyr::rename(med = value_avgs)
             
             plot_data_end <- obs_current %>% 
                 dplyr::select(sp, day, end) %>% 
                 as_tsibble(key = id(sp), index = day) %>% 
-                tile_observations("day", "end", input$tile_selector) %>% 
+                tile_observations("day", "end", WINDOW_SIZE) %>% 
                 dplyr::rename(end = value_avgs)
             
             plot_data <- plot_data_begin %>% 
@@ -655,14 +624,8 @@ server <- function(input, output, session) {
                 tidyr::gather(epoch, value, -day) %>% 
                 dplyr::mutate(epoch = forcats::fct_relevel(epoch, "begin", "med", "end"))
             
-            if (input$show_plotbands) {
-                pb_list <- PB_LIST
-            } else {
-                pb_list <- NA
-            }
-            
             hc <- plot_data %>% 
-                hchart(type = input$line_type, 
+                hchart(type = "line", 
                        hcaes(x = day, y = value, group = epoch),
                        # order of epochs c("begin", "end", "med")
                        name = c("1979-1999", "2000-2010", "2011-2017"),
@@ -674,9 +637,8 @@ server <- function(input, output, session) {
                          max = XMAX,
                          dateTimeLabelFormats = list(month = '%b'),
                          tickInterval = X_AXIS_TIME_UNITS,
-                         plotBands = pb_list) %>% 
-                hc_plotOptions(line = list(marker = list(enabled = input$show_markers)),
-                               spline = list(marker = list(enabled = input$show_markers))) %>% 
+                         plotBands = PB_LIST) %>% 
+                hc_plotOptions(line = list(marker = list(enabled = FALSE))) %>% 
                 hc_title(text = i18n()$t("Runsauksien muutokset")) %>% 
                 hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                            shared = TRUE, xDateFormat = "%b %d") %>% 
@@ -844,12 +806,6 @@ server <- function(input, output, session) {
                    # Pretty version of the date for tooltips
                    date_print = format(date, "%b %d"))
         
-        if (input$show_plotbands) {
-            pb_list <- PB_LIST
-        } else {
-            pb_list <- NA
-        }
-        
         hc <- plot_data %>% 
             hchart(type = "scatter", 
                    hcaes(x = date, y = epochnum, group = epoch),
@@ -866,7 +822,7 @@ server <- function(input, output, session) {
                      max = XMAX,
                      dateTimeLabelFormats = list(month = '%b'),
                      tickInterval = X_AXIS_TIME_UNITS,
-                     plotBands = pb_list) %>% 
+                     plotBands = PB_LIST) %>% 
             hc_plotOptions(
                 scatter = list(marker = list(symbol = "circle",
                                              radius = 8))
