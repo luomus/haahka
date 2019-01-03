@@ -15,6 +15,19 @@ library(yaml)
 
 # Helper functions --------------------------------------------------------
 
+# Return full language names instead of a language code.
+#
+get_languages <- function(x) {
+    
+    langs <- list("fi" = "Suomi",
+                  "en" = "English",
+                  "se" = "Svenska")
+    
+    assertthat::assert_that(x %in% names(langs))
+    
+    return(langs[[x]])
+}
+
 # Return numeric timestamp value based on a Date. Needed for highcharts 
 # x-axis settings and plotting.
 # 
@@ -390,11 +403,15 @@ server <- function(input, output, session) {
         )
     })
     
-    # render_species ----------------------------------------------------------
+    # render_lanugage ----------------------------------------------------------
     output$render_language <- renderUI({
+        
+        choices <- translator$languages
+        names(choices) <- purrr::map_chr(choices, get_languages)
+        
         payload <- selectInput("language",
                                label = i18n()$t("Kieli"),
-                               choices = translator$languages, 
+                               choices = choices, 
                                selected = input$language)
         return(payload)
     })
