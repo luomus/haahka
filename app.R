@@ -180,6 +180,13 @@ X_AXIS_TIME_UNITS = 30 * 24 * 3600 * 1000
 # Year x-axis limits
 XMIN <- datetime_to_timestamp(as.Date('2000-01-01', tz = 'UTC'))
 XMAX <- datetime_to_timestamp(as.Date('2000-12-31', tz = 'UTC'))
+# Year x-axis labels in languages different than English
+X_YEARLY_LABELS <- list(
+    "fi" = c("Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä",
+             "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu"),
+    "en" = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+             "Oct", "Nov", "Dec")
+)
 
 # Color of the plotBands (background bars for months) 
 PB_COLOR <- "rgba(240, 240, 245, 0.4)"
@@ -558,6 +565,11 @@ server <- function(input, output, session) {
         
         if (!is.null(plot_data)) {
             
+            # Update highcarts language options
+            hcoptslang <- getOption("highcharter.lang")
+            hcoptslang$shortMonths <- X_YEARLY_LABELS[[input$language]]
+            options(highcharter.lang = hcoptslang)
+            
             hc <- plot_data %>% 
                 hchart(type = "line", 
                        hcaes(x = day, y = value_avgs),
@@ -594,6 +606,11 @@ server <- function(input, output, session) {
             tile_observations("day", "paik", WINDOW_SIZE)
         
         if (!is.null(plot_data)) {
+            
+            # Update highcarts language options
+            hcoptslang <- getOption("highcharter.lang")
+            hcoptslang$shortMonths <- X_YEARLY_LABELS[[input$language]]
+            options(highcharter.lang = hcoptslang)
             
             hc <- plot_data %>% 
                 hchart(type = "line", 
@@ -652,6 +669,11 @@ server <- function(input, output, session) {
                 dplyr::left_join(., plot_data_end, by = c("day" = "day")) %>%
                 tidyr::gather(epoch, value, -day) %>% 
                 dplyr::mutate(epoch = forcats::fct_relevel(epoch, "begin", "med", "end"))
+            
+            # Update highcarts language options
+            hcoptslang <- getOption("highcharter.lang")
+            hcoptslang$shortMonths <- X_YEARLY_LABELS[[input$language]]
+            options(highcharter.lang = hcoptslang)
             
             hc <- plot_data %>% 
                 hchart(type = "line", 
@@ -834,6 +856,11 @@ server <- function(input, output, session) {
                    date = origin + value, 
                    # Pretty version of the date for tooltips
                    date_print = format(date, "%b %d"))
+        
+        # Update highcarts language options
+        hcoptslang <- getOption("highcharter.lang")
+        hcoptslang$shortMonths <- X_YEARLY_LABELS[[input$language]]
+        options(highcharter.lang = hcoptslang)
         
         hc <- plot_data %>% 
             hchart(type = "scatter", 
