@@ -563,7 +563,7 @@ server <- function(input, output, session) {
                        hcaes(x = day, y = value_avgs),
                        name = i18n()$t("Muuttavien keskiarvot"),
                        color = "#1f78b4") %>% 
-                hc_yAxis(title = list(text = i18n()$t("Yksilölkm."))) %>% 
+                hc_yAxis(title = list(text = i18n()$t("Yksilöä / havaintopäivä"))) %>% 
                 hc_xAxis(title = list(text = ""),
                          type = "datetime", 
                          min = XMIN,
@@ -600,7 +600,7 @@ server <- function(input, output, session) {
                        hcaes(x = day, y = value_avgs),
                        name = i18n()$t("Paikallisten keskiarvot"),
                        color = "#1f78b4") %>% 
-                hc_yAxis(title = list(text = i18n()$t("Yksilölkm."))) %>% 
+                hc_yAxis(title = list(text = i18n()$t("Yksilöä / havaintopäivä"))) %>% 
                 hc_xAxis(title = list(text = ""),
                          type = "datetime", 
                          min = XMIN,
@@ -659,7 +659,7 @@ server <- function(input, output, session) {
                        # order of epochs c("begin", "end", "med")
                        name = c("1979-1999", "2000-2010", "2011-2017"),
                        color = c("#66c2a5", "#8da0cb", "#fc8d62")) %>% 
-                hc_yAxis(title = list(text = i18n()$t("Yksilölkm."))) %>% 
+                hc_yAxis(title = list(text = i18n()$t("Yksilöä / havaintopäivä"))) %>% 
                 hc_xAxis(title = list(text = ""),
                          type = "datetime", 
                          min = XMIN,
