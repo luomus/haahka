@@ -205,6 +205,9 @@ PB_LIST <- list(
     )
 )
 
+# Needed for tracking the language state
+INTENDED_LANGUAGE <- ""
+
 
 # UI ----------------------------------------------------------------------
 ui <- dashboardPage(
@@ -288,11 +291,12 @@ server <- function(input, output, session) {
     # Reactives ---------------------------------------------------------------
     i18n <- reactive({
         selected <- input$language
+        
         if (length(selected) > 0 && selected %in% translator$languages) {
             message("Language changed to: ", selected)
             translator$set_translation_language(selected)
         }
-        translator
+        return(translator)
     })
     
     get_current_sp <- reactive({
@@ -331,6 +335,12 @@ server <- function(input, output, session) {
         #photo_credit <- PHOTO_CREDITS[[sp_abbr]]
         imgs <- list.files(img_dir, pattern = ".jpg", full.names = TRUE)
         return(imgs)
+    })
+    
+    get_species_abbr <- reactive({
+        current_sp <- get_current_sp()    
+        sp_abbr <- tolower(current_sp$Species_Abb)
+        return(sp_abbr)
     })
     
     # Helper functions ---------------------------------------------------------
@@ -434,18 +444,6 @@ server <- function(input, output, session) {
             )
         )
         return(payload)
-    })
-    
-    # image_slider -------------------------------------------------------------
-    output$image_slider <- renderSlickR({
-        
-        imgs <- get_images()
-        
-        shiny::validate(
-            no_images(imgs)
-        )
-        
-        slickR::slickR(imgs, width = "100%")
     })
     
     # render_image -------------------------------------------------------------
@@ -1006,26 +1004,72 @@ server <- function(input, output, session) {
 
     # Observers ----------------------------------------------------------------
     
-    observeEvent(i18n(), {
-        updateSelectInput(session, "language", label =  i18n()$t("Kieli"), selected = input$language)
-        updateSelectInput(session, "species", label =  i18n()$t("Valitse laji"), 
-                          choices = get_species_names(input$language), selected = input$species)
-        
-    })
-    
+    # Update values based on an URL query
     observe({
+        # Parse the query string from the current URL
         query <- parseQueryString(session$clientData$url_search)
-        
+        # Update species selector based on the query.
+        # NOTE: nothing will happen if the 3+3 abbreviation provided as an
+        # URL parameter is not found.
         if (!is.null(query[['species']])) {
+            # Capitalize for join
             sp_abb <- toupper(query[['species']])
+            # Get the same name format as used in the species selector
             spps <- get_species_names("fi")
+            # Join to get the 3+3 species abbreviation
             selected_sp <- sp_data %>% 
                 dplyr::filter(Species_Abb == sp_abb)
             updateSelectInput(session, "species", 
                               selected = spps[which(spps == selected_sp$Sci_name)])
         }
-        
-        
+        # Update language selector based in the query.
+        if (!is.null(query[['language']])) {
+            url_language <- tolower(query[['language']])
+            # Global variable INTENDED_LANGUAGE tracks the current intended 
+            # language (i.e. the one user wants to use). Default value is "".
+            # Change the language selector only if the language provided in the
+            # URL query is different to the intended language and if the 
+            # provided language actually exists in the translator.
+            if (url_language != INTENDED_LANGUAGE & url_language %in% translator$languages) {
+                # Intended language needs to be update first because the 
+                # observeEvent(input$language, {...}) is triggered *before* the
+                # value of input$language is changed.
+                INTENDED_LANGUAGE <<- url_language
+                updateSelectInput(session, "language",
+                                  label = i18n()$t("Kieli"),
+                                  selected = url_language)
+            }
+        }
+    })
+    
+    # Whenever the language selector is used, update the URL to match
+    observeEvent(input$language, {
+        current_sp <- get_species_abbr()
+        current_lang <- isolate(input$language)
+        # Update the intended language if needed
+        if (current_lang != INTENDED_LANGUAGE) {
+            INTENDED_LANGUAGE <<- current_lang
+        }
+        query_string <- paste0("?species=", current_sp, 
+                               "&language=", INTENDED_LANGUAGE)
+        session$updateQueryString(query_string, mode = "push")
+    })
+    
+    # Whenever the species selector is used, update the URL to match
+    observeEvent(input$species, {
+        current_sp <- get_species_abbr()
+        current_lang <- isolate(input$language)
+        query_string <- paste0("?species=", current_sp, 
+                               "&language=", INTENDED_LANGUAGE)
+        session$updateQueryString(query_string, mode = "push")
+    })
+    
+    observeEvent(i18n(), {
+        updateSelectInput(session, "language", label = i18n()$t("Kieli"), 
+                          selected = input$language)
+        updateSelectInput(session, "species", label =  i18n()$t("Valitse laji"), 
+                          choices = get_species_names(input$language), 
+                          selected = input$species)
     })
 }
 
