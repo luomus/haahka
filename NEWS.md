@@ -13,11 +13,17 @@ late than never-
 - 3+3 species abbreviation can be passed as an URL parameter, e.g. 
   https://jlehtoma.shinyapps.io/halias-browser?species=picpic will bring up 
   the data for the Common Magpie (Pica pica). 
+- Language code can also be used an URL parameter, e.g.
+  https://jlehtoma.shinyapps.io/halias-browser?species=accnis&language=en
+  to share links directly to a given species and in correct language.
 
+This way links to species (in correct language) can be shared.
 
 ### UI changes
 
 - Trophy icons are golden.
+- Temporary controls box removed.
+- Language selector is now in the main controls box, not in the sidebar.
 
 ## 0.1.5 (2019-01-02)
 
