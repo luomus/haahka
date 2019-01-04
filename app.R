@@ -884,7 +884,7 @@ server <- function(input, output, session) {
                 scatter = list(marker = list(symbol = "circle",
                                              radius = 8))
             ) %>% 
-            hc_title(text = "Median observation date") %>% 
+            hc_title(text = i18n()$t("Muuton ajoittumisen mediaanipäivämäärä")) %>% 
             hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                        shared = TRUE, xDateFormat = "%b %d",
                        pointFormat = "{point.season} migration median date:<br> {point.date_print}") %>% 

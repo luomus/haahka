@@ -37,6 +37,10 @@
       "en": "Change in abundance"
     },
     {
+      "fi": "Muuton ajoittumisen mediaanipäivämäärä",
+      "en": "Migration median date"
+    },
+    {
       "fi": "Runsauksien muutokset numeroina",
       "en": "Change in abundance in numbers"
     },
