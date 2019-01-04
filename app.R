@@ -738,18 +738,14 @@ server <- function(input, output, session) {
         
         payload <- box(width = 12,
                        solidHeader = FALSE,
-                       title = i18n()$t("Vuosittaiset keskirunsaudet tarkastelujaksoilla"),
+                       title = i18n()$t("Runsauden muutokset"),
                        background = NULL,
                        status = "danger",
                        footer = tagList(
                            p(
-                               strong("Pitkän aikavälin muutos"), "=",
-                               " keskirunsausden muutos aikajaksolta 1979-1999",
-                               " aikajaksolle 2011-2017.",
+                               i18n()$t("Pitkän aikavälin muutos = keskirunsauden muutos aikajaksolta 1979-1999 aikajaksolle 2011-2017."),
                                br(),
-                               strong("Lyhyen aikavälin muutos"), "=",
-                               " keskirunsausden muutos aikajaksolta 2000-2010",
-                               " aikajaksolle 2011-2017."
+                               i18n()$t("Lyhyen aikavälin muutos = keskirunsauden muutos aikajaksolta 2000-2010 aikajaksolle 2011-2017.")
                            )
                        ),
                        fluidRow(
@@ -779,7 +775,7 @@ server <- function(input, output, session) {
                            ),
                            column(width = 12,
                                   descriptionBlock(
-                                      header = paste(i18n()$t("Keskirunsaus tarkastelujaksolla")), 
+                                      header = paste(i18n()$t("Vuosittaiset keskirunsaudet yhteensä")), 
                                       right_border = TRUE,
                                       margin_bottom = FALSE
                                   )
@@ -789,7 +785,7 @@ server <- function(input, output, session) {
                                descriptionBlock(
                                    header = format(round(stats_current$Nbegin, 0),
                                                    big.mark = " "),
-                                   text = "1970-1999", 
+                                   text = "1979-1999", 
                                    right_border = TRUE,
                                    margin_bottom = FALSE
                                )
@@ -900,7 +896,7 @@ server <- function(input, output, session) {
         records_current <- get_current_records() %>% 
             dplyr::mutate(Date = lubridate::dmy(Date)) %>% 
             dplyr::group_by(sp, Sum) %>% 
-            dplyr::mutate(date_string = paste0(Date, collapse = ", ")) %>% 
+            dplyr::mutate(date_string = paste(Date, collapse = i18n()$t(" ja "))) %>% 
             dplyr::select(-Date) %>% 
             dplyr::distinct()
         
@@ -925,18 +921,18 @@ server <- function(input, output, session) {
             
             payload <- box(width = 12,
                            solidHeader = FALSE,
-                           title = i18n()$t("Havaintoennätykset"),
+                           title = i18n()$t("Runsausennätykset"),
                            status = "info",
                            fluidRow(
                                column(
                                    width = 6,
                                    tagList(
-                                       h4("Kevät", class = "record")
+                                       h4(i18n()$t("Kevät"), class = "record")
                                    ),
                                    column(
                                        width = 6,
                                        tagList(
-                                           h5("Muuttavat", class = "record"),
+                                           h5(i18n()$t("Muuttavat"), class = "record"),
                                            div(class = "record",
                                                column(width = 3,
                                                       icon("trophy", 
@@ -957,7 +953,7 @@ server <- function(input, output, session) {
                                    column(
                                        width = 6,
                                        tagList(
-                                           h5("Paikalliset", class = "record"),
+                                           h5(i18n()$t("Paikalliset"), class = "record"),
                                            div(class = "record",
                                                column(width = 3,
                                                       icon("trophy", 
@@ -979,12 +975,12 @@ server <- function(input, output, session) {
                                column(
                                    width = 6,
                                    tagList(
-                                       h4("Syksy", class = "record")
+                                       h4(i18n()$t("Syksy"), class = "record")
                                    ),
                                    column(
                                        width = 6,
                                        tagList(
-                                           h5("Muuttavat", class = "record"),
+                                           h5(i18n()$t("Muuttavat"), class = "record"),
                                            div(class = "record",
                                                column(width = 3,
                                                       icon("trophy", 
@@ -1005,7 +1001,7 @@ server <- function(input, output, session) {
                                    column(
                                        width = 6,
                                        tagList(
-                                           h5("Paikalliset", class = "record"),
+                                           h5(i18n()$t("Paikalliset"), class = "record"),
                                            div(class = "record",
                                                column(width = 3,
                                                       icon("trophy", 

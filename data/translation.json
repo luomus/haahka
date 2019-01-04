@@ -41,16 +41,52 @@
       "en": "Migration median date"
     },
     {
-      "fi": "Runsauksien muutokset numeroina",
-      "en": "Change in abundance in numbers"
+      "fi": "Runsauden muutokset",
+      "en": "Change in abundance"
     },
     {
-      "fi": "Pitkänajan trendi",
-      "en": "Long term trend"
+      "fi": "Pitkän aikavälin muutos = keskirunsauden muutos aikajaksolta 1979-1999 aikajaksolle 2011-2017.",
+      "en": "Long term change = change in average abundance from 1979-1999 to 2011-2017."
     },
     {
-      "fi": "Lyhyenajan trendi",
-      "en": "Short term trend"
+      "fi": "Lyhyen aikavälin muutos = keskirunsauden muutos aikajaksolta 2000-2010 aikajaksolle 2011-2017.",
+      "en": "Short term change = change in average abundance from 2000-2010 to 2011-2017."
+    },
+    {
+      "fi": "Pitkän aikavälin muutos",
+      "en": "Long term change"
+    },
+    {
+      "fi": "Lyhyen aikavälin muutos",
+      "en": "Short term change"
+    },
+    {
+      "fi": "Vuosittaiset keskirunsaudet yhteensä",
+      "en": "Summed yearly average abundances"
+    },
+    {
+      "fi": " ja ",
+      "en": " and "
+    },
+    {
+      "fi": "Runsausennätykset",
+      "en": "Abundance records"
+    },
+    {
+      "fi": "Kevät",
+      "en": "Spring"
+    },
+    {
+      "fi": "Syksy",
+      "en": "Autumn"
+    },
+    {
+      "fi": "Muuttavat",
+      "en": "Migrating"
+    },
+    {
+      "fi": "Paikalliset",
+      "en": "Locals"
     },
     {
       "fi": "Keskirunsaus",
