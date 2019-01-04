@@ -939,7 +939,8 @@ server <- function(input, output, session) {
                                                            class = "icon-record icon-gold")
                                                ),
                                                column(width = 9,
-                                                      p(get_value("Spring", "Migr", "Sum"))                                 
+                                                      p(get_value("Spring", "Migr", "Sum"),
+                                                        class = "record-number")                                 
                                                ),
                                                column(width = 3,
                                                       icon("calendar", class = "icon-record")
@@ -960,7 +961,8 @@ server <- function(input, output, session) {
                                                            class = "icon-record icon-gold")
                                                ),
                                                column(width = 9,
-                                                      p(get_value("Spring", "Local", "Sum"))                                 
+                                                      p(get_value("Spring", "Local", "Sum"),
+                                                        class = "record-number")                                 
                                                ),
                                                column(width = 3,
                                                       icon("calendar", class = "icon-record")
@@ -987,13 +989,15 @@ server <- function(input, output, session) {
                                                            class = "icon-record icon-gold")
                                                ),
                                                column(width = 9,
-                                                      p(get_value("Autumn", "Migr", "Sum"))                                 
+                                                      p(get_value("Autumn", "Migr", "Sum"),
+                                                        class = "record-number")                                 
                                                ),
                                                column(width = 3,
                                                       icon("calendar", class = "icon-record")
                                                ),
                                                column(width = 9,
-                                                      p(get_value("Autumn", "Migr", "date_string"))                                 
+                                                      p(get_value("Autumn", "Migr", "date_string")
+                                                        )                                 
                                                )
                                            )
                                        )
@@ -1008,7 +1012,8 @@ server <- function(input, output, session) {
                                                            class = "icon-record icon-gold")
                                                ),
                                                column(width = 9,
-                                                      p(get_value("Autumn", "Local", "Sum"))                                 
+                                                      p(get_value("Autumn", "Local", "Sum"),
+                                                        class = "record-number")                                 
                                                ),
                                                column(width = 3,
                                                       icon("calendar", class = "icon-record")
