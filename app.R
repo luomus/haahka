@@ -464,7 +464,7 @@ server <- function(input, output, session) {
                              selected = TRUE,
                              icon = icon("binoculars")
                     ),
-                    menuItem(i18n()$t("Tietoa sovelluksesta"), 
+                    menuItem(i18n()$t("Tietoa aineistosta"), 
                              tabName = "info", 
                              icon = icon("question-circle")
                     )
