@@ -25,10 +25,13 @@ late than never-
 
 ### UI changes
 
+- Species observations content is now places in a tab and the sidebarmenu
+  is adjusted accordingly.
+- New information tab contains information on the app.
 - Trophy icons are golden.
 - Temporary controls box removed.
-- Language selector is now in the main controls box, not in the sidebar.
 - Color schemes changed to darker hues.
+- App and data versions displayed in the sidebar footer.
 
 ## 0.1.5 (2019-01-02)
 
