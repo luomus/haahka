@@ -13,8 +13,8 @@
       
     },
     {
-      "fi": "Tietoa aineistosta",
-      "en": "Information on the data"
+      "fi": "Ohjeet",
+      "en": "Help"
       
     },
     {
@@ -119,6 +119,18 @@
     {
       "fi": "Ei kuvia tälle lajille",
       "en": "No images found"
+    },
+    {
+      "fi": "Aineisto",
+      "en": "Data"
+    },
+    {
+      "fi": "Hangon lintuaseman pitkäaikaisaineisto",
+      "en": "Long term data from the Hanko Bird Observatory"
+    },
+    {
+      "fi": "Verkkosovellus",
+      "en": "Web App"
     }
     ]
 }

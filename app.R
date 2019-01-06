@@ -342,35 +342,7 @@ ui <- dashboardPage(
         ),
         # Help tab -------------------------------------------------------------
         tabItem(tabName = "help",
-                fluidRow(
-                  column(width = 6,
-                         widgetUserBox(
-                           title = "Aineisto",
-                           subtitle = "Hangon lintuaseman pitkäaikaisaineisto",
-                           type = NULL,
-                           width = 12,
-                           src = "database.png",
-                           color = "navy-active",
-                           closable = FALSE,
-                           collapsible = FALSE,
-                           "Some text here!",
-                           footer = "The footer here!"
-                         )
-                  ),
-                  column(width = 6,
-                         widgetUserBox(
-                           title = "Verkkosvellus",
-                           subtitle = "Halias Browser",
-                           type = NULL,
-                           width = 12,
-                           src = "settings.png",
-                           color = "navy-active",
-                           closable = FALSE,
-                           "Some text here!",
-                           footer = "The footer here!"
-                         )
-                  )
-                )
+                uiOutput("render_helpsections")
         )
       )
     )
@@ -1155,6 +1127,44 @@ server <- function(input, output, session) {
         return(payload)        
     })
 
+    # render_helpsections ------------------------------------------------------
+    output$render_helpsections <- renderUI({
+      
+        payload <- tagList(
+          fluidRow(
+            column(width = 6,
+                   widgetUserBox(
+                     title = i18n()$t("Aineisto"),
+                     subtitle = i18n()$t("Hangon lintuaseman pitkäaikaisaineisto"),
+                     type = NULL,
+                     width = 12,
+                     src = "database.png",
+                     color = "navy-active",
+                     closable = FALSE,
+                     collapsible = FALSE,
+                     "Some text here!",
+                     footer = "The footer here!"
+                   )
+            ),
+            column(width = 6,
+                   widgetUserBox(
+                     title = i18n()$t("Verkkosovellus"),
+                     subtitle = "Halias Browser",
+                     type = NULL,
+                     width = 12,
+                     src = "settings.png",
+                     color = "navy-active",
+                     closable = FALSE,
+                     collapsible = FALSE,
+                     "Some text here!",
+                     footer = "The footer here!"
+                   )
+            )
+          )
+        )
+      return(payload)
+    })
+    
     # Observers ----------------------------------------------------------------
     
     # Update values based on an URL query
