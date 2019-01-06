@@ -22,6 +22,7 @@ late than never-
 - Two new helper funtions:
     - `get_months()`: get short ot long month names in a give language.
     - `make_date_label()`: use for constracting multi-language date labels.
+- New tab: help. Content is still largely missing.
 
 ### UI changes
 
@@ -32,6 +33,7 @@ late than never-
 - Temporary controls box removed.
 - Color schemes changed to darker hues.
 - App and data versions displayed in the sidebar footer.
+- Proper implementation of tabs.
 
 ## 0.1.5 (2019-01-02)
 
