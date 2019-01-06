@@ -256,7 +256,7 @@ PB_LIST <- list(
 )
 
 # Needed for tracking the language state
-INTENDED_LANGUAGE <- ""
+INTENDED_LANGUAGE <- "fi"
 
 
 # UI ----------------------------------------------------------------------
@@ -469,7 +469,6 @@ server <- function(input, output, session) {
                              icon = icon("question-circle")
                     )
         )
-      
     })
     
     # render_species ----------------------------------------------------------
