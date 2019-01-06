@@ -287,6 +287,8 @@ ui <- dashboardPage(
         tags$head(
             tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
         ),
+
+        # Species observations tab ---------------------------------------------
         tabItems(
             tabItem(tabName = "species",
             fluidPage(
@@ -338,6 +340,7 @@ ui <- dashboardPage(
             )
             
         ),
+        # Help tab -------------------------------------------------------------
         tabItem(tabName = "help",
                 fluidRow(
                   column(width = 6,
