@@ -271,17 +271,15 @@ ui <- dashboardPage(
         )
     ),
     # ui-sidebar ---------------------------------------------------------------
-    dashboardSidebar(collapsed = TRUE,
-                     div(style = "text-align: center",
-                         h4(VERSION)),
+    dashboardSidebar(collapsed = FALSE,
+                     div(
+                         style = "text-align: center",
+                         h4(VERSION)
+                     ),
                      uiOutput("render_language"),
                      hr(),
-                     sidebarMenu(id = "tabs", 
-                                 menuItem("Species", tabName = "species", 
-                                          selected = TRUE,
-                                          icon = icon("dashboard"))
-                     )
-        ),
+                     sidebarMenuOutput("sidebarmenu")
+    ),
     # ui-body ------------------------------------------------------------------
     dashboardBody(
         tags$head(
@@ -442,6 +440,34 @@ server <- function(input, output, session) {
     
     # Outputs ------------------------------------------------------------------
     
+    # render_lanugage ----------------------------------------------------------
+    output$render_language <- renderUI({
+        
+        choices <- translator$languages
+        names(choices) <- purrr::map_chr(choices, get_languages)
+        
+        payload <- selectInput("language",
+                               label = i18n()$t("Kieli"),
+                               choices = choices, 
+                               selected = input$language)
+        return(payload)
+    })
+    
+    # render_sidebarmenu -------------------------------------------------------
+    output$sidebarmenu <- renderMenu({
+      
+        req(input$language)
+        
+        sidebarMenu(id = "tabs", 
+                    menuItem(i18n()$t("Lajikohtaiset havainnot"), 
+                             tabName = "species", 
+                             selected = TRUE,
+                             icon = icon("binoculars")
+                    )
+        )
+      
+    })
+    
     # render_species ----------------------------------------------------------
     output$render_species <- renderUI({
         
@@ -460,19 +486,6 @@ server <- function(input, output, session) {
                         choices = spps,
                         selected = input$species)
         )
-    })
-    
-    # render_lanugage ----------------------------------------------------------
-    output$render_language <- renderUI({
-        
-        choices <- translator$languages
-        names(choices) <- purrr::map_chr(choices, get_languages)
-        
-        payload <- selectInput("language",
-                               label = i18n()$t("Kieli"),
-                               choices = choices, 
-                               selected = input$language)
-        return(payload)
     })
     
     # render_carousel ----------------------------------------------------------
