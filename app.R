@@ -338,7 +338,7 @@ ui <- dashboardPage(
             )
             
         ),
-        tabItem(tabName = "info",
+        tabItem(tabName = "help",
                 fluidRow(
                   column(width = 6,
                          widgetUserBox(
@@ -497,8 +497,8 @@ server <- function(input, output, session) {
                              selected = TRUE,
                              icon = icon("binoculars")
                     ),
-                    menuItem(i18n()$t("Tietoa aineistosta"), 
-                             tabName = "info", 
+                    menuItem(i18n()$t("Ohjeet"), 
+                             tabName = "help", 
                              icon = icon("question-circle")
                     )
         )
