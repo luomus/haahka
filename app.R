@@ -272,64 +272,72 @@ ui <- dashboardPage(
     ),
     # ui-sidebar ---------------------------------------------------------------
     dashboardSidebar(collapsed = TRUE,
-                     uiOutput("render_sidebar")
+                     div(style = "text-align: center",
+                         h4(VERSION)),
+                     uiOutput("render_language"),
+                     hr(),
+                     sidebarMenu(id = "tabs", 
+                                 menuItem("Species", tabName = "species", 
+                                          selected = TRUE,
+                                          icon = icon("dashboard"))
+                     )
         ),
     # ui-body ------------------------------------------------------------------
     dashboardBody(
         tags$head(
             tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
         ),
-        fluidPage(
-            fluidRow(
-                column(12,
-                       box(width = 12,
-                           column(width = 6,
-                                  uiOutput("render_species")
-                           ),
-                           column(width = 6,
-                                  column(width = 6
-                                  ),
-                                  column(width = 6,
-                                         uiOutput("render_language")
-                                  )
+        tabItems(
+            tabItem(tabName = "species",
+            fluidPage(
+                fluidRow(
+                    column(12,
+                           box(width = 12,
+                               column(width = 6,
+                                      uiOutput("render_species")
+                               ),
+                               column(width = 6
+                               )
                            )
-                       )
-                )
-            ),
-            fluidRow(
-                column(6,
-                       box(
-                           width = 12,
-                           withSpinner(uiOutput("description"), type = 8, 
-                                       size = 0.5)
-                       )
+                    )
                 ),
-                column(6,
-                       box(
-                           width = 12,
-                           withSpinner(highchartOutput("migration", height = "300px"),
-                                       type = 8, size = 0.5)
-                           
-                       ),
-                       box(
-                           width = 12,
-                           withSpinner(highchartOutput("local", height = "300px"),
-                                       type = 8, size = 0.5)
-                       ),
-                       box(
-                           width = 12,
-                           withSpinner(highchartOutput("change", height = "300px"),
-                                       type = 8, size = 0.5)
-                       ),
-                       box(
-                           width = 12,
-                           withSpinner(highchartOutput("migration_medians", height = "200px"),
-                                       type = 8, size = 0.5)
-                       ),
-                       uiOutput("change_numbers"),
-                       uiOutput("records")
+                fluidRow(
+                    column(6,
+                           box(
+                               width = 12,
+                               withSpinner(uiOutput("description"), type = 8, 
+                                           size = 0.5)
+                           )
+                    ),
+                    column(6,
+                           box(
+                               width = 12,
+                               withSpinner(highchartOutput("migration", height = "300px"),
+                                           type = 8, size = 0.5)
+                               
+                           ),
+                           box(
+                               width = 12,
+                               withSpinner(highchartOutput("local", height = "300px"),
+                                           type = 8, size = 0.5)
+                           ),
+                           box(
+                               width = 12,
+                               withSpinner(highchartOutput("change", height = "300px"),
+                                           type = 8, size = 0.5)
+                           ),
+                           box(
+                               width = 12,
+                               withSpinner(highchartOutput("migration_medians", height = "200px"),
+                                           type = 8, size = 0.5)
+                           ),
+                           uiOutput("change_numbers"),
+                           uiOutput("records")
+                    )
                 )
             )
+            
+        )
         )
     )
 )
@@ -433,15 +441,6 @@ server <- function(input, output, session) {
     }
     
     # Outputs ------------------------------------------------------------------
-
-    # render_sidebar -----------------------------------------------------------    
-    output$render_sidebar <- renderUI({
-        tagList(
-            div(style = "text-align: center",
-                h4(VERSION)
-            )
-        )
-    })
     
     # render_species ----------------------------------------------------------
     output$render_species <- renderUI({
