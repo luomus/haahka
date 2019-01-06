@@ -18,6 +18,16 @@
       
     },
     {
+      "fi": "Sovellusversio",
+      "en": "App version"
+      
+    },
+    {
+      "fi": "Aineistoversio",
+      "en": "Data version"
+      
+    },
+    {
       "fi": "Valitse laji",
       "en": "Select species"
       

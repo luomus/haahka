@@ -211,6 +211,11 @@ translator <- shiny.i18n::Translator$new(translation_json_path = "data/translati
 # Get the app metadata from the DESCRIPTION file
 METADATA <- yaml::yaml.load_file("DESCRIPTION")
 VERSION <- METADATA[["Version"]]
+REPO_URL <- METADATA[["URL"]]
+LICENSE <- METADATA[["License"]]
+
+# FIXME: hard coded for now
+DATA_VERSION <- 1.1
 
 # Get photo credits
 PHOTO_CREDITS <- yaml::yaml.load_file("www/img/sp_images/attribution.yaml")
@@ -272,13 +277,10 @@ ui <- dashboardPage(
     ),
     # ui-sidebar ---------------------------------------------------------------
     dashboardSidebar(collapsed = FALSE,
-                     div(
-                         style = "text-align: center",
-                         h4(VERSION)
-                     ),
                      uiOutput("render_language"),
                      hr(),
-                     sidebarMenuOutput("sidebarmenu")
+                     sidebarMenuOutput("sidebarmenu"),
+                     uiOutput("render_sidebarfooter")
     ),
     # ui-body ------------------------------------------------------------------
     dashboardBody(
@@ -335,8 +337,11 @@ ui <- dashboardPage(
                 )
             )
             
+        ),
+        tabItem(tabName = "info",
+                h1("foo")
         )
-        )
+      )
     )
 )
 
@@ -469,6 +474,32 @@ server <- function(input, output, session) {
                              icon = icon("question-circle")
                     )
         )
+    })
+    
+    # render_sidebarfooter -----------------------------------------------------
+    output$render_sidebarfooter <- renderMenu({
+        
+        req(input$language)
+        
+        app_prefix <- i18n()$t("Sovellusversio")
+        data_prefix <- i18n()$t("Aineistoversio")
+        
+        payload <- tagList(
+            HTML("<footer>"),
+            div(class = "footer-content",
+                strong("Halias Browser"),
+                br(),
+                paste0(app_prefix, ": ", VERSION),
+                br(),
+                paste0(data_prefix, ": ", DATA_VERSION),
+                br(),
+                br(),
+                a(href = REPO_URL,
+                  gsub("https://", "", REPO_URL))
+            ),
+            HTML("</footer>")
+        )
+        return(payload)
     })
     
     # render_species ----------------------------------------------------------
