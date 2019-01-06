@@ -227,10 +227,8 @@ XMIN <- datetime_to_timestamp(as.Date('2000-01-01', tz = 'UTC'))
 XMAX <- datetime_to_timestamp(as.Date('2000-12-31', tz = 'UTC'))
 # Year x-axis labels in languages different than English
 X_YEARLY_LABELS <- list(
-    "fi" = c("Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä",
-             "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu"),
-    "en" = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
-             "Oct", "Nov", "Dec")
+    "fi" = get_months("fi", "short"),
+    "en" = get_months("en", "short")
 )
 
 # Color of the plotBands (background bars for months) 
@@ -883,8 +881,8 @@ server <- function(input, output, session) {
             # Mutate new variables
             mutate(
                    # Replace "sphen" and "aphen" with more informative strings
-                   season = ifelse(season == "sphen", "spring", 
-                                   ifelse(season == "aphen", "autumn", NA)),
+                   season = ifelse(season == "sphen", tolower(i18n()$t("Kevät")), 
+                                   ifelse(season == "aphen", tolower(i18n()$t("Syys")), NA)),
                    # Make epochs factors
                    epoch = factor(epoch, levels = c("begin", "med", "end"),
                                   labels = rev(c("1979-1999", "2000-2010", "2011-2017")),
@@ -896,7 +894,7 @@ server <- function(input, output, session) {
                    # Convert Julian days into actual dates
                    date = origin + value, 
                    # Pretty version of the date for tooltips
-                   date_print = format(date, "%b %d"))
+                   date_print = make_date_label(date, input$language))
         
         # Update highcarts language options
         hcoptslang <- getOption("highcharter.lang")
@@ -927,7 +925,12 @@ server <- function(input, output, session) {
             hc_title(text = i18n()$t("Muuton ajoittumisen mediaanipäivämäärä")) %>% 
             hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                        shared = TRUE, xDateFormat = "%b %d",
-                       pointFormat = "{point.season} migration median date:<br> {point.date_print}") %>% 
+                       pointFormat = paste0("{point.season}",
+                                            # Not pretty, but needed for 
+                                            # compound words
+                                            ifelse(input$language == "fi", "", " "),
+                                            tolower(i18n()$t("Muuton ajoittumisen mediaanipäivämäärä")),
+                                            ":", "<br> {point.date_print}")) %>% 
             hc_exporting(enabled = TRUE) %>% 
             hc_chart(zoomType = "xy")
         
