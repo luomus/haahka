@@ -7,6 +7,9 @@ late than never-
 
 - Fix app title.
 - Median dates were in wrong order, fixed now.
+- Chart x-axis labels (months) are now correctly translated.
+- Translations updated.
+- Tooltip translations in median migration days handled correctly
 
 ### New features
 
@@ -16,14 +19,16 @@ late than never-
 - Language code can also be used an URL parameter, e.g.
   https://jlehtoma.shinyapps.io/halias-browser?species=accnis&language=en
   to share links directly to a given species and in correct language.
-
-This way links to species (in correct language) can be shared.
+- Two new helper funtions:
+    - `get_months()`: get short ot long month names in a give language.
+    - `make_date_label()`: use for constracting multi-language date labels.
 
 ### UI changes
 
 - Trophy icons are golden.
 - Temporary controls box removed.
 - Language selector is now in the main controls box, not in the sidebar.
+- Color schemes changed to darker hues.
 
 ## 0.1.5 (2019-01-02)
 
