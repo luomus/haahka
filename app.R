@@ -339,7 +339,35 @@ ui <- dashboardPage(
             
         ),
         tabItem(tabName = "info",
-                h1("foo")
+                fluidRow(
+                  column(width = 6,
+                         widgetUserBox(
+                           title = "Aineisto",
+                           subtitle = "Hangon lintuaseman pitkäaikaisaineisto",
+                           type = NULL,
+                           width = 12,
+                           src = "database.png",
+                           color = "navy-active",
+                           closable = FALSE,
+                           collapsible = FALSE,
+                           "Some text here!",
+                           footer = "The footer here!"
+                         )
+                  ),
+                  column(width = 6,
+                         widgetUserBox(
+                           title = "Verkkosvellus",
+                           subtitle = "Halias Browser",
+                           type = NULL,
+                           width = 12,
+                           src = "settings.png",
+                           color = "navy-active",
+                           closable = FALSE,
+                           "Some text here!",
+                           footer = "The footer here!"
+                         )
+                  )
+                )
         )
       )
     )
