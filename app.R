@@ -463,6 +463,10 @@ server <- function(input, output, session) {
                              tabName = "species", 
                              selected = TRUE,
                              icon = icon("binoculars")
+                    ),
+                    menuItem(i18n()$t("Tietoa sovelluksesta"), 
+                             tabName = "info", 
+                             icon = icon("question-circle")
                     )
         )
       
