@@ -28,6 +28,39 @@ get_languages <- function(x) {
     return(langs[[x]])
 }
 
+# Get month names in a given language
+# 
+get_months <- function(lang = "en", format) {
+    
+    supported_languages <- c("en", "fi")
+    
+    assertthat::assert_that(lang %in% supported_languages,
+                            msg = paste0("lang must be one of: ", 
+                                         paste(supported_languages, 
+                                               collapse = ", ")))
+    assertthat::assert_that(format %in% c("long", "short"),
+                            msg = "format must be either long or short")
+    
+    month_names <- list(
+        "short" = list(
+            "en" = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+                     "Oct", "Nov", "Dec"),
+            "fi" = c("Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä",
+                     "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu")
+        ),
+        "long" = list(
+            "en" = c("January", "February", "March", "April", "May", "June", 
+                     "July", "August", "September", "October", "November", 
+                     "December"),
+            "fi" = c("Tammikuu", "Helmikuu", "Maaliskuu", "Huhtikuu", 
+                     "Toukokuu", "Kesäkuu", "Heinäkuu", "Elokuu", "Syyskuu", 
+                     "Lokakuu", "Marraskuu", "Joulukuu")
+        )
+        
+    )
+    return(month_names[[format]][[lang]])
+}
+
 # Return numeric timestamp value based on a Date. Needed for highcharts 
 # x-axis settings and plotting.
 # 
