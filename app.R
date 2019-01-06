@@ -74,7 +74,19 @@ is_odd <- function(x) {
     assertthat::assert_that(is.numeric(x), length(x) == 1)
     x %% 2 == 1
 }
- 
+
+# Make a date label for tooltips with language support
+# 
+make_date_label <- function(x, lang) {
+    
+    assertthat::see_if(is(x, "Date"))
+    
+    # Get the name of month in a given language
+     month_name <- get_months(lang, "long")[lubridate::month(x)]
+     label <- glue::glue("{month_name} {day(x)}")
+     return(label)
+}
+
 # Parse description file
 # 
 parse_description <- function(style_name, text) {
