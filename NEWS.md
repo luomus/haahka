@@ -1,4 +1,4 @@
-## 0.2.0 (2019-XX-XX)
+## 0.2.0 (2019-01-06)
 
 - Minor number should've been increased already a while back, but it's better
 late than never-
