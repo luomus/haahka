@@ -1254,7 +1254,6 @@ server <- function(input, output, session) {
       sendSweetAlert(
         session = session,
         title = NULL,
-        type = "info",
         text = tagList(
           includeMarkdown(content_file)
         ),
