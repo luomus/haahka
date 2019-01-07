@@ -2,6 +2,7 @@ library(assertthat)
 library(glue)
 library(highcharter)
 library(lubridate)
+library(markdown)
 library(officer)
 library(RColorBrewer)
 library(shiny)
@@ -9,6 +10,7 @@ library(shiny.i18n)
 library(shinycssloaders)
 library(shinydashboard)
 library(shinydashboardPlus)
+library(shinyWidgets)
 library(tidyverse)
 library(tsibble)
 library(yaml)
@@ -315,7 +317,14 @@ ui <- dashboardPage(
                            box(
                                width = 12,
                                withSpinner(highchartOutput("migration", height = "300px"),
-                                           type = 8, size = 0.5)
+                                           type = 8, size = 0.5),
+                               actionButton(
+                                 inputId = "migration_info",
+                                 label = NULL,
+                                 icon = icon("info-circle",
+                                             class = "icon-info"),
+                                 class = "btn-info btn-small-info"
+                               )
                                
                            ),
                            box(
@@ -1233,6 +1242,24 @@ server <- function(input, output, session) {
         updateSelectInput(session, "species", label =  i18n()$t("Valitse laji"), 
                           choices = get_species_names(input$language), 
                           selected = input$species)
+    })
+    
+    observeEvent(input$migration_info, {
+      
+      req(input$language)
+      
+      content_file <- file.path("www", "infos", 
+                                paste0("migration_info-", input$language, ".md"))
+      
+      sendSweetAlert(
+        session = session,
+        title = NULL,
+        type = "info",
+        text = tagList(
+          includeMarkdown(content_file)
+        ),
+        html = TRUE
+      )
     })
 }
 
