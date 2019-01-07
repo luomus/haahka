@@ -49,6 +49,19 @@ div.record {
   color: #DAA520;  
 }
 
+.icon-info {
+  color: #fff;
+  font-size: 18px;
+}
+
+.btn-small-info {
+  /*background-color: rgb(60, 141, 188);*/
+  float: right;
+  height: 30px;
+  width: 30px;
+  padding: 0;
+}
+
 h4.record {
   font-weight: bold;
   text-align: center;
