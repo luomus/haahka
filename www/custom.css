@@ -72,6 +72,10 @@ h5.record {
   text-align: center;
 }
 
+.swal-content {
+  text-align: left;
+}
+
 .endnote {
   font-size: 14px;
   margin-left: 20px;
