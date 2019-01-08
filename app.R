@@ -1,4 +1,5 @@
 library(assertthat)
+library(ggsci)
 library(glue)
 library(highcharter)
 library(lubridate)
@@ -781,7 +782,7 @@ server <- function(input, output, session) {
                        hcaes(x = day, y = value, group = epoch),
                        # order of epochs c("begin", "end", "med")
                        name = c("1979-1999", "2000-2010", "2011-2017"),
-                       color = RColorBrewer::brewer.pal(3, "Dark2")) %>% 
+                       color = ggsci::pal_d3("category10")(3)) %>% 
                 hc_yAxis(title = list(text = i18n()$t("Yksilöä / havaintopäivä"))) %>% 
                 hc_xAxis(title = list(text = ""),
                          type = "datetime", 
@@ -964,7 +965,7 @@ server <- function(input, output, session) {
                    hcaes(x = date, y = epochnum, group = epoch),
                    # order of epochs c("begin", "end", "med")
                    name = c("1979-1999", "2000-2010", "2011-2017"),
-                   color = RColorBrewer::brewer.pal(3, "Dark2")) %>% 
+                   color = ggsci::pal_d3("category10")(3)) %>% 
             hc_yAxis(title = list(text = ""),
                      min = 0,
                      max = 2,
