@@ -1030,7 +1030,7 @@ server <- function(input, output, session) {
                            status = "info",
                            fluidRow(
                                column(
-                                   width = 6,
+                                   width = 12,
                                    tagList(
                                        h4(i18n()$t("Kevät"), class = "record")
                                    ),
@@ -1078,9 +1078,11 @@ server <- function(input, output, session) {
                                            )
                                        )
                                    )
-                               ),
+                               )
+                           ),
+                           fluidRow(
                                column(
-                                   width = 6,
+                                   width = 12,
                                    tagList(
                                        h4(i18n()$t("Syksy"), class = "record")
                                    ),
