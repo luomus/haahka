@@ -331,17 +331,38 @@ ui <- dashboardPage(
                            box(
                                width = 12,
                                withSpinner(highchartOutput("local", height = "300px"),
-                                           type = 8, size = 0.5)
+                                           type = 8, size = 0.5),
+                               actionButton(
+                                 inputId = "local_info",
+                                 label = NULL,
+                                 icon = icon("info-circle",
+                                             class = "icon-info"),
+                                 class = "btn-info btn-small-info"
+                               )
                            ),
                            box(
                                width = 12,
                                withSpinner(highchartOutput("change", height = "300px"),
-                                           type = 8, size = 0.5)
+                                           type = 8, size = 0.5),
+                               actionButton(
+                                 inputId = "change_info",
+                                 label = NULL,
+                                 icon = icon("info-circle",
+                                             class = "icon-info"),
+                                 class = "btn-info btn-small-info"
+                               )
                            ),
                            box(
                                width = 12,
                                withSpinner(highchartOutput("migration_medians", height = "200px"),
-                                           type = 8, size = 0.5)
+                                           type = 8, size = 0.5),
+                               actionButton(
+                                 inputId = "median_info",
+                                 label = NULL,
+                                 icon = icon("info-circle",
+                                             class = "icon-info"),
+                                 class = "btn-info btn-small-info"
+                               )
                            ),
                            uiOutput("change_numbers"),
                            uiOutput("records")
@@ -418,6 +439,19 @@ server <- function(input, output, session) {
     })
     
     # Helper functions ---------------------------------------------------------
+    
+    create_popup <- function(session, filebody, lang_suffix) {
+      content_file <- file.path("www", "infos", 
+                                paste0(filebody, lang_suffix, ".md"))
+      sendSweetAlert(
+        session = session,
+        title = NULL,
+        text = tagList(
+          includeMarkdown(content_file)
+        ),
+        html = TRUE
+      )
+    }
     
     no_images <- function(files) {
         if (length(files) == 0) {
@@ -1248,20 +1282,23 @@ server <- function(input, output, session) {
     })
     
     observeEvent(input$migration_info, {
-      
       req(input$language)
-      
-      content_file <- file.path("www", "infos", 
-                                paste0("migration_info-", input$language, ".md"))
-      
-      sendSweetAlert(
-        session = session,
-        title = NULL,
-        text = tagList(
-          includeMarkdown(content_file)
-        ),
-        html = TRUE
-      )
+      create_popup(session, "migration_info-", input$language) 
+    })
+    
+    observeEvent(input$local_info, {
+      req(input$language)
+      create_popup(session, "local_info-", input$language) 
+    })
+    
+    observeEvent(input$change_info, {
+      req(input$language)
+      create_popup(session, "change_info-", input$language) 
+    })
+    
+    observeEvent(input$median_info, {
+      req(input$language)
+      create_popup(session, "median_info-", input$language) 
     })
 }
 
