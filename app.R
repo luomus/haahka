@@ -309,7 +309,8 @@ ui <- dashboardPage(
                                column(width = 6,
                                       uiOutput("render_species")
                                ),
-                               column(width = 6
+                               column(width = 6,
+                                      uiOutput("render_citation")
                                )
                            )
                     )
@@ -574,6 +575,43 @@ server <- function(input, output, session) {
                         choices = spps,
                         selected = input$species)
         )
+    })
+    
+    # render_citation ----------------------------------------------------------
+    output$render_citation <- renderUI({
+      
+      req(input$language)
+      
+      now <- format(Sys.time(), format = "%Y-%m-%d")
+      this_year <- lubridate::year(now)
+      
+      title <- i18n()$t("Viittausohje")
+      text_fi <- glue::glue("Hangon lintuasema {this_year}: Asemalla havaittujen lintulajien esiintyminen. Versio {DATA_VERSION} [Viitattu {now}]")
+      text_se <- glue::glue("Hangö fågelstation {this_year}: Förekomst av arter vid fågelstationen.  Version {DATA_VERSION} [Nedladdad {now}]")
+      text_en <- glue::glue("Hanko Bird Observatory {this_year}: Occurrence of species at the observatory. Version {DATA_VERSION} [Cited {now}]")
+      
+      if (input$language == "fi") {
+        payload <- tagList(
+          strong(title),
+          p(text_fi,
+            br(),
+            text_en)
+        )  
+      } else if (input$language == "se") {
+        payload <- tagList(
+          strong(title),
+          p(text_se,
+            br(),
+            text_en)
+        )  
+      } else if (input$language == "en") {
+        payload <- tagList(
+          strong(title),
+          p(text_en)
+        )  
+      }
+      
+      return(payload)
     })
     
     # render_carousel ----------------------------------------------------------
