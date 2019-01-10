@@ -267,6 +267,13 @@ PB_LIST <- list(
 INTENDED_LANGUAGE <- "fi"
 
 
+jscode <-
+  '$(document).on("shiny:connected", function(e) {
+  var jsWidth = screen.width;
+  Shiny.onInputChange("GetScreenWidth",jsWidth);
+});
+'
+
 # UI ----------------------------------------------------------------------
 ui <- dashboardPage(
     
@@ -295,6 +302,7 @@ ui <- dashboardPage(
         tabItems(
             tabItem(tabName = "species",
             fluidPage(
+                tags$script(jscode),
                 fluidRow(
                     column(12,
                            box(width = 12,
@@ -354,8 +362,7 @@ ui <- dashboardPage(
                            ),
                            box(
                                width = 12,
-                               withSpinner(highchartOutput("migration_medians"),
-                                           type = 8, size = 0.5),
+                               uiOutput("render_median"),
                                actionButton(
                                  inputId = "median_info",
                                  label = NULL,
@@ -948,6 +955,23 @@ server <- function(input, output, session) {
                        )
         )
         return(payload)
+    })
+    
+    # render_median ------------------------------------------------------------
+    output$render_median <- renderUI({
+      
+      # Adjust height based on the initial screen size
+      screen_size <- input$GetScreenWidth
+      if (screen_size > 600) {
+        height <- "200px"
+      } else {
+        height <- NULL
+      }
+      
+      payload <- withSpinner(highchartOutput("migration_medians", 
+                                             height = height),
+                             type = 8, size = 0.5)
+      return(payload)
     })
     
     # migration_medians --------------------------------------------------------
