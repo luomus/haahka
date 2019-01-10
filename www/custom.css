@@ -23,6 +23,10 @@ body
   font-style: italic;  
 }
 
+.citation {
+  margin-left: 14px;
+}
+
 h3.description {
   margin-top: 0; 
 }

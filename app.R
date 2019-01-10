@@ -611,7 +611,7 @@ server <- function(input, output, session) {
         )  
       }
       
-      return(payload)
+      return(tagList(div(payload, class = "citation")))
     })
     
     # render_carousel ----------------------------------------------------------
