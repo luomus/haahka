@@ -451,14 +451,16 @@ server <- function(input, output, session) {
     create_popup <- function(session, filebody, lang_suffix) {
       content_file <- file.path("www", "infos", 
                                 paste0(filebody, lang_suffix, ".md"))
-      sendSweetAlert(
-        session = session,
-        title = NULL,
-        text = tagList(
-          includeMarkdown(content_file)
-        ),
-        html = TRUE
-      )
+      if (file.exists(content_file)) {
+        sendSweetAlert(
+          session = session,
+          title = NULL,
+          text = tagList(
+            includeMarkdown(content_file)
+          ),
+          html = TRUE
+        )  
+      }
     }
     
     no_images <- function(files) {
