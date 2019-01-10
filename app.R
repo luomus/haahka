@@ -354,7 +354,7 @@ ui <- dashboardPage(
                            ),
                            box(
                                width = 12,
-                               withSpinner(highchartOutput("migration_medians", height = "200px"),
+                               withSpinner(highchartOutput("migration_medians"),
                                            type = 8, size = 0.5),
                                actionButton(
                                  inputId = "median_info",
