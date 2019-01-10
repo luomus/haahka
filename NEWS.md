@@ -1,3 +1,24 @@
+## 0.2.1 (2019-01-XX)
+
+### Bug fixes
+
+- Median day graph height is now dynamically adjusted based on the viewport
+  size. This way it actually looks nice on mobile screens.
+
+### New features
+
+- Info buttons added for each graph. Clicking the button brings up a popup
+  containing more information on the graph.
+- Add citation instructions.
+
+### UI changes
+
+- Re-arrange the observation records layout.
+- Color-schemes changed for "change" and "median dates".
+- Species photos are now slightly smaller, because they were slightly too 
+  wide for mobile layout.
+
+
 ## 0.2.0 (2019-01-06)
 
 - Minor number should've been increased already a while back, but it's better
