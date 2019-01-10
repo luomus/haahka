@@ -634,7 +634,7 @@ server <- function(input, output, session) {
                 # If the file does exist, use tags instead of rendering the image
                 # directly. This way the browser will cache the image.
                 payload <- shiny::div(shiny::img(src = glue::glue("img/sp_images/{sp_abbr}/{sp_abbr}.jpg"),
-                                                 width = "95%", class = "description"),
+                                                 width = "90%", class = "description"),
                                       shiny::p(glue::glue("Ⓒ {photo_credit}"), 
                                                class = "description"),
                                       shiny::br())
