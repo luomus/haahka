@@ -1,3 +1,14 @@
+## 0.2.2 (2019-01-XX)
+
+### Bug fixes
+
+### New features
+
+- Swedish translations added.
+
+### UI changes
+
+
 ## 0.2.1 (2019-01-10)
 
 ### Bug fixes
