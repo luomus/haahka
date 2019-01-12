@@ -1,141 +1,161 @@
 {
   "cultural_date_format": "%d-%m-%Y",
-  "languages": ["fi", "en"],
+  "languages": ["fi", "en", "se"],
   "translation": [
     {
       "fi": "Kieli",
-      "en": "Language"
+      "en": "Language",
+      "se": "Språk"
       
     },
     {
       "fi": "Lajikohtaiset havainnot",
-      "en": "Species observations"
-      
-    },
-    {
-      "fi": "Viittausohje",
-      "en": "Citation"
-      
+      "en": "Species observations",
+      "se": "Observationer artvis"
     },
     {
       "fi": "Ohjeet",
-      "en": "Help"
-      
+      "en": "Help",
+      "se": "Instruktioner"
     },
     {
       "fi": "Sovellusversio",
-      "en": "App version"
-      
+      "en": "App version",
+      "se": "Version av app"
     },
     {
       "fi": "Aineistoversio",
-      "en": "Data version"
-      
+      "en": "Data version",
+      "se": "Version av data"
     },
     {
       "fi": "Valitse laji",
-      "en": "Select species"
-      
+      "en": "Select species",
+      "se": "Välj art"
     },
     {
       "fi": "Kuvaa ei löydy",
-      "en": "No image found"
+      "en": "No image found",
+      "se": "Bild hittas ej"
     },
     {
       "fi": "Kuvausta ei löydy",
-      "en": "No description found"
+      "en": "No description found",
+      "se": "Beskrivning hittas ej"
     },
     {
-      "fi": "Muuttavien keskiarvot",
-      "en": "Migration average"
+      "fi": "Muuttavien keskiarvot",  # Miksi ei "Muuttajamäärien keskiarvot"
+      "en": "Migration average",       # "Average numbers migrating"
+      "se": "Medelantal flyttande"
     },
     {
-      "fi": "Paikallisten keskiarvot",
-      "en": "Local average"
+      "fi": "Paikallisten keskiarvot",  # Paikallisten määrien keskiarvot
+      "en": "Local average",               # Average numbers of stationary birds
+      "se": "Medelantal stationära fåglar"
     },
     {
       "fi": "Yksilöä / havaintopäivä",
-      "en": "Individuals / obs. day "
+      "en": "Individuals / obs. day ",
+      "se": "Individer / observationsdag"
     },
     {
       "fi": "Runsauksien muutokset",
-      "en": "Change in abundance"
+      "en": "Change in abundance",
+      "se": "Förändringar i abundans"
     },
     {
       "fi": "Muuton ajoittumisen mediaanipäivämäärä",
-      "en": "Migration median date"
+      "en": "Migration median date",
+      "se": "Mediandatum för sträck"
     },
     {
       "fi": "Runsauden muutokset",
-      "en": "Change in abundance"
+      "en": "Change in abundance",
+      "se": "Förändring i abundans"
     },
     {
       "fi": "Pitkän aikavälin muutos = keskirunsauden muutos aikajaksolta 1979-1999 aikajaksolle 2011-2017.",
-      "en": "Long term change = change in average abundance from 1979-1999 to 2011-2017."
+      "en": "Long term change = change in average abundance from 1979-1999 to 2011-2017.",
+      "se": "Långfristig förändring = förändring i medelabundans från 1979-1999 till 2011-2017."
     },
     {
       "fi": "Lyhyen aikavälin muutos = keskirunsauden muutos aikajaksolta 2000-2010 aikajaksolle 2011-2017.",
-      "en": "Short term change = change in average abundance from 2000-2010 to 2011-2017."
+      "en": "Short term change = change in average abundance from 2000-2010 to 2011-2017.",
+      "se": "Kortfristig förändring = förändring i medelabundans från 2000-2010 till 2011-2017."
     },
     {
       "fi": "Pitkän aikavälin muutos",
-      "en": "Long term change"
+      "en": "Long term change",
+      "se":  "Långfristig förändring"
     },
     {
       "fi": "Lyhyen aikavälin muutos",
-      "en": "Short term change"
+      "en": "Short term change",
+      "se":  "Kortfristig förändring"
     },
     {
       "fi": "Vuosittaiset keskirunsaudet yhteensä",
-      "en": "Summed yearly average abundances"
+      "en": "Summed yearly average abundances",
+      "se":  "Summan av årliga medelabundanser"
     },
     {
       "fi": " ja ",
       "en": " and "
+      "se":  "och"
     },
     {
       "fi": "Runsausennätykset",
-      "en": "Abundance records"
+      "en": "Abundance records",
+      "se":  "Rekord; största antal"
     },
     {
       "fi": "Kevät",
-      "en": "Spring"
+      "en": "Spring",
+      "se":  "Vår"
     },
     {
       "fi": "Syksy",
-      "en": "Autumn"
+      "en": "Autumn",
+      "se":  "Höst"
     },
     {
       "fi": "Syys",
-      "en": "Autumn"
+      "en": "Autumn",
+      "se":  "Höst"
     },
     {
       "fi": "Muuttavat",
-      "en": "Migrating"
+      "en": "Migrating",
+      "se":  "Sträckande"
     },
     {
       "fi": "Paikalliset",
-      "en": "Locals"
+      "en": "Locals",
+      "se":  "Stationära"
     },
     {
       "fi": "Keskirunsaus",
-      "en": "Average abundance"
+      "en": "Average abundance",
+      "se":  "Medelabundans"
     },
     {
       "fi": "Ei kuvia tälle lajille",
-      "en": "No images found"
+      "en": "No images found",
+      "se":  "Bild hittas ej för denna art"
     },
     {
       "fi": "Aineisto",
       "en": "Data"
+      "se":  "Data"
     },
     {
       "fi": "Hangon lintuaseman pitkäaikaisaineisto",
-      "en": "Long term data from the Hanko Bird Observatory"
+      "en": "Long term data from the Hanko Bird Observatory",
+      "se": "Långtidsdata från Hangö fågelstation"
     },
     {
       "fi": "Verkkosovellus",
-      "en": "Web App"
-    }
+      "en": "Web App",
+      "se: "Webb app"
     ]
 }
