@@ -35,7 +35,7 @@ get_languages <- function(x) {
 # 
 get_months <- function(lang = "en", format) {
     
-    supported_languages <- c("en", "fi")
+    supported_languages <- c("en", "fi", "se")
     
     assertthat::assert_that(lang %in% supported_languages,
                             msg = paste0("lang must be one of: ", 
@@ -49,7 +49,9 @@ get_months <- function(lang = "en", format) {
             "en" = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
                      "Oct", "Nov", "Dec"),
             "fi" = c("Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä",
-                     "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu")
+                     "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu"),
+            "se" = c("Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep",
+                     "Okt", "Nov", "Dec")
         ),
         "long" = list(
             "en" = c("January", "February", "March", "April", "May", "June", 
@@ -57,7 +59,10 @@ get_months <- function(lang = "en", format) {
                      "December"),
             "fi" = c("Tammikuu", "Helmikuu", "Maaliskuu", "Huhtikuu", 
                      "Toukokuu", "Kesäkuu", "Heinäkuu", "Elokuu", "Syyskuu", 
-                     "Lokakuu", "Marraskuu", "Joulukuu")
+                     "Lokakuu", "Marraskuu", "Joulukuu"),
+            "se" = c("Januari", "Februari", "Mars", "April", "Maj", "Juni", 
+                     "Juli", "Augusti", "September", "Oktober", "November", 
+                     "December")
         )
         
     )
@@ -236,7 +241,8 @@ XMAX <- datetime_to_timestamp(as.Date('2000-12-31', tz = 'UTC'))
 # Year x-axis labels in languages different than English
 X_YEARLY_LABELS <- list(
     "fi" = get_months("fi", "short"),
-    "en" = get_months("en", "short")
+    "en" = get_months("en", "short"),
+    "se" = get_months("se", "short")
 )
 
 # Color of the plotBands (background bars for months) 
@@ -477,7 +483,9 @@ server <- function(input, output, session) {
                 name_field = "FIN_name"
             } else if (lang == "en") {
                 name_field = "ENG_name"
-            }
+            } else if (lang == "se") {
+            name_field = "SWE_name"
+          }
             
             sp_names <- sp_data %>% 
                 dplyr::filter(Sp == 1) %>% 
@@ -699,6 +707,8 @@ server <- function(input, output, session) {
                 common_name <- current_sp$ENG_name
             } else if (input$language == "fi") {
                 common_name <- current_sp$FIN_name
+            } else if (input$language == "se") {
+              common_name <- current_sp$SWE_name
             }
             
             # Try reading the description docx file
@@ -768,7 +778,7 @@ server <- function(input, output, session) {
                          plotBands = PB_LIST) %>% 
                 hc_plotOptions(line = list(marker = list(enabled = input$show_markers)),
                                spline = list(marker = list(enabled = input$show_markers))) %>% 
-                hc_title(text = i18n()$t("Muuttavien keskiarvot")) %>% 
+                hc_title(text = i18n()$t("Muuttajamäärien keskiarvot")) %>% 
                 hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                            xDateFormat = "%b %d") %>% 
                 hc_exporting(enabled = TRUE) %>% 
@@ -808,7 +818,7 @@ server <- function(input, output, session) {
                          dateTimeLabelFormats = list(month = '%b'),
                          tickInterval = X_AXIS_TIME_UNITS,
                          plotBands = PB_LIST) %>%
-                hc_title(text = i18n()$t("Paikallisten keskiarvot")) %>% 
+                hc_title(text = i18n()$t("Paikallisten määrien keskiarvot")) %>% 
                 hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
                            xDateFormat = "%b %d") %>% 
                 hc_exporting(enabled = TRUE) %>% 
