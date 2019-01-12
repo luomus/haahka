@@ -756,7 +756,7 @@ server <- function(input, output, session) {
             hc <- plot_data %>% 
                 hchart(type = "line", 
                        hcaes(x = day, y = value_avgs),
-                       name = i18n()$t("Muuttavien keskiarvot"),
+                       name = i18n()$t("Muuttajamäärien keskiarvot"),
                        color = "#1f78b4") %>% 
                 hc_yAxis(title = list(text = i18n()$t("Yksilöä / havaintopäivä"))) %>% 
                 hc_xAxis(title = list(text = ""),
@@ -798,7 +798,7 @@ server <- function(input, output, session) {
             hc <- plot_data %>% 
                 hchart(type = "line", 
                        hcaes(x = day, y = value_avgs),
-                       name = i18n()$t("Paikallisten keskiarvot"),
+                       name = i18n()$t("Paikallisten määrien keskiarvot"),
                        color = "#1f78b4") %>% 
                 hc_yAxis(title = list(text = i18n()$t("Yksilöä / havaintopäivä"))) %>% 
                 hc_xAxis(title = list(text = ""),
@@ -957,7 +957,7 @@ server <- function(input, output, session) {
                            ),
                            column(width = 12,
                                   descriptionBlock(
-                                      header = paste(i18n()$t("Vuosittaiset keskirunsaudet yhteensä")), 
+                                      header = paste(i18n()$t("Päivittäiset keskirunsaudet yhteensä")), 
                                       right_border = TRUE,
                                       margin_bottom = FALSE
                                   )

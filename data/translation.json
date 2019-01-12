@@ -44,13 +44,13 @@
       "se": "Beskrivning hittas ej"
     },
     {
-      "fi": "Muuttavien keskiarvot",  # Miksi ei "Muuttajamäärien keskiarvot"
-      "en": "Migration average",       # "Average numbers migrating"
+      "fi": "Muuttajamäärien keskiarvot",
+      "en": "Average numbers migrating",
       "se": "Medelantal flyttande"
     },
     {
-      "fi": "Paikallisten keskiarvot",  # Paikallisten määrien keskiarvot
-      "en": "Local average",               # Average numbers of stationary birds
+      "fi": "Paikallisten määrien keskiarvot",
+      "en": "Average numbers of stationary birds",
       "se": "Medelantal stationära fåglar"
     },
     {
@@ -86,67 +86,67 @@
     {
       "fi": "Pitkän aikavälin muutos",
       "en": "Long term change",
-      "se":  "Långfristig förändring"
+      "se": "Långfristig förändring"
     },
     {
       "fi": "Lyhyen aikavälin muutos",
       "en": "Short term change",
-      "se":  "Kortfristig förändring"
+      "se": "Kortfristig förändring"
     },
     {
-      "fi": "Vuosittaiset keskirunsaudet yhteensä",
-      "en": "Summed yearly average abundances",
-      "se":  "Summan av årliga medelabundanser"
+      "fi": "Päivittäiset keskirunsaudet yhteensä",
+      "en": "Summed daily average abundances",
+      "sw": "Summan av dagliga medelabundanser"
     },
     {
       "fi": " ja ",
-      "en": " and "
-      "se":  "och"
+      "en": " and ",
+      "se": " och "
     },
     {
       "fi": "Runsausennätykset",
       "en": "Abundance records",
-      "se":  "Rekord; största antal"
+      "se": "Rekord; största antal"
     },
     {
       "fi": "Kevät",
       "en": "Spring",
-      "se":  "Vår"
+      "se": "Vår"
     },
     {
       "fi": "Syksy",
       "en": "Autumn",
-      "se":  "Höst"
+      "se": "Höst"
     },
     {
       "fi": "Syys",
       "en": "Autumn",
-      "se":  "Höst"
+      "se": "Höst"
     },
     {
       "fi": "Muuttavat",
       "en": "Migrating",
-      "se":  "Sträckande"
+      "se": "Sträckande"
     },
     {
       "fi": "Paikalliset",
       "en": "Locals",
-      "se":  "Stationära"
+      "se": "Stationära"
     },
     {
       "fi": "Keskirunsaus",
       "en": "Average abundance",
-      "se":  "Medelabundans"
+      "se": "Medelabundans"
     },
     {
       "fi": "Ei kuvia tälle lajille",
       "en": "No images found",
-      "se":  "Bild hittas ej för denna art"
+      "se": "Bild hittas ej för denna art"
     },
     {
       "fi": "Aineisto",
-      "en": "Data"
-      "se":  "Data"
+      "en": "Data",
+      "se": "Data"
     },
     {
       "fi": "Hangon lintuaseman pitkäaikaisaineisto",
@@ -156,6 +156,7 @@
     {
       "fi": "Verkkosovellus",
       "en": "Web App",
-      "se: "Webb app"
+      "se": "Webb app"
+    }
     ]
 }
