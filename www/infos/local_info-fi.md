@@ -1,4 +1,4 @@
-### Paikallisten keskiarvot
+### Paikallisten määrien keskiarvot
   
 #### Mitä kuvaajassa on?
 

@@ -1,4 +1,4 @@
-### Muuton ajaoittumisen mediaanipäivämäärä
+### Muuton ajoittumisen mediaanipäivämäärä
 
 #### Mitä kuvaajassa on?
 

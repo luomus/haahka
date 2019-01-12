@@ -1,4 +1,4 @@
-### Muuttavien keskiarvot
+### Muuttajamäärien keskiarvot
   
 #### Mitä kuvaajassa on?
 
