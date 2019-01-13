@@ -1,6 +1,6 @@
 {
   "cultural_date_format": "%d-%m-%Y",
-  "languages": ["fi", "en", "se"],
+  "languages": ["fi", "se", "en"],
   "translation": [
     {
       "fi": "Kieli",
