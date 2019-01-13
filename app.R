@@ -274,7 +274,8 @@ PB_LIST <- list(
 # Needed for tracking the language state
 INTENDED_LANGUAGE <- "fi"
 
-
+# This Javascript is needed for resizing the median day graph dynamically 
+# depeding on the size of the current viewport
 jscode <-
   '$(document).on("shiny:connected", function(e) {
   var jsWidth = screen.width;
@@ -310,6 +311,7 @@ ui <- dashboardPage(
         tabItems(
             tabItem(tabName = "species",
             fluidPage(
+                # Inject the JS bit
                 tags$script(jscode),
                 fluidRow(
                     column(12,
