@@ -633,8 +633,8 @@ server <- function(input, output, session) {
       return(tagList(div(payload, class = "citation")))
     })
     
-    # image --------------------------------------------------------------------
-    output$image <- renderUI({
+    # render_image -------------------------------------------------------------
+    output$render_image <- renderUI({
         
         current_sp <- get_current_sp()
 
@@ -692,7 +692,7 @@ server <- function(input, output, session) {
                         shiny::h2(common_name, class = "description"),
                         shiny::h3(sci_name, class = "description sci-name"),
                         shiny::br(),
-                        uiOutput("image"),
+                        uiOutput("render_image"),
                         docx_content %>% 
                             dplyr::rowwise() %>% 
                             do(row = parse_description(.$style_name, .$text)) %>% 
@@ -705,7 +705,7 @@ server <- function(input, output, session) {
                         shiny::h2(common_name, class = "description"),
                         shiny::h3(sci_name, class = "description sci-name"),
                         shiny::br(),
-                        uiOutput("image"),
+                        uiOutput("render_image"),
                         shiny::p(i18n()$t("Kuvausta ei löydy"), class = "description")
                     )
                 )
