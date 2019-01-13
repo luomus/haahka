@@ -9,6 +9,7 @@
 
 ### UI changes
 
+- Author name, email and license now in sidebar footer.
 
 ## 0.2.1 (2019-01-10)
 
