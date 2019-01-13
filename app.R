@@ -479,14 +479,6 @@ server <- function(input, output, session) {
       }
     }
     
-    no_images <- function(files) {
-        if (length(files) == 0) {
-            i18n()$t("Ei kuvia tälle lajille")
-        } else {
-            NULL
-        }
-    }
-    
     get_species_names <- function(lang) {
         if (!is.null(lang)) {
             if (lang == "fi") {
