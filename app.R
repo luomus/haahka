@@ -1221,6 +1221,18 @@ server <- function(input, output, session) {
     # render_helpsections ------------------------------------------------------
     output$render_helpsections <- renderUI({
       
+        data_help_file <- file.path("www", "helps", 
+                                    paste0("data_help-", input$language, ".md"))
+        if (file.exists(data_help_file)) {
+          data_help_content <- tagList(
+                div(class = "help-container",
+                    includeMarkdown(data_help_file)
+              )
+          )
+        } else {
+          data_help_content <- ""
+        }
+      
         payload <- tagList(
           fluidRow(
             column(width = 6,
@@ -1233,8 +1245,7 @@ server <- function(input, output, session) {
                      color = "navy-active",
                      closable = FALSE,
                      collapsible = FALSE,
-                     "Some text here!",
-                     footer = "The footer here!"
+                     data_help_content
                    )
             ),
             column(width = 6,
