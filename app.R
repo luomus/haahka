@@ -327,7 +327,7 @@ ui <- dashboardPage(
                     column(6,
                            box(
                                width = 12,
-                               withSpinner(uiOutput("description"), type = 8, 
+                               withSpinner(uiOutput("render_description"), type = 8, 
                                            size = 0.5)
                            )
                     ),
@@ -662,8 +662,8 @@ server <- function(input, output, session) {
         }        
     })
     
-    # description --------------------------------------------------------------
-    output$description <- renderUI({
+    # render_description -------------------------------------------------------
+    output$render_description <- renderUI({
         
         current_sp <- get_current_sp()
         
