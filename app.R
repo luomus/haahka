@@ -653,26 +653,6 @@ server <- function(input, output, session) {
         return(payload)
     })
     
-    # render_image -------------------------------------------------------------
-    output$render_image <- renderUI({
-        
-        imgs <- get_images()
-        
-        if (length(imgs) == 0) {
-            collapsed = TRUE           
-        } else {
-            collapsed = FALSE
-        }
-        
-        payload <- tagList(
-            box(
-                width = 12, collapsible = TRUE, collapsed = collapsed,
-                uiOutput("image")
-            )
-        )
-        return(payload)
-    })
-    
     # image --------------------------------------------------------------------
     output$image <- renderUI({
         
