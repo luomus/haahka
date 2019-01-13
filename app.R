@@ -633,26 +633,6 @@ server <- function(input, output, session) {
       return(tagList(div(payload, class = "citation")))
     })
     
-    # render_carousel ----------------------------------------------------------
-    output$render_carousel <- renderUI({
-        
-        imgs <- get_images()
-        
-        if (length(imgs) == 0) {
-            collapsed = TRUE           
-        } else {
-            collapsed = FALSE
-        }
-        
-        payload <- tagList(
-            box(
-                width = 12, collapsible = TRUE, collapsed = collapsed,
-                slickROutput("image_slider")
-            )
-        )
-        return(payload)
-    })
-    
     # image --------------------------------------------------------------------
     output$image <- renderUI({
         
