@@ -162,6 +162,11 @@
       "fi": "Verkkosovellus",
       "en": "Web App",
       "se": "Webb app"
+    },
+    {
+      "fi": "Lisenssi",
+      "en": "License",
+      "se": "Licens"
     }
     ]
 }

@@ -221,6 +221,8 @@ METADATA <- yaml::yaml.load_file("DESCRIPTION")
 VERSION <- METADATA[["Version"]]
 REPO_URL <- METADATA[["URL"]]
 LICENSE <- METADATA[["License"]]
+AUTHOR <- METADATA[["Author"]]
+AUTHOREMAIL <- METADATA[["AuthorEmail"]]
 
 # FIXME: hard coded for now
 DATA_VERSION <- 1.1
@@ -560,7 +562,14 @@ server <- function(input, output, session) {
                 br(),
                 br(),
                 a(href = REPO_URL,
-                  gsub("https://", "", REPO_URL))
+                  gsub("https://", "", REPO_URL)),
+                br(),
+                br(),
+                "© 2018 ",
+                a(href = paste0("mailto:", AUTHOREMAIL), AUTHOR),
+                br(),
+                a(href = "https://opensource.org/licenses/MIT", "MIT"),
+                paste0(" ", tolower(i18n()$t("Lisenssi")))
             ),
             HTML("</footer>")
         )
