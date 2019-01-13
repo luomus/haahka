@@ -399,7 +399,9 @@ ui <- dashboardPage(
 # Server ------------------------------------------------------------------
 server <- function(input, output, session) {
     
-    # Reactives ---------------------------------------------------------------
+    # REACTIVES ----------------------------------------------------------------
+    
+    # i18n() -------------------------------------------------------------------
     i18n <- reactive({
         selected <- input$language
         
@@ -410,17 +412,20 @@ server <- function(input, output, session) {
         return(translator)
     })
     
+    # get_current_sp -----------------------------------------------------------
     get_current_sp <- reactive({
         shiny::req(input$species)
         
         return(dplyr::filter(sp_data, Sci_name == input$species))
     })
     
+    # get_current_data ---------------------------------------------------------
     get_current_data <- reactive({
         sp_current <- get_current_sp()
         return(dplyr::filter(dat, sp == sp_current$Species_Abb) )
     })
     
+    # get_current_records ------------------------------------------------------
     get_current_records <- reactive({
         sp_current <- get_current_sp()
         current_stats <- record_stats %>% 
@@ -428,6 +433,7 @@ server <- function(input, output, session) {
         return(current_stats)
     })
     
+    # get_current_stats --------------------------------------------------------
     get_current_stats <- reactive({
         sp_current <- get_current_sp()
         current_stats <- abundance_stats %>% 
@@ -435,6 +441,7 @@ server <- function(input, output, session) {
         return(current_stats)
     })
     
+    # get_images ---------------------------------------------------------------
     get_images <- reactive({
         current_sp <- get_current_sp()    
         
@@ -448,13 +455,14 @@ server <- function(input, output, session) {
         return(imgs)
     })
     
+    # get_species_abbr ---------------------------------------------------------
     get_species_abbr <- reactive({
         current_sp <- get_current_sp()    
         sp_abbr <- tolower(current_sp$Species_Abb)
         return(sp_abbr)
     })
     
-    # Helper functions ---------------------------------------------------------
+    # HELPERS ------------------------------------------------------------------
     
     create_popup <- function(session, filebody, lang_suffix) {
       content_file <- file.path("www", "infos", 
@@ -510,7 +518,7 @@ server <- function(input, output, session) {
         }
     }
     
-    # Outputs ------------------------------------------------------------------
+    # OUTPUTS ------------------------------------------------------------------
     
     # render_lanugage ----------------------------------------------------------
     output$render_language <- renderUI({
@@ -1254,7 +1262,7 @@ server <- function(input, output, session) {
       return(payload)
     })
     
-    # Observers ----------------------------------------------------------------
+    # OBSERVERS ----------------------------------------------------------------
     
     # Update values based on an URL query
     observe({
