@@ -8,7 +8,6 @@ muuttoajankohta siirtynyt ja onko lajin runsaudessa tapahtunut muutoksia.
 
 #### Miten luvut on laskettu?
 
-Kuvaajassa esitetään lajin päiväkohtaiset muuttajien ja paikallisten keskirunsauksia kolmella 
+Kuvaajassa esitetään lajin päiväkohtaiset muuttajien ja paikallisten keskirunsaudet kolmella 
 eri aikajaksolla. Päiväkohtaiset arvot on laskettu jakamalla kalenteripäivän muutto- ja 
-paikallismäärien summat kyseisen kalenteripäivän havaintopäivämäärien lukumäärällä. Klikkaamalla 
-kuvaajan alla olevia vuosilukujaksoja, voit valita mitkä jaksot näkyvät kuvaajassa.
+paikallismäärien summat kyseisen kalenteripäivän havaintopäivämäärien lukumäärällä. Klikkaamalla kuvaajan alla olevia vuosilukujaksoja, voit valita mitkä jaksot näkyvät kuvaajassa.
