@@ -6,6 +6,7 @@
 
 - Swedish translations added (info popups still missing).
 - English translations for graph info popups added.
+- Help page content added.
 
 ### UI changes
 
