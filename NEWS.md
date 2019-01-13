@@ -4,7 +4,8 @@
 
 ### New features
 
-- Swedish translations added.
+- Swedish translations added (info popups still missing).
+- English translations for graph info popups added.
 
 ### UI changes
 
