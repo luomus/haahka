@@ -95,6 +95,18 @@ make_date_label <- function(x, lang) {
      return(label)
 }
 
+# Parse author
+#
+# Convert normal name to citation format, e.g. "Aki Aintila" to "Aintila, A"
+# FIXME: won't work with names other than "FIRSTNAME LASTNAME"
+#
+parse_author <- function(x) {
+  tokens <- unlist(strsplit(x, " "))
+  initial <- paste0(substring(tokens[1], 1, 1), ".")
+  return(paste(c(tokens[2], initial), collapse = ", "))
+}
+
+
 # Parse description file
 # 
 parse_description <- function(style_name, text) {
@@ -214,6 +226,9 @@ record_stats <- readr::read_csv("data/Halias_record20181230.csv") %>%
 # Translation data
 translator <- shiny.i18n::Translator$new(translation_json_path = "data/translation.json")
 
+# Text and image metadata
+metadata <- readr::read_csv("data/text_and_image_reference.csv")
+
 # Global variables --------------------------------------------------------
 
 # Get the app metadata from the DESCRIPTION file
@@ -226,9 +241,7 @@ AUTHOREMAIL <- METADATA[["AuthorEmail"]]
 
 # FIXME: hard coded for now
 DATA_VERSION <- 1.1
-
-# Get photo credits
-PHOTO_CREDITS <- yaml::yaml.load_file("www/img/sp_images/attribution.yaml")
+DATA_URL <- "https://www.tringa.fi/hangon-lintuasema/hankodata/"
 
 # Define the size of the tiling window for data averaging
 WINDOW_SIZE <- 5
@@ -319,8 +332,7 @@ ui <- dashboardPage(
                                column(width = 6,
                                       uiOutput("render_species")
                                ),
-                               column(width = 6,
-                                      uiOutput("render_citation")
+                               column(width = 6
                                )
                            )
                     )
@@ -425,6 +437,14 @@ server <- function(input, output, session) {
     get_current_data <- reactive({
         sp_current <- get_current_sp()
         return(dplyr::filter(dat, sp == sp_current$Species_Abb) )
+    })
+    
+    # get_current_meta ---------------------------------------------------------
+    get_current_meta <- reactive({
+      sp_current <- get_current_sp()
+      current_meta <-  metadata %>% 
+        dplyr::filter(Lajilyhenne == sp_current$Species_Abb)
+      return(current_meta)
     })
     
     # get_current_records ------------------------------------------------------
@@ -603,36 +623,46 @@ server <- function(input, output, session) {
       
       req(input$language)
       
+      current_meta <- get_current_meta()
+      current_sp <- get_current_sp()
+      
+      # Define metadata for the selected species
+      author <- parse_author(current_meta$Kirjoittaja)
+      year <- current_meta$Vuosi
+      data_version <- current_meta$Aineistoversio
       now <- format(Sys.time(), format = "%Y-%m-%d")
-      this_year <- lubridate::year(now)
       
       title <- i18n()$t("Viittausohje")
-      text_fi <- glue::glue("Hangon lintuasema {this_year}: Asemalla havaittujen lintulajien esiintyminen. Versio {DATA_VERSION} [Viitattu {now}]")
-      text_se <- glue::glue("Hangö fågelstation {this_year}: Förekomst av arter vid fågelstationen.  Version {DATA_VERSION} [Nedladdad {now}]")
-      text_en <- glue::glue("Hanko Bird Observatory {this_year}: Occurrence of species at the observatory. Version {DATA_VERSION} [Cited {now}]")
-      
+      text_fi <- glue::glue("{author} {year}: {current_sp$FIN_name}. ",
+                            "Julkaisussa: Hangon lintuasema: Asemalla havaittujen lintulajien esiintyminen. ",
+                            "Versio {data_version} [{DATA_URL}] [Viitattu {now}]")
+      #text_se <- glue::glue("Hangö fågelstation {this_year}: Förekomst av arter vid fågelstationen.  Version {DATA_VERSION} [Nedladdad {now}]")
+      text_en <- glue::glue("{author} {year}: {current_sp$ENG_name}. ",
+                            "In: Hanko Bird Observatory: Occurrence of species at the observatory. ",
+                            "Version {data_version} [{DATA_URL}] [Cited {now}]")
+            
       if (input$language == "fi") {
         payload <- tagList(
-          strong(title),
+          h4(title),
           p(text_fi,
             br(),
             text_en)
         )  
       } else if (input$language == "se") {
         payload <- tagList(
-          strong(title),
+          h4(title),
           p(text_se,
             br(),
             text_en)
         )  
       } else if (input$language == "en") {
         payload <- tagList(
-          strong(title),
+          h4(title),
           p(text_en)
         )  
       }
       
-      return(tagList(div(payload, class = "citation")))
+      return(tagList(div(payload, class = "description")))
     })
     
     # render_image -------------------------------------------------------------
@@ -672,6 +702,7 @@ server <- function(input, output, session) {
     output$render_description <- renderUI({
         
         current_sp <- get_current_sp()
+        current_meta <- get_current_meta()
         
         if (!is.null(current_sp)) {
             # Define species names
@@ -704,7 +735,9 @@ server <- function(input, output, session) {
                         docx_content %>% 
                             dplyr::rowwise() %>% 
                             do(row = parse_description(.$style_name, .$text)) %>% 
-                            as.list()
+                            as.list(),
+                        br(),
+                        uiOutput("render_citation")
                     )
                 )
             } else {
