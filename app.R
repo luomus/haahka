@@ -636,7 +636,9 @@ server <- function(input, output, session) {
       text_fi <- glue::glue("{author} {year}: {current_sp$FIN_name}. ",
                             "Julkaisussa: Hangon lintuasema: Asemalla havaittujen lintulajien esiintyminen. ",
                             "Versio {data_version} [{DATA_URL}] [Viitattu {now}]")
-      #text_se <- glue::glue("Hangö fågelstation {this_year}: Förekomst av arter vid fågelstationen.  Version {DATA_VERSION} [Nedladdad {now}]")
+      text_se <- glue::glue("{author} {year}: {current_sp$SWE_name}. ",
+                            "I: Hangö fågelstation: Förekomst av arter vid fågelstationen.",
+                            "Version {data_version} [{DATA_URL}] [Citerad {now}]")
       text_en <- glue::glue("{author} {year}: {current_sp$ENG_name}. ",
                             "In: Hanko Bird Observatory: Occurrence of species at the observatory. ",
                             "Version {data_version} [{DATA_URL}] [Cited {now}]")
