@@ -671,6 +671,7 @@ server <- function(input, output, session) {
     output$render_image <- renderUI({
         
         current_sp <- get_current_sp()
+        current_meta <- get_current_meta()
 
         if (!is.null(current_sp)) {
             sp_abbr <- current_sp$Species_Abb
@@ -683,14 +684,16 @@ server <- function(input, output, session) {
             
             if (length(img_file) > 0 && file.exists(img_file)) {
                 # Photo credit
-                photo_credit <- PHOTO_CREDITS[[sp_abbr]]
+                photo_credit <- current_meta$Kuvaaja
+                photo_date <- current_meta$Päivämäärä
+                photo_date <- ifelse(is.na(photo_date), "", paste0("(", photo_date, ")"))
                 # Get file basename
                 file_basename <- basename(img_file)
                 # If the file does exist, use tags instead of rendering the image
                 # directly. This way the browser will cache the image.
                 payload <- shiny::div(shiny::img(src = glue::glue("img/sp_images/{sp_abbr}/{file_basename}"),
                                                  width = "90%", class = "description"),
-                                      shiny::p(glue::glue("Ⓒ {photo_credit}"), 
+                                      shiny::p(glue::glue("Ⓒ {photo_credit} {photo_date}"), 
                                                class = "description"),
                                       shiny::br())
             } else {
