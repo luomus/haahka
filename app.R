@@ -641,18 +641,22 @@ server <- function(input, output, session) {
         current_sp <- get_current_sp()
 
         if (!is.null(current_sp)) {
-            sp_abbr <- tolower(current_sp$Species_Abb)
+            sp_abbr <- current_sp$Species_Abb
             
             # The actual file path is needed to figure out if the file exists
-            img_file <- file.path("www", "img", "sp_images", sp_abbr, 
-                                  paste0(sp_abbr, ".jpg"))
+            # FIXME: does not work with multiple files!
+            img_file <- list.files(file.path("www", "img", "sp_images", sp_abbr),
+                                   pattern = paste0("[0-9]{3}-(", sp_abbr, ")"),
+                                   full.names = TRUE)
             
-            if (file.exists(img_file)) {
+            if (length(img_file) > 0 && file.exists(img_file)) {
                 # Photo credit
                 photo_credit <- PHOTO_CREDITS[[sp_abbr]]
+                # Get file basename
+                file_basename <- basename(img_file)
                 # If the file does exist, use tags instead of rendering the image
                 # directly. This way the browser will cache the image.
-                payload <- shiny::div(shiny::img(src = glue::glue("img/sp_images/{sp_abbr}/{sp_abbr}.jpg"),
+                payload <- shiny::div(shiny::img(src = glue::glue("img/sp_images/{sp_abbr}/{file_basename}"),
                                                  width = "90%", class = "description"),
                                       shiny::p(glue::glue("Ⓒ {photo_credit}"), 
                                                class = "description"),
@@ -671,7 +675,7 @@ server <- function(input, output, session) {
         
         if (!is.null(current_sp)) {
             # Define species names
-            sp_abbr <- tolower(current_sp$Species_Abb)
+            sp_abbr <- current_sp$Species_Abb
             sci_name <- current_sp$Sci_name
             
             if (input$language == "en") {
@@ -683,9 +687,11 @@ server <- function(input, output, session) {
             }
             
             # Try reading the description docx file
-            docx_file <- file.path("data", "descriptions", paste0(tolower(sp_abbr), ".docx"))
+            docx_file <- list.files(file.path("data", "descriptions"),
+                                    pattern = paste0("[0-9]{3}-(", sp_abbr, ")"),
+                                    full.names = TRUE)
             
-            if (file.exists(docx_file)) {
+            if (length(docx_file) > 0 && file.exists(docx_file)) {
                 
                 docx_content <- officer::docx_summary(officer::read_docx(docx_file))
                 
