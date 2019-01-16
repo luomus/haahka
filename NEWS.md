@@ -1,16 +1,27 @@
-## 0.2.2 (2019-01-XX)
+## 0.3.0 (2019-01-16)
+
+- Major update content-wise: 10 new species added and the app is ready for some
+  demo time.
 
 ### Bug fixes
+
+- Remove tons of redundant functions and code.
 
 ### New features
 
 - Swedish translations added (info popups still missing).
 - English translations for graph info popups added.
 - Help page content added.
+- Metadata (description author and photographer identities) are now read
+  from a separate CSV file. This data is used to generate correct citation 
+  guide.
+- Add help text on data (not on the app yet).
 
 ### UI changes
 
 - Author name, email and license now in sidebar footer.
+- Citation guide now refers to the written description, not data itself.
+- Show description only if language is Finnish.
 
 ## 0.2.1 (2019-01-10)
 
