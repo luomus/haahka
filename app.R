@@ -679,7 +679,7 @@ server <- function(input, output, session) {
             # The actual file path is needed to figure out if the file exists
             # FIXME: does not work with multiple files!
             img_file <- list.files(file.path("www", "img", "sp_images", sp_abbr),
-                                   pattern = paste0("[0-9]{3}-(", sp_abbr, ")"),
+                                   pattern = paste0("[0-9]{3}(-|_)(", sp_abbr, ")"),
                                    full.names = TRUE)
             
             if (length(img_file) > 0 && file.exists(img_file)) {
