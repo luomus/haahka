@@ -727,7 +727,7 @@ server <- function(input, output, session) {
                                     pattern = paste0("[0-9]{3}-(", sp_abbr, ")"),
                                     full.names = TRUE)
             
-            if (length(docx_file) > 0 && file.exists(docx_file)) {
+            if (length(docx_file) > 0 && file.exists(docx_file) && input$language == "fi") {
                 
                 docx_content <- officer::docx_summary(officer::read_docx(docx_file))
                 
