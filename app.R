@@ -115,7 +115,20 @@ parse_description <- function(style_name, text) {
     if (style_name == "No Spacing" & text != "") {
         element <- shiny::p(text, class = "description")
     } else if (style_name == "Endnote Text" & text != "") {
-        element <- shiny::p(text, class = "endnote")
+        # Make hyperlinks acutal hyperlinks
+        if (grepl("http", text)) {
+          # Get rid of the unneed prefix/suffix characters
+          text <- gsub("(<|>)", "", text)
+          url_pattern <- "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
+          url <- stringr::str_extract(text, url_pattern)
+          # Contsruct valid HTML
+          text <- gsub(url, paste0("<a href='", url, "'>", url, "</a>"), text)
+          text <- paste0("<p class='endnote'>", text, "</p>")
+          element <- shiny::HTML(text)
+        } else {
+          element <- shiny::p(text, class = "endnote")
+        }
+        
     } else if (style_name == "Heading 3" & text != "") {
         element <- shiny::h4(text, class = "description")
     } else {
