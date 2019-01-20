@@ -227,8 +227,13 @@ record_stats <- readr::read_csv("data/Halias_record20181230.csv") %>%
 translator <- shiny.i18n::Translator$new(translation_json_path = "data/translation.json")
 
 # Text and image metadata
-metadata <- readr::read_csv("data/text_and_image_reference.csv")
-
+metadata <- readr::read_csv("data/text_and_image_reference.csv") %>% 
+  # Rename Kuvauspaikka
+  dplyr::rename(Kuvauspaikka = dplyr::starts_with("Kuvauspaikka")) %>% 
+  # If kuvauspaikka is NA, the place is Halias
+  dplyr::mutate(Kuvauspaikka = ifelse(is.na(Kuvauspaikka), 
+                                      "Halias", Kuvauspaikka))
+  
 # Global variables --------------------------------------------------------
 
 # Get the app metadata from the DESCRIPTION file
@@ -686,14 +691,18 @@ server <- function(input, output, session) {
                 # Photo credit
                 photo_credit <- current_meta$Kuvaaja
                 photo_date <- current_meta$Päivämäärä
-                photo_date <- ifelse(is.na(photo_date), "", paste0("(", photo_date, ")"))
+                photo_date <- ifelse(is.na(photo_date), "", photo_date)
+                photo_place <- current_meta$Kuvauspaikka
+                photo_date_place <- paste0("(", 
+                                           paste0(c(photo_date, photo_place),
+                                                  collapse = ", "), ")")
                 # Get file basename
                 file_basename <- basename(img_file)
                 # If the file does exist, use tags instead of rendering the image
                 # directly. This way the browser will cache the image.
                 payload <- shiny::div(shiny::img(src = glue::glue("img/sp_images/{sp_abbr}/{file_basename}"),
                                                  width = "90%", class = "description"),
-                                      shiny::p(glue::glue("Ⓒ {photo_credit} {photo_date}"), 
+                                      shiny::p(glue::glue("Ⓒ {photo_credit} {photo_date_place}"), 
                                                class = "description"),
                                       shiny::br())
             } else {
