@@ -1,9 +1,9 @@
-### **Medelantal sträckande**
+### Muuttajamäärien keskiarvot
+  
+#### Mitä kuvaajassa on?
 
-#### Vad visar grafen?
+Kuvaaja näyttää, kuinka monta tarkastelemasi lajin muuttavaa yksilöä on keskimäärin havaittu tiettynä kalenteripäivänä. Kuvaajan avulla voit hahmottaa esimerkiksi lajin keskimääräisen kevät- ja syysmuuton ajoittumisen. 
+  
+#### Miten luvut on laskettu?
 
-Grafen visar hur många sträckande individer av vald art har observerats i snitt under givna datum.  Med hjälp av grafen kan du gestalta t.ex. när den valda artens vår- och höststreck inträffar i medeltal.
-
-#### Hur har detta räknats ut?
-
-De dagliga värdena har räknats med att för varje tidsintervall dividera totalantalet sträckande individer från ett givet datum med antalet aktuella observationsdagar för det datum. För att grafen skall vara enklare att tolka, visas värdena som fem dagars medeltal.
+Kuvaajan arvot on laskettu jakamalla kalenteripäivän muuttajamäärien summat kyseisen kalenteripäivän havaintopäivämäärien lukumäärällä. Jotta kuvaajaa olisi helpompi tarkastella, esitetään arvot viiden päivän keskiarvoina. 

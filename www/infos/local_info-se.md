@@ -1,4 +1,4 @@
-### **Medelantal stationära fåglar**
+### Medelantal stationära fåglar
 
 #### Vad visar grafen?
 

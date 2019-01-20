@@ -1,4 +1,4 @@
-### **Mediandatum för sträck**
+### Mediandatum för sträck
 
 #### Vad visar grafen?
 

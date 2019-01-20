@@ -1,4 +1,4 @@
-### **Förändringar i abundans**
+### Förändringar i abundans
 
 #### Vad visar grafen?
 
