@@ -1,3 +1,13 @@
+## 0.3.1 (2019-01-XX)
+
+### Bug fixes
+
+### New features
+
+- Info popups translated to Swedish.
+
+### UI changes
+
 ## 0.3.0 (2019-01-16)
 
 - Major update content-wise: 10 new species added and the app is ready for some
