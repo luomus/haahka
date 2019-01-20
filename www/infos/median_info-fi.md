@@ -10,3 +10,4 @@ syysesiintymisessä tapahtunut muutosta.
 #### Miten luvut on laskettu?
 
 Lajista ja sen muuttokäyttäytymisestä rippuen, mediaani lasketaan lajista riippuen joko muutto- tai paikallisaineistosta tai näiden yhdistelmästä.
+
