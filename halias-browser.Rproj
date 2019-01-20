@@ -13,5 +13,3 @@ RnwWeave: knitr
 LaTeX: XeLaTeX
 
 AutoAppendNewline: Yes
-
-QuitChildProcessesOnExit: Yes
