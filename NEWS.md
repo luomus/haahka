@@ -1,10 +1,21 @@
 ## 0.3.1 (2019-01-XX)
 
+- Following species added (description and photo):
+  - ANSALB
+  - ANSFAB
+  
+- Following species added (only photo):
+  - POLSTE
+
 ### Bug fixes
 
 ### New features
 
 - Info popups translated to Swedish.
+- Hyperlinks (URLs) in reference lists are now active.
+- New script files for:
+  1. Downloading species photos from Google Drive
+  2. Down-scaling (resizing) photos to 900 pixel width
 
 ### UI changes
 
