@@ -696,7 +696,7 @@ server <- function(input, output, session) {
             
             # The actual file path is needed to figure out if the file exists
             # FIXME: does not work with multiple files!
-            img_file <- list.files(file.path("www", "img", "sp_images", sp_abbr),
+            img_file <- list.files(file.path("www", "img", "sp_images"),
                                    pattern = paste0("[0-9]{3}(-|_)(", sp_abbr, ")"),
                                    full.names = TRUE)
             
@@ -713,7 +713,7 @@ server <- function(input, output, session) {
                 file_basename <- basename(img_file)
                 # If the file does exist, use tags instead of rendering the image
                 # directly. This way the browser will cache the image.
-                payload <- shiny::div(shiny::img(src = glue::glue("img/sp_images/{sp_abbr}/{file_basename}"),
+                payload <- shiny::div(shiny::img(src = glue::glue("img/sp_images/{file_basename}"),
                                                  width = "90%", class = "description"),
                                       shiny::p(glue::glue("Ⓒ {photo_credit} {photo_date_place}"), 
                                                class = "description"),
