@@ -42,6 +42,6 @@ download_file <- function(x, path) {
   # Process each row (i.e. file) in the dribble rowwise
   dplyr::rowwise() %>% 
   # Download files
-  dplyr::do(download_file(., path = "test"))
+  dplyr::do(download_file(., path = "www/img/sp_images/org"))
 
             

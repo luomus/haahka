@@ -42,7 +42,10 @@ resize_all <- function(src_path, dst_path) {
 }
 
 # Where are the photos?
-src_path <- "test"
-dst_path <- "test/resized"
+src_path <- "www/img/sp_images/org"
+dst_path <- "www/img/sp_images/"
 
 resize_all(src_path, dst_path)
+
+# Delete original files
+unlink(src_path)
