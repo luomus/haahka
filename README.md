@@ -19,11 +19,6 @@ In addition, you will need the following R packages:
 install.packages(shiny)
 install.packages(shinydashboard)
 install.packages(tidyverse)
-
-# Needed to install the development versions of highcharter
-install.packages(devtools)
-# Highcharter >= 0.6.0 is needed for compatability with dplyr
-devtools::install_github("jbkunst/highcharter")
 ```
 
 ### Installing
