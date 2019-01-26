@@ -7,6 +7,9 @@
 - Following species added (only photo):
   - POLSTE
 
+- Package dependencies are now managed with `packrat` to facilitate 
+  deployment.
+
 ### Bug fixes
 
 ### New features
