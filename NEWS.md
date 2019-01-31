@@ -1,11 +1,6 @@
-## 0.3.1 (2019-01-XX)
+## 0.3.1 (2019-01-31)
 
-- Following species added (description and photo):
-  - ANSALB
-  - ANSFAB
-  
-- Following species added (only photo):
-  - POLSTE
+- Photos of 311 species now present.
 
 - Package dependencies are now managed with `packrat` to facilitate 
   deployment.
