@@ -515,11 +515,14 @@ server <- function(input, output, session) {
     get_species_names <- function(lang) {
         if (!is.null(lang)) {
             if (lang == "fi") {
-                name_field = "FIN_name"
+                name_field <- "FIN_name"
+                items <- c("Valitse laji tai ala kirjoittamaan" = "")
             } else if (lang == "en") {
-                name_field = "ENG_name"
+                name_field <- "ENG_name"
+                items <- c("Select species or start writing" = "")
             } else if (lang == "se") {
-            name_field = "SWE_name"
+                name_field <- "SWE_name"
+                items <- c("Välj arter eller börja skriva" = "")
           }
             
             sp_names <- sp_data %>% 
@@ -539,7 +542,7 @@ server <- function(input, output, session) {
             # Create a named character vector
             names(spps) <- sp_names
             
-            return(spps)
+            return(c(items, spps))
         }
     }
     
