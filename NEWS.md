@@ -2,7 +2,8 @@
 
 ### Bug fixes
 
-- Parsring styles from the description docx-files works correctly.
+- Parsing styles from the description docx-files works correctly.
+- Selecting species through the URL query parameters was broken, but fixed now. 
 
 ### New features
 
@@ -11,6 +12,10 @@
   2. Downloading metadata spreadsheet from Google Drive
 
 ### UI changes
+
+- Give a more hopefule note if no description is found.
+- Species selector now has no species selected by default. Instead, it has 
+  short instructions on how the user can start searching.
 
 ## 0.3.1 (2019-01-31)
 
