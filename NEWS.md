@@ -1,3 +1,17 @@
+## 0.3.2 (2019-02-xx)
+
+### Bug fixes
+
+- Parsring styles from the description docx-files works correctly.
+
+### New features
+
+- New script files for:
+  1. Downloading description files (docx) from Google Drive
+  2. Downloading metadata spreadsheet from Google Drive
+
+### UI changes
+
 ## 0.3.1 (2019-01-31)
 
 - Photos of 311 species now present.
