@@ -109,11 +109,16 @@ parse_author <- function(x) {
 # Parse description file
 # 
 parse_description <- function(style_name, text) {
+    if (is.na(style_name) || is.na(text)) {
+      return(invisible(NULL))
+    }
+    style_name <- tolower(style_name)
+  
     # NOTE: style is hard coded and needs to be adjusted if the style changes
     # Check both the element style and content
-    if (style_name == "No Spacing" & text != "") {
+    if (style_name == "no spacing" & text != "") {
         element <- shiny::p(text, class = "description")
-    } else if (style_name == "Endnote Text" || style_name == "List Paragraph" & text != "") {
+    } else if (style_name == "endnote text" || style_name == "list paragraph" && text != "") {
         # Make hyperlinks acutal hyperlinks
         if (grepl("http", text)) {
           # Get rid of the unneed prefix/suffix characters
@@ -740,7 +745,7 @@ server <- function(input, output, session) {
             if (length(docx_file) > 0 && file.exists(docx_file) && input$language == "fi") {
                 
                 docx_content <- officer::docx_summary(officer::read_docx(docx_file))
-                
+
                 payload <- withTags(
                     div(
                         shiny::h2(common_name, class = "description"),
