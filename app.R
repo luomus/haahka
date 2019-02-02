@@ -113,7 +113,7 @@ parse_description <- function(style_name, text) {
     # Check both the element style and content
     if (style_name == "No Spacing" & text != "") {
         element <- shiny::p(text, class = "description")
-    } else if (style_name == "Endnote Text" & text != "") {
+    } else if (style_name == "Endnote Text" || style_name == "List Paragraph" & text != "") {
         # Make hyperlinks acutal hyperlinks
         if (grepl("http", text)) {
           # Get rid of the unneed prefix/suffix characters
@@ -128,7 +128,7 @@ parse_description <- function(style_name, text) {
           element <- shiny::p(text, class = "endnote")
         }
         
-    } else if (style_name == "Heading 3" & text != "") {
+    } else if (style_name == "heading 3" & text != "") {
         element <- shiny::h4(text, class = "description")
     } else {
         element <- invisible(NULL)
@@ -744,7 +744,7 @@ server <- function(input, output, session) {
             }
             
             # Try reading the description docx file
-            docx_file <- list.files(file.path("data", "descriptions"),
+            docx_file <- list.files(file.path("data", "descriptions", "test"),
                                     pattern = paste0("[0-9]{3}-(", sp_abbr, ")"),
                                     full.names = TRUE)
             
