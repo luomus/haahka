@@ -1,16 +1,16 @@
 Tämä verkkosovellus on tehty [R-kielellä](https://cran.r-project.org/index.html) ja erityisesti [Shiny-paketin](https://shiny.rstudio.com) avulla. Sovelluksen lähdekoodi on avoimesti lisenssöity (MIT-lisenssi) ja se löytyy [GitLab-palvelusta](https://gitlab.com/tringa-ry/halias-browser).
 
-#### Ohjeita
+### Ohjeita
 
-##### Linkki tiettyyn lajiin
+#### Linkki tiettyyn lajiin
 
 Sovellus luo automaattisesti selaimen osoitekentässä olevaa URL-linkin parametrit, jotka toimivat tunnisteina valitulle lajille ja kielelle. Kopioimalla osoitekentässä olevan URL-linkin voit siis viitata suoraan haluamaasi lajiin (ja kieleen). Esim. seuraava linkki: 
 
-http://jlehtoma.shinyapps.io/?species=sommol&language=fi
+http://jlehtoma.shinyapps.io/halias-browser?species=sommol&language=fi
 
 vie suoraan haahkasta kertovalle suomenkieliseslle sivulle.
 
-#### Palaute
+### Palaute
 
 Löysitkö ohjelmasta bugin? Eikö jokin ominaisuus toimi toivotulla tavalla? Tuliko sinulle mieleen jokin parannusehdotus? Ei hätää, tapoja osallistua sovelluksen kehittämiseen on monia:
 
