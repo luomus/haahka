@@ -1297,6 +1297,18 @@ server <- function(input, output, session) {
         } else {
           data_help_content <- ""
         }
+        
+        app_help_file <- file.path("www", "helps", 
+                                    paste0("app_help-", input$language, ".md"))
+        if (file.exists(app_help_file)) {
+          app_help_content <- tagList(
+            div(class = "help-container",
+                includeMarkdown(app_help_file)
+            )
+          )
+        } else {
+          app_help_content <- ""
+        }
       
         payload <- tagList(
           fluidRow(
@@ -1323,8 +1335,7 @@ server <- function(input, output, session) {
                      color = "navy-active",
                      closable = FALSE,
                      collapsible = FALSE,
-                     "Some text here!",
-                     footer = "The footer here!"
+                     app_help_content
                    )
             )
           )
