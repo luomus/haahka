@@ -712,7 +712,7 @@ server <- function(input, output, session) {
                                                class = "description"),
                                       shiny::br())
             } else {
-                payload <- shiny::p(i18n()$t("Kuvaa ei löydy"), class = "description")
+                payload <- shiny::p(i18n()$t("Kuvausteksti tulee kevään aikana"), class = "description")
             }
             return(payload)
         }        
@@ -767,7 +767,7 @@ server <- function(input, output, session) {
                         shiny::h3(sci_name, class = "description sci-name"),
                         shiny::br(),
                         uiOutput("render_image"),
-                        shiny::p(i18n()$t("Kuvausta ei löydy"), class = "description")
+                        shiny::p(i18n()$t("Kuvausteksti tulee kevään aikana"), class = "description")
                     )
                 )
             }
