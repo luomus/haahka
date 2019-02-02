@@ -480,20 +480,6 @@ server <- function(input, output, session) {
         return(current_stats)
     })
     
-    # get_images ---------------------------------------------------------------
-    get_images <- reactive({
-        current_sp <- get_current_sp()    
-        
-        sp_abbr <- tolower(current_sp$Species_Abb)
-        
-        # The actual dir path is needed to figure out if the files exists
-        img_dir <- file.path("www", "img", "sp_images", sp_abbr)
-        # Photo credit
-        #photo_credit <- PHOTO_CREDITS[[sp_abbr]]
-        imgs <- list.files(img_dir, pattern = ".jpg", full.names = TRUE)
-        return(imgs)
-    })
-    
     # get_species_abbr ---------------------------------------------------------
     get_species_abbr <- reactive({
         current_sp <- get_current_sp()    
