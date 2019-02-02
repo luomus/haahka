@@ -744,7 +744,7 @@ server <- function(input, output, session) {
             }
             
             # Try reading the description docx file
-            docx_file <- list.files(file.path("data", "descriptions", "test"),
+            docx_file <- list.files(file.path("data", "descriptions"),
                                     pattern = paste0("[0-9]{3}-(", sp_abbr, ")"),
                                     full.names = TRUE)
             
