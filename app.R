@@ -268,9 +268,11 @@ DATA_URL <- "https://www.tringa.fi/hangon-lintuasema/hankodata/"
 # Define the size of the tiling window for data averaging
 WINDOW_SIZE <- 5
 
-# Highcharts options
+# Which species is selected by default?
+DEFAULT_SPECIES <- "SOMMOL"
 
-# # How many milliseconds in a year?
+# Highcharts options
+## How many milliseconds in a year?
 X_AXIS_TIME_UNITS = 30 * 24 * 3600 * 1000
 # Year x-axis limits
 XMIN <- datetime_to_timestamp(as.Date('2000-01-01', tz = 'UTC'))
@@ -306,11 +308,12 @@ PB_LIST <- list(
     )
 )
 
-# Needed for tracking the language state
+# Globals needed to track various states
 INTENDED_LANGUAGE <- "fi"
 INTENDED_SPECIES <- ""
 REQUEST_FROM_URL <- FALSE
 ALREADY_RENDERED <- FALSE
+FIRST_RENDER <- TRUE
 
 # This Javascript is needed for resizing the median day graph dynamically 
 # depeding on the size of the current viewport
@@ -534,6 +537,8 @@ server <- function(input, output, session) {
                 dplyr::select(Sci_name) %>% 
                 purrr::pluck(1)
             
+            sp_names <- paste0(sp_names, " (", spps, ")")
+            
             # Create a named character vector
             names(spps) <- sp_names
             
@@ -619,12 +624,24 @@ server <- function(input, output, session) {
         
         spps <- get_species_names(name_field)
         
-        tagList(
-            selectInput("species", 
-                        label = i18n()$t("Valitse laji"),
-                        choices = spps,
-                        selected = input$species)
-        )
+        # If this is the very first render, show the selected default species
+        if (FIRST_RENDER) {
+          selected_sp <- sp_data %>% 
+            dplyr::filter(Species_Abb == DEFAULT_SPECIES) %>% 
+            dplyr::pull(Sci_name)
+          selected_sp <- spps[which(spps == selected_sp)]
+        } else {
+          selected_sp <- input$species
+        }
+        payload <- selectInput("species", 
+                               label = i18n()$t("Valitse laji"),
+                               choices = spps,
+                               selected = selected_sp)
+        
+        if (FIRST_RENDER) {
+          FIRST_RENDER <<- FALSE
+        }
+        return(payload)
     })
     
     # render_citation ----------------------------------------------------------
