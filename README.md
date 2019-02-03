@@ -46,13 +46,13 @@ You will still have to update packrat by:
 packrat::snapshot()
 ```
 
-### Installing
+## Installing
 
-#### Release version
+### Release version
 
 TBA.
 
-#### Development version
+### Development version
 
 Using git:
 
@@ -70,7 +70,7 @@ shiny::runApp()
 
 The development version of this app can also be found at https://jlehtoma.shinyapps.io/halias-browser/
 
-## Updating the observation data
+# Updating the observation data
 
 **NOTE** You will only have to do this whenever the actual observation data updates, not to get the app up and running.
 
