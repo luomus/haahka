@@ -516,13 +516,10 @@ server <- function(input, output, session) {
         if (!is.null(lang)) {
             if (lang == "fi") {
                 name_field <- "FIN_name"
-                items <- c("Valitse laji tai ala kirjoittamaan" = "")
             } else if (lang == "en") {
                 name_field <- "ENG_name"
-                items <- c("Select species or start writing" = "")
             } else if (lang == "se") {
                 name_field <- "SWE_name"
-                items <- c("Välj arter eller börja skriva" = "")
           }
             
             sp_names <- sp_data %>% 
@@ -537,12 +534,10 @@ server <- function(input, output, session) {
                 dplyr::select(Sci_name) %>% 
                 purrr::pluck(1)
             
-            sp_names <- paste0(sp_names, " (", spps, ")")
-            
             # Create a named character vector
             names(spps) <- sp_names
             
-            return(c(items, spps))
+            return(spps)
         }
     }
     
