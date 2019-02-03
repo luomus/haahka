@@ -6,7 +6,7 @@ Tämä verkkosovellus on tehty [R-kielellä](https://cran.r-project.org/index.ht
 
 Sovellus luo automaattisesti selaimen osoitekentässä olevaa URL-linkin parametrit, jotka toimivat tunnisteina valitulle lajille ja kielelle. Kopioimalla osoitekentässä olevan URL-linkin voit siis viitata suoraan haluamaasi lajiin (ja kieleen). Esim. seuraava linkki: 
 
-http://jlehtoma.shinyapps.io/halias-browser?species=sommol&language=fi
+https://haahka.halias.fi/?species=sommol&language=fi
 
 vie suoraan haahkasta kertovalle suomenkieliseslle sivulle.
 
