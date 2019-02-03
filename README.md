@@ -47,6 +47,8 @@ The development version of this app can also be found at https://jlehtoma.shinya
 
 ## Updating the observation data
 
+**NOTE** You will only have to do this whenever the actual observation data updates, not to get the app up and running.
+
 The data used by this Shiny app lives in the `data` subfolder and is based on [the long term data from the Hanko Bird Observatory](https://www.tringa.fi/hangon-lintuasema/hankodata/). However, all the data pre-processing is done by code living in a different repository called `halias-observations` (see [here](https://gitlab.com/tringa-ry/halias-observations)). Whenever the source data is updated, the updates must be manually migrated into this repository. Do the following:
 
 #### 1. Download the updated data and run the pre-processing scripts
