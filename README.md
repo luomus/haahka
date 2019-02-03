@@ -8,10 +8,14 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+#### R
 
-+ [R](https://cran.r-project.org) ( tested on versions >= 3.5.1)
+You will need the following:
+
++ [R](https://cran.r-project.org) (tested on versions >= 3.5.1)
 + [RStudio](https://www.rstudio.com) (optional, but useful for development)
+
+#### R packages
 
 The R package management is handled by [`packrat`](https://rstudio.github.io/packrat/). 
 Packrat overloads the system R library path and uses a local library of packages
