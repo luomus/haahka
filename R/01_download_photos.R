@@ -13,7 +13,7 @@ library(tidyverse)
 download_file <- function(x, path) {
   
   if (!file.exists(path)) {
-    dir.create(path)
+    dir.create(path, recursive = TRUE)
   }
   # Build target file name. The format is XXX-YYYYYY.ext, where XXX are three 
   # digits, YYYYYY is the species abbreviation and ext should be jpg, though 
