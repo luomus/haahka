@@ -729,9 +729,13 @@ server <- function(input, output, session) {
                 photo_date <- current_meta$Päivämäärä
                 photo_date <- ifelse(is.na(photo_date), "", photo_date)
                 photo_place <- current_meta$Kuvauspaikka
-                photo_date_place <- paste0("(", 
-                                           paste0(c(photo_date, photo_place),
-                                                  collapse = ", "), ")")
+                if (photo_date == "") {
+                  photo_date_place <- paste0("(", photo_place, ")")
+                } else {
+                  photo_date_place <- paste0("(", 
+                                             paste0(c(photo_date, photo_place),
+                                                    collapse = ", "), ")")
+                }
                 # Get file basename
                 file_basename <- basename(img_file)
                 # If the file does exist, use tags instead of rendering the image
