@@ -12,6 +12,7 @@
   2. Downloading metadata spreadsheet from Google Drive
 - It is now possible to select (in code) the species that is shown when the 
   app is first loaded. For now, the default species is the Common Eider.
+- The logo now links to www.halias.fi
 
 ### UI changes
 
