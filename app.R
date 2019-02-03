@@ -341,7 +341,7 @@ jscode <-
 # UI ----------------------------------------------------------------------
 ui <- dashboardPage(
     
-    title = "Halias Browser",
+    title = "Haahka - muuttolintuselain",
     
     # ui-header ----------------------------------------------------------------
     dashboardHeader(
@@ -604,7 +604,7 @@ server <- function(input, output, session) {
         payload <- tagList(
             HTML("<footer>"),
             div(class = "footer-content",
-                strong("Halias Browser"),
+                strong("Muuttolintuselain Haahka"),
                 br(),
                 paste0(app_prefix, ": ", VERSION),
                 br(),
@@ -1347,7 +1347,7 @@ server <- function(input, output, session) {
             column(width = 6,
                    widgetUserBox(
                      title = i18n()$t("Verkkosovellus"),
-                     subtitle = "Halias Browser",
+                     subtitle = "Muuttolintuselain Haahka",
                      type = NULL,
                      width = 12,
                      src = "settings.png",
