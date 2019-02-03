@@ -345,7 +345,7 @@ ui <- dashboardPage(
     
     # ui-header ----------------------------------------------------------------
     dashboardHeader(
-        title = tags$a(href = "https://www.tringa.fi/hangon-lintuasema/hankodata",
+        title = tags$a(href = "https://www.halias.fi",
                        tags$img(src = "browser_logo.png", height = "40")
         )
     ),
