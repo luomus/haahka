@@ -11,10 +11,10 @@ Lajinumero,Lajinimi,Lajilyhenne,Korkea prioriteetti,Kirjoittaja,Aineistoversio,V
 10,kanadanhanhi,BRACAN,,Aki Aintila,1.1.,2019,Aleksi Lehikoinen,07.02.2016,Iso-Britannia,
 11,valkoposkihanhi,BRALEU,K,Aki Aintila,1.1.,2019,Aleksi Lehikoinen,19.05.2017,,x
 12,sepelhanhi,BRABER,,Aki Aintila,1.1.,2019,Aleksi Lehikoinen,02.06.2008,,
-13,punakaulahanhi,BRARUF,,,,,Aleksi Lehikoinen,23.04.2012,"Helsinki, Korkeasaari",
+13,punakaulahanhi,BRARUF,,Sakari Lehikoinen,1.1.,2019,Aleksi Lehikoinen,23.04.2012,"Helsinki, Korkeasaari",
 14,ruostesorsa,TADFER,,,,,Jarkko Santaharju,16.08.2017,,
 15,ristisorsa,TADTAD,,,,,Pasi Pirinen,20.04.2003,,
-16,mandariinisorsa,AIXGAL,,,,,Petri Clusius,13.4.1993,,
+16,mandariinisorsa,AIXGAL,,Sakari Lehikoinen,1.1.,2019,Petri Clusius,13.4.1993,,
 17,haapana,ANAPEN,K,,,,Aleksi Lehikoinen,04.05.2009,,x
 18,harmaasorsa,ANASTR,,,,,Aleksi Lehikoinen,10.02.2017,Espanja,
 19,tavi,ANACRE,,,,,Aleksi Lehikoinen,17.02.2017,Espanja,
@@ -23,16 +23,16 @@ Lajinumero,Lajinimi,Lajilyhenne,Korkea prioriteetti,Kirjoittaja,Aineistoversio,V
 22,heinätavi,ANAQUE,,,,,Jarkko Santaharju,01.05.2014,,
 23,lapasorsa,ANACLY,,,,,Aleksi Lehikoinen,22.04.2018,,
 24,punasotka,AYTFER,,,,,Aki Aintila,11.04.2015,,
-25,amerikantukkasotka,AYTCOL,,,,,Aleksi Mikola,27.05.2012,,
+25,amerikantukkasotka,AYTCOL,,Sakari Lehikoinen,1.1.,2019,Aleksi Mikola,27.05.2012,,
 26,tukkasotka,AYTFUL,K,Aki Aintila,1.1.,2019,Jonne von Hertzen,01.04.2018,,x
 27,lapasotka,AYTMAR,,Aki Aintila,1.1.,2019,Aleksi Lehikoinen,10.4.2009,,
 28,punapäänarsku,NETRUF,,,,,Jonne von Hertzen,18.04.2018,,
-29,haahka,SOMMOL,K,Aki Aintila,1.1.,2019,Jonne von Hertzen,,,x
+29,haahka,SOMMOL,K,Aki Aintila,1.1.,2019,Jonne von Hertzen,06.04.2018,,x
 30,kyhmyhaahka,SOMSPE,,,,,Mauri Leivo,29.03.2004,,
 31,allihaahka,POLSTE,,,,,Aleksi Lehikoinen,21.07.2008,Norja,
 32,alli,CLAHYE,K,Aki Aintila,1.1.,2019,Jarkko Santaharju,31.10.2008,,x
 33,mustalintu,MELNIG,,,,,Aki Aintila,25.07.2014,"Viro, Spithami",
-34,pilkkaniska,MELPER,,,,,Aleksi Lehikoinen,09.11.2008,Yhdysvallat,
+34,pilkkaniska,MELPER,,Sakari Lehikoinen,1.1.,2019,Aleksi Lehikoinen,09.11.2008,Yhdysvallat,
 35,pilkkasiipi,MELFUS,,,,,Aki Aintila,19.07.2014,"Viro, Spithami",
 36,kyhmypilkkasiipi,MELDEG,,Aleksi Lehikoinen,1.1.,2019,Janne Riihimäki,30.05.2012,,
 37,telkkä,BUCCLA,K,Aki Aintila,1.1.,2019,Aleksi Lehikoinen,10.04.2011,,x
@@ -43,8 +43,8 @@ Lajinumero,Lajinimi,Lajilyhenne,Korkea prioriteetti,Kirjoittaja,Aineistoversio,V
 42,pyy,TETBON,,Aleksi Lehikoinen,1.1.,2019,Aleksi Lehikoinen,18.07.2013,,
 43,teeri,TETRIX,,,,,Dick Forsman,04.05.2014,,
 44,metso,TETURO,,,,,Jarkko Santaharju,02.05.2009,Hanko,
-45,peltopyy,PERPER,,,,,Aleksi Lehikoinen,18.8.2005,,
-46,fasaani,PHACOL,,,,,Aki Aintila,,Helsinki,
+45,peltopyy,PERPER,,Sakari Lehikoinen,1.1.,2019,Aleksi Lehikoinen,18.8.2005,,
+46,fasaani,PHACOL,,Sakari Lehikoinen,1.1.,2019,Aki Aintila,07.05.2012,Helsinki,
 47,kaakkuri,GAVSTE,,Antero Lindholm,1.1.,2019,Petro Pynnönen,01.01.1997,,
 48,kuikka,GAVARC,K,Antero Lindholm,1.1.,2019,Jarkko Santaharju,22.04.2013,,
 49,amerikanjääkuikka,GAVIMM,,,,,Aleksi Lehikoinen,07.11.2008,Yhdysvallat,
@@ -205,7 +205,7 @@ Lajinumero,Lajinimi,Lajilyhenne,Korkea prioriteetti,Kirjoittaja,Aineistoversio,V
 204,rautiainen,PRUMOD,,,,,Pasi Pirinen,12.04.2009,,
 205,taigarautiainen,PRUMON,,,,,Jari Laitasalo,12.10.2016,,
 206,mustakurkkurautiainen,PRUATR,,,,,Aleksi Mikola,29.10.2009,,
-207,punarinta,ERIRUB,,,,,Jonne von Hertzen,,,
+207,punarinta,ERIRUB,,,,,Jonne von Hertzen,10.04.2018,,
 208,satakieli,LUSLUS,,,,,Aleksi Lehikoinen,15.08.2014,,
 209,etelänsatakieli,LUSMEG,,Pekka Topp,1.1.,2019,Pekka Topp,08.10.1990,,
 210,sinirinta,LUSSVE,,,,,Aleksi Lehikoinen,15.05.2015,,
