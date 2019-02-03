@@ -1,9 +1,11 @@
-## 0.3.2 (2019-02-xx)
+## 0.3.2 (2019-02-03)
 
 ### Bug fixes
 
 - Parsing styles from the description docx-files works correctly.
 - Selecting species through the URL query parameters was broken, but fixed now. 
+  NOTE: species selection and setting the default species is still not completely
+  solid and needs more work.
 
 ### New features
 
@@ -11,7 +13,7 @@
   1. Downloading description files (docx) from Google Drive
   2. Downloading metadata spreadsheet from Google Drive
 - It is now possible to select (in code) the species that is shown when the 
-  app is first loaded. For now, the default species is the Common Eider.
+  app is first loaded. For now, the default species is the Mute Swan.
 - The logo now links to www.halias.fi
 
 ### UI changes
