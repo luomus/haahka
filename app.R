@@ -117,7 +117,22 @@ parse_description <- function(style_name, text) {
     # NOTE: style is hard coded and needs to be adjusted if the style changes
     # Check both the element style and content
     if (style_name == "no spacing" & text != "") {
-        element <- shiny::p(text, class = "description")
+        citation_pattern <- "\\((.+?)\\)"
+      
+        if (grepl(citation_pattern, text)) {
+          citations <- unlist(stringr::str_extract_all(text, citation_pattern))
+          for (citation in citations) {
+            i_citation <- gsub("\\(", "<i>", citation)
+            i_citation <- gsub("\\)", "</i>", i_citation)
+            text <- gsub(citation, i_citation, text)
+          }
+          # Contsruct valid HTML
+          text <- paste0("<p class='endnote'>", text, "</p>")
+          element <- shiny::HTML(text)
+        } else {
+          element <- shiny::p(text, class = "description")  
+        }
+        
     } else if (style_name == "endnote text" || style_name == "list paragraph" && text != "") {
         # Make hyperlinks acutal hyperlinks
         if (grepl("http", text)) {
