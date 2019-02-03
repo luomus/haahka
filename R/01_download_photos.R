@@ -3,8 +3,7 @@ library(googledrive)
 library(here)
 library(tidyverse)
 
-# Google auhtentication
-drive_auth(use_oob = TRUE) 
+# FIXME: Add instructions on how to authorize with Google Drive
 
 # Helper functions --------------------------------------------------------
 
