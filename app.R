@@ -284,7 +284,7 @@ DATA_URL <- "https://www.tringa.fi/hangon-lintuasema/hankodata/"
 WINDOW_SIZE <- 5
 
 # Which species is selected by default?
-DEFAULT_SPECIES <- "SOMMOL"
+DEFAULT_SPECIES <- "CYGCYG"
 
 # Highcharts options
 ## How many milliseconds in a year?
