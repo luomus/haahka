@@ -70,6 +70,37 @@ Alternatively, [download](https://gitlab.com/tringa-ry/halias-browser/-/archive/
 
 #### 2. Download additional content
 
+Species photos and descriptions are not included in this repository. They are
+managed by a number volunteers on Google Drive and so the updating procedure is
+independent to this repository. Photos (jpg/png), description files (docx) and
+additional metadata (csv) can be downloaded directly from Google Drive given
+that you have permissions to access the necessary folder on Google Drive.
+
+I.e., to download the necessary files, you 1) must have access to the necessary 
+directories on Google Drive and 2) grant permission (authenticate) the code to 
+download content. If you are working on a local machine, the code will direct
+you to a browser window where you can grant the necessary permissions. If you 
+are deploying the system on a remote system, please see ["Deployment"](https://gitlab.com/tringa-ry/halias-browser/blob/master/README.md#deployment) below.
+
+Run the following R scripts from the root of the repository:
+
+```
+# Download original photos from Google Drive
+./R/01_download_photos.R
+
+# Re-scale photos to a smaller size
+./R/02_resize_photos.R
+
+# Download description files (docx)
+./R/03_download_descriptions.R
+
+# Download additional metadata. This file is also inculded in the repository
+# and you can find it in the "data" subdir.
+04_download_metadata.R
+```
+
+Alternatively, you can source the files from your RStudio project.
+
 #### 3. Launch shiny
 
 Make sure you have [the dependencies](https://gitlab.com/tringa-ry/halias-browser/blob/master/README.md#r-packages) installed. Fire up R, navigate to the root of `halias-browser` project and start the Shiny app:
