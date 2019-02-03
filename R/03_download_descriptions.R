@@ -1,4 +1,5 @@
 library(googledrive)
+library(here)
 library(tidyverse)
 
 # FIXME: Add instructions on how to authorize with Google Drive
@@ -44,6 +45,6 @@ download_file <- function(x, path) {
   # Process each row (i.e. file) in the dribble rowwise
   dplyr::rowwise() %>% 
   # Download files
-  dplyr::do(download_file(., path = "data/descriptions/test"))
+  dplyr::do(download_file(., path = here::here("data/descriptions/test")))
 
             
