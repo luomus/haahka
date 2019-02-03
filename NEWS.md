@@ -10,12 +10,12 @@
 - New script files for:
   1. Downloading description files (docx) from Google Drive
   2. Downloading metadata spreadsheet from Google Drive
+- It is now possible to select (in code) the species that is shown when the 
+  app is first loaded. For now, the default species is the Common Eider.
 
 ### UI changes
 
 - Give a more hopefule note if no description is found.
-- Species selector now has no species selected by default. Instead, it has 
-  short instructions on how the user can start searching.
 
 ## 0.3.1 (2019-01-31)
 
