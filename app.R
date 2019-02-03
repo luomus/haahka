@@ -1427,7 +1427,6 @@ server <- function(input, output, session) {
     
     # Whenever the species selector is used, update the URL to match
     observeEvent(input$species, {
-        browser()
         current_sp <- get_species_abbr()
         current_lang <- input$language
         
@@ -1461,18 +1460,9 @@ server <- function(input, output, session) {
     observeEvent(i18n(), {
         updateSelectInput(session, "language", label = i18n()$t("Kieli"), 
                           selected = input$language)
-      
-        # Capitalize for join
-        sp_abb <- toupper(INTENDED_SPECIES)
-        # Get the same name format as used in the species selector
-        spps <- get_species_names("fi")
-        # Join to get the 3+3 species abbreviation
-        selected_sp <- sp_data %>% 
-          dplyr::filter(Species_Abb == sp_abb)
-        browser()
         updateSelectInput(session, "species", label =  i18n()$t("Valitse laji"), 
                           choices = get_species_names(input$language), 
-                          selected = selected_sp$Sci_name)
+                          selected = input$species)
     })
     
     observeEvent(input$migration_info, {
