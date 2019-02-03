@@ -54,6 +54,12 @@ TBA.
 
 ### Development version
 
+Following instructions help you to get everything up and running on your local
+machine. If you are interested in deplying the app on a remote server, please
+see ["Deployment"](https://gitlab.com/tringa-ry/halias-browser/blob/master/README.md#deployment) below.
+
+#### 1. Get the source code
+
 Using git:
 
 ```
@@ -61,6 +67,10 @@ git clone https://gitlab.com/tringa-ry/halias-browser.git
 ```
 
 Alternatively, [download](https://gitlab.com/tringa-ry/halias-browser/-/archive/master/halias-browser-master.zip) the repository as zip-file and decompress the zip-file. 
+
+#### 2. Download additional content
+
+#### 3. Launch shiny
 
 Make sure you have [the dependencies](https://gitlab.com/tringa-ry/halias-browser/blob/master/README.md#r-packages) installed. Fire up R, navigate to the root of `halias-browser` project and start the Shiny app:
 
@@ -70,21 +80,21 @@ shiny::runApp()
 
 The development version of this app can also be found at https://jlehtoma.shinyapps.io/halias-browser/
 
-# Updating the observation data
+## Updating the observation data
 
 **NOTE** You will only have to do this whenever the actual observation data updates, not to get the app up and running.
 
 The data used by this Shiny app lives in the `data` subfolder and is based on [the long term data from the Hanko Bird Observatory](https://www.tringa.fi/hangon-lintuasema/hankodata/). However, all the data pre-processing is done by code living in a different repository called `halias-observations` (see [here](https://gitlab.com/tringa-ry/halias-observations)). Whenever the source data is updated, the updates must be manually migrated into this repository. Do the following:
 
-#### 1. Download the updated data and run the pre-processing scripts
+### 1. Download the updated data and run the pre-processing scripts
 
 TBA
 
-#### 2. Download the generated RData file
+### 2. Download the generated RData file
 
 TBA
 
-#### 3. Document the updated data in the Shiny app
+### 3. Document the updated data in the Shiny app
 
 TBA
 
