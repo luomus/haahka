@@ -325,10 +325,9 @@ PB_LIST <- list(
 
 # Globals needed to track various states
 INTENDED_LANGUAGE <- "fi"
-INTENDED_SPECIES <- ""
+INTENDED_SPECIES <- DEFAULT_SPECIES
 REQUEST_FROM_URL <- FALSE
 ALREADY_RENDERED <- FALSE
-FIRST_RENDER <- TRUE
 
 # This Javascript is needed for resizing the median day graph dynamically 
 # depeding on the size of the current viewport
@@ -639,23 +638,15 @@ server <- function(input, output, session) {
         
         spps <- get_species_names(name_field)
         
-        # If this is the very first render, show the selected default species
-        if (FIRST_RENDER) {
-          selected_sp <- sp_data %>% 
-            dplyr::filter(Species_Abb == DEFAULT_SPECIES) %>% 
-            dplyr::pull(Sci_name)
-          selected_sp <- spps[which(spps == selected_sp)]
-        } else {
-          selected_sp <- input$species
-        }
+        selected_sp <- sp_data %>% 
+          dplyr::filter(Species_Abb == INTENDED_SPECIES) %>% 
+          dplyr::pull(Sci_name)
+        selected_sp <- spps[which(spps == selected_sp)]
+
         payload <- selectInput("species", 
                                label = i18n()$t("Valitse laji"),
                                choices = spps,
                                selected = selected_sp)
-        
-        if (FIRST_RENDER) {
-          FIRST_RENDER <<- FALSE
-        }
         return(payload)
     })
     
@@ -1394,10 +1385,10 @@ server <- function(input, output, session) {
               # observeEvent(input$language, {...}) is triggered *before* the
               # value of input$language is changed.
               INTENDED_SPECIES <<- tolower(selected_sp$Species_Abb)
-              # Mark the global variable indivating that the species has been
+              message("Intended species changed (URL) to: ", INTENDED_SPECIES)
+              # Mark the global variable indivating that the change has been
               # changed from the URL
               REQUEST_FROM_URL <<- TRUE
-              ALREADY_RENDERED <<- FALSE
             }
         }
         # Update language selector based in the query.
@@ -1436,11 +1427,13 @@ server <- function(input, output, session) {
     
     # Whenever the species selector is used, update the URL to match
     observeEvent(input$species, {
+        browser()
         current_sp <- get_species_abbr()
         current_lang <- input$language
         
         if (current_sp != INTENDED_SPECIES && !REQUEST_FROM_URL) {
           INTENDED_SPECIES <<- current_sp
+          message("Intended species changed (observer) to: ", INTENDED_SPECIES)
         }
         
         if (REQUEST_FROM_URL) {
@@ -1451,31 +1444,35 @@ server <- function(input, output, session) {
                                "&language=", current_lang)
         session$updateQueryString(query_string, mode = "push")
         
-        if (!ALREADY_RENDERED) {
-          
-          
-          # Capitalize for join
-          sp_abb <- toupper(INTENDED_SPECIES)
-          # Get the same name format as used in the species selector
-          spps <- get_species_names("fi")
-          # Join to get the 3+3 species abbreviation
-          selected_sp <- sp_data %>% 
-            dplyr::filter(Species_Abb == sp_abb)
-          
-          updateSelectInput(session, "species", 
-                            selected = spps[which(spps == selected_sp$Sci_name)])
-          
-          message("Species changed to: ", INTENDED_SPECIES)  
-          ALREADY_RENDERED <<- TRUE
-        }
+        # Capitalize for join
+        sp_abb <- toupper(INTENDED_SPECIES)
+        # Get the same name format as used in the species selector
+        spps <- get_species_names("fi")
+        # Join to get the 3+3 species abbreviation
+        selected_sp <- sp_data %>% 
+          dplyr::filter(Species_Abb == sp_abb)
+        
+        updateSelectInput(session, "species", 
+                          selected = spps[which(spps == selected_sp$Sci_name)])
+        
+        message("Species changed to: ", INTENDED_SPECIES)  
     })
     
     observeEvent(i18n(), {
         updateSelectInput(session, "language", label = i18n()$t("Kieli"), 
                           selected = input$language)
+      
+        # Capitalize for join
+        sp_abb <- toupper(INTENDED_SPECIES)
+        # Get the same name format as used in the species selector
+        spps <- get_species_names("fi")
+        # Join to get the 3+3 species abbreviation
+        selected_sp <- sp_data %>% 
+          dplyr::filter(Species_Abb == sp_abb)
+        browser()
         updateSelectInput(session, "species", label =  i18n()$t("Valitse laji"), 
                           choices = get_species_names(input$language), 
-                          selected = input$species)
+                          selected = selected_sp$Sci_name)
     })
     
     observeEvent(input$migration_info, {
