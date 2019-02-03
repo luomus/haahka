@@ -13,6 +13,12 @@ Source: CRAN
 Version: 1.0.0
 Hash: 6abedd7919c4457604c0aa44529a6683
 
+Package: PKI
+Source: CRAN
+Version: 0.1-5.1
+Hash: 8c194fb34ebaab38a13e43ce84feedee
+Requires: base64enc
+
 Package: R6
 Source: CRAN
 Version: 2.3.0
@@ -27,6 +33,17 @@ Package: RColorBrewer
 Source: CRAN
 Version: 1.1-2
 Hash: c0d56cd15034f395874c870141870c25
+
+Package: RCurl
+Source: CRAN
+Version: 1.95-4.11
+Hash: 98b1b04db217dc56baca68aa34079fdd
+Requires: bitops
+
+Package: RJSONIO
+Source: CRAN
+Version: 1.3-1.1
+Hash: b822a1c716af0ff7b4f8cdf7287dca14
 
 Package: Rcpp
 Source: CRAN
@@ -81,6 +98,11 @@ Source: CRAN
 Version: 0.2.2
 Hash: 8ce499301f0dc5c7ff69f0b42e33f5c1
 Requires: Rcpp, bindr, plogr
+
+Package: bitops
+Source: CRAN
+Version: 1.0-6
+Hash: 67d0775189fd0041d95abca618c5c07e
 
 Package: broom
 Source: CRAN
@@ -204,8 +226,8 @@ Hash: 1fbde6dec830370be696eee8ef31c9e4
 
 Package: googledrive
 Source: CRAN
-Version: 0.1.2
-Hash: d6f011f1771677acba9970738dabc9ad
+Version: 0.1.3
+Hash: 1be9e28134762e4ac67090556455ba6c
 Requires: curl, glue, httr, jsonlite, purrr, rlang, tibble, uuid
 
 Package: gtable
@@ -219,6 +241,12 @@ Version: 2.0.0
 Hash: 3180a95083d9ef6da3fafc38e0519e2f
 Requires: Rcpp, forcats, hms, readr, tibble
 
+Package: here
+Source: CRAN
+Version: 0.1
+Hash: 90e1a97508a0d7383b0eeb11e397e763
+Requires: rprojroot
+
 Package: highcharter
 Source: github
 Version: 0.7.0.9000
@@ -230,11 +258,6 @@ GithubRepo: highcharter
 GithubUsername: jbkunst
 GithubRef: master
 GithubSha1: 64bc306c50fa1857721ba0034a41bf8ada622617
-RemoteHost: api.github.com
-RemoteRepo: highcharter
-RemoteUsername: jbkunst
-RemoteRef: master
-RemoteSha: 64bc306c50fa1857721ba0034a41bf8ada622617
 
 Package: highr
 Source: CRAN
@@ -396,6 +419,12 @@ Version: 3.2.1
 Hash: fdc6a66626b75f96ee28ffc770d9ebd7
 Requires: R6, ps
 
+Package: profvis
+Source: CRAN
+Version: 0.3.5
+Hash: 68abff8877b3d436602a124262b83efe
+Requires: htmlwidgets, stringr
+
 Package: progress
 Source: CRAN
 Version: 1.2.0
@@ -415,9 +444,9 @@ Hash: 1d4cae95887ffe5b1a22bea5994476cd
 
 Package: purrr
 Source: CRAN
-Version: 0.2.5
-Hash: 8b0c16db10c7e20b70cd37779a673a8b
-Requires: magrittr, rlang, tibble
+Version: 0.3.0
+Hash: 39be04d964bc2b860f09147ce4b8e2ef
+Requires: magrittr, rlang
 
 Package: quantmod
 Source: CRAN
@@ -471,6 +500,18 @@ Version: 1.11
 Hash: a30b0c41b60d981f41dc8c98f2136297
 Requires: base64enc, evaluate, htmltools, jsonlite, knitr, mime,
     stringr, tinytex, yaml
+
+Package: rprojroot
+Source: CRAN
+Version: 1.3-2
+Hash: a25c3f70c166fb3fbabc410eb32b6366
+Requires: backports
+
+Package: rsconnect
+Source: CRAN
+Version: 0.8.13
+Hash: d93bb8ab6ee93f064771e3d96dd983b9
+Requires: RCurl, jsonlite, openssl, packrat, rstudioapi, yaml
 
 Package: rstudioapi
 Source: CRAN
