@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 library(assertthat)
 library(magick)
 library(progress)

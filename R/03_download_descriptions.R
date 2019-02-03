@@ -16,6 +16,8 @@ download_file <- function(x, path) {
     dir.create(path)
   }
   # Build target file name. The format is XXX-YYYYYY.ext, where XXX are three 
+  #!/usr/bin/env Rscript
+  
   # digits, YYYYYY is the species abbreviation and ext should be jpg, though 
   # few pngs are there as well. YYYYYY should be in upper, but is delivered 
   # in lower as well. Make it all upper.
