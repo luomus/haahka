@@ -15,6 +15,14 @@ You will need the following:
 + [R](https://cran.r-project.org) (tested on versions >= 3.5.1)
 + [RStudio](https://www.rstudio.com) (optional, but useful for development)
 
+#### System libraries
+
+The following system packages are needed by the R-packages:
+
+**Ubuntu 16.04**
+
+TBA
+
 #### R packages
 
 The R package management is handled by [`packrat`](https://rstudio.github.io/packrat/). 
@@ -54,7 +62,7 @@ git clone https://gitlab.com/tringa-ry/halias-browser.git
 
 Alternatively, [download](https://gitlab.com/tringa-ry/halias-browser/-/archive/master/halias-browser-master.zip) the repository as zip-file and decompress the zip-file. 
 
-Make sure you have the dependencies installed. Fire up R, navigate to the root of `halias-browser` project and start the Shiny app:
+Make sure you have [the dependencies](https://gitlab.com/tringa-ry/halias-browser/blob/master/README.md#r-packages) installed. Fire up R, navigate to the root of `halias-browser` project and start the Shiny app:
 
 ```R
 shiny::runApp()
