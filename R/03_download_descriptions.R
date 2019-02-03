@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 library(googledrive)
 library(here)
 library(tidyverse)
