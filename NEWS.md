@@ -16,6 +16,7 @@
 ### UI changes
 
 - Give a more hopefule note if no description is found.
+- Inline citations in description texts are formatted in italics.
 
 ## 0.3.1 (2019-01-31)
 
