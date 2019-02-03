@@ -5,7 +5,7 @@ library(tidyverse)
 
 # Google auhtentication
 options(httr_oob_default = TRUE) 
-gs_auth(new_user = TRUE) 
+drive_auth(new_user = TRUE) 
 
 # Helper functions --------------------------------------------------------
 
