@@ -4,8 +4,7 @@ library(here)
 library(tidyverse)
 
 # Google auhtentication
-options(httr_oob_default = TRUE) 
-drive_auth(new_user = TRUE) 
+drive_auth(use_oob = TRUE) 
 
 # Helper functions --------------------------------------------------------
 
