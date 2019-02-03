@@ -96,7 +96,7 @@ Run the following R scripts from the root of the repository:
 
 # Download additional metadata. This file is also inculded in the repository
 # and you can find it in the "data" subdir.
-04_download_metadata.R
+./R/04_download_metadata.R
 ```
 
 Alternatively, you can source the files from your RStudio project.
