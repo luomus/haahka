@@ -13,12 +13,25 @@ What things you need to install the software and how to install them
 + [R](https://cran.r-project.org) ( tested on versions >= 3.5.1)
 + [RStudio](https://www.rstudio.com) (optional, but useful for development)
 
-In addition, you will need the following R packages:
+The R package management is handled by [`packrat`](https://rstudio.github.io/packrat/). 
+Packrat overloads the system R library path and uses a local library of packages
+instead. This way, required packages can be automatically handled by packrat
+and the installed packages will not conflict with the system library. To see
+whichi packages will be installed by packrat, have a look at [here](https://gitlab.com/tringa-ry/halias-browser/blob/master/packrat/packrat.lock).
 
-```R
-install.packages(shiny)
-install.packages(shinydashboard)
-install.packages(tidyverse)
+Packrat will automatically start installing the required packages once you
+start R (or RStudio) at the root of this repository. If you need to update
+packages at any time later, do the following from R:
+
+```
+packrat::restore()
+```
+
+In case you introduce new packages, packrat will automatically know about them.
+You will still have to update packrat by:
+
+```
+packrat::snapshot()
 ```
 
 ### Installing
