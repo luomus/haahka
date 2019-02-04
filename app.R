@@ -371,11 +371,7 @@ ui <- dashboardPage(
                 fluidRow(
                     column(12,
                            box(width = 12,
-                               column(width = 6,
-                                      uiOutput("render_species")
-                               ),
-                               column(width = 6
-                               )
+                               uiOutput("render_species")
                            )
                     )
                 ),
