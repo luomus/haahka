@@ -643,10 +643,12 @@ server <- function(input, output, session) {
           dplyr::pull(Sci_name)
         selected_sp <- spps[which(spps == selected_sp)]
 
-        payload <- selectInput("species", 
-                               label = i18n()$t("Valitse laji"),
-                               choices = spps,
-                               selected = selected_sp)
+        payload <- div(id = "large",
+                       selectInput("species", 
+                                   label = i18n()$t("Valitse laji"),
+                                   choices = spps,
+                                   selected = selected_sp)
+        )
         return(payload)
     })
     

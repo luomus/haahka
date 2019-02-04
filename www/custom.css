@@ -37,6 +37,16 @@ h4.description {
   margin-right: 20px;
 }
 
+#large .selectize-input { 
+  line-height: 40px; 
+  font-size: 16px;
+}
+
+#large .selectize-dropdown { 
+  line-height: 30px; 
+  font-size: 16px;
+}
+
 div.record {
   text-align: center;
   margin-bottom: 20px;
