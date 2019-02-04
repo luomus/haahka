@@ -373,22 +373,14 @@ ui <- dashboardPage(
                 # Inject the JS bit
                 tags$script(jscode),
                 fluidRow(
-                    column(12,
-                           box(width = 12,
-                               column(width = 6,
-                                      uiOutput("render_species")
-                               ),
-                               column(width = 6
-                               )
-                           )
-                    )
-                ),
-                fluidRow(
                     column(6,
+                           box(width = 12,
+                               uiOutput("render_species")
+                           ),
                            box(
-                               width = 12,
-                               withSpinner(uiOutput("render_description"), type = 8, 
-                                           size = 0.5)
+                             width = 12,
+                             withSpinner(uiOutput("render_description"), type = 8, 
+                                         size = 0.5)
                            )
                     ),
                     column(6,
@@ -650,10 +642,12 @@ server <- function(input, output, session) {
           dplyr::pull(Sci_name)
         selected_sp <- spps[which(spps == selected_sp)]
 
-        payload <- selectInput("species", 
-                               label = i18n()$t("Valitse laji"),
-                               choices = spps,
-                               selected = selected_sp)
+        payload <- div(id = "large",
+                       selectInput("species", 
+                                   label = i18n()$t("Valitse laji listasta tai tyhjennä kenttä ja kirjoita lajinimi"),
+                                   choices = spps,
+                                   selected = selected_sp)
+        )
         return(payload)
     })
     
