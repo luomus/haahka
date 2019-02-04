@@ -369,18 +369,14 @@ ui <- dashboardPage(
                 # Inject the JS bit
                 tags$script(jscode),
                 fluidRow(
-                    column(12,
+                    column(6,
                            box(width = 12,
                                uiOutput("render_species")
-                           )
-                    )
-                ),
-                fluidRow(
-                    column(6,
+                           ),
                            box(
-                               width = 12,
-                               withSpinner(uiOutput("render_description"), type = 8, 
-                                           size = 0.5)
+                             width = 12,
+                             withSpinner(uiOutput("render_description"), type = 8, 
+                                         size = 0.5)
                            )
                     ),
                     column(6,
