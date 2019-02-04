@@ -31,5 +31,5 @@ Tringa ry, Annankatu 29 A 16, 00100 Helsinki.
 Aineistoversio 1.1 kattaa havainnot 31.12.2017 asti, ja tiedostoa 
 tullaan päivittämään uudella aineistolla noin vuoden välein.
 
-Suomen kulttuurirahasto on tukenut lintuaseman aineiston keruuta, 
-josta lämmin kiitos!
+Suomen kulttuurirahasto on tukenut lintuaseman aineiston keruuta ja Alfred Kordelinin säätiö lajitekstien kirjoittamista, 
+lämmin kiitos!
