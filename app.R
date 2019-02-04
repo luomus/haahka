@@ -637,7 +637,7 @@ server <- function(input, output, session) {
 
         payload <- div(id = "large",
                        selectInput("species", 
-                                   label = i18n()$t("Valitse laji"),
+                                   label = i18n()$t("Valitse laji listasta tai tyhjennä kenttä ja kirjoita lajinimi"),
                                    choices = spps,
                                    selected = selected_sp)
         )
