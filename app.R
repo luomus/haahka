@@ -276,6 +276,9 @@ LICENSE <- METADATA[["License"]]
 AUTHOR <- METADATA[["Author"]]
 AUTHOREMAIL <- METADATA[["AuthorEmail"]]
 
+# Where should feedback be sent
+FEEDBACK <- "halias@halias.fi"
+
 # FIXME: hard coded for now
 DATA_VERSION <- 1.1
 DATA_URL <- "https://www.tringa.fi/hangon-lintuasema/hankodata/"
@@ -610,6 +613,9 @@ server <- function(input, output, session) {
                 br(),
                 paste0(data_prefix, ": ", DATA_VERSION),
                 br(),
+                i18n()$t("Palaute: "),
+                a(href = paste0("mailto:", FEEDBACK), FEEDBACK),
+                br(),
                 br(),
                 a(href = REPO_URL,
                   gsub("https://", "", REPO_URL)),
@@ -639,7 +645,7 @@ server <- function(input, output, session) {
         spps <- get_species_names(name_field)
         
         selected_sp <- sp_data %>% 
-          dplyr::filter(Species_Abb == INTENDED_SPECIES) %>% 
+          dplyr::filter(Species_Abb == DEFAULT_SPECIES) %>% 
           dplyr::pull(Sci_name)
         selected_sp <- spps[which(spps == selected_sp)]
 

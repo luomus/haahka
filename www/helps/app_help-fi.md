@@ -16,4 +16,4 @@ Löysitkö ohjelmasta bugin? Eikö jokin ominaisuus toimi toivotulla tavalla? Tu
 
 1. Toteuta korjaus tai uusi omainaisuus itse ja jätä [GitLab-palvelussa](https://gitlab.com/tringa-ry/halias-browser) pull request.
 2. [Avaa uusi huomio](https://gitlab.com/tringa-ry/halias-browser/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=) (“issue”) GitLab-palvelussa ja kuvaa havaitesemasi bugi tai toive uudesta ominaisuudesta siellä.
-3. Lähetä meiliä osoitteeseen <joona.lehtomaki@iki.fi>
+3. Lähetä meiliä osoitteeseen <halias@halias.fi>

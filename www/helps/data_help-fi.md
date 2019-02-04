@@ -21,7 +21,7 @@ analysoinnista ja tulkinnasta tai mahdollisista aineistossa olevista
 tallennusvirheistä. 
 
 Aineiston käyttöön liittyvissä kysymyksissä ota yhteyttä osoitteeseen 
-<halias@tringa.fi>. Mikäli aineistosta tuotetaan julkaisu, pyydämme 
+<halias@halias.fi>. Mikäli aineistosta tuotetaan julkaisu, pyydämme 
 kiittämään siinä satoja vapaaehtoisia lintuharrastajia, jotka ovat 
 keränneet aineiston. Lisäksi pyydämme lähettämään julkaisusta kopion 
 pdf-muodossa em. osoitteeseen tai postitse:
