@@ -167,6 +167,12 @@ Hash: b42cd2910f0494b711ee5ef5fe2a71c2
 Requires: DBI, R6, assertthat, dplyr, glue, purrr, rlang, tibble,
     tidyselect
 
+Package: debugme
+Source: CRAN
+Version: 1.1.0
+Hash: c233690edd9fa17a63f7c8d83c1ca153
+Requires: crayon
+
 Package: digest
 Source: CRAN
 Version: 0.6.18
@@ -385,11 +391,21 @@ Source: CRAN
 Version: 0.5.0
 Hash: 498643e765d1442ba7b1160a1df3abf9
 
+Package: parsedate
+Source: CRAN
+Version: 1.1.3
+Hash: 85902ad85833c2e722af340d486ef256
+
 Package: pillar
 Source: CRAN
 Version: 1.3.1
 Hash: 9ed4c2a5d3047bfba3e852ad5e806d91
 Requires: cli, crayon, fansi, rlang, utf8
+
+Package: pingr
+Source: CRAN
+Version: 1.1.2
+Hash: c06422794727df56ede9a55be3fc91da
 
 Package: pkgconfig
 Source: CRAN
@@ -406,6 +422,16 @@ Source: CRAN
 Version: 1.8.4
 Hash: ec185c885aab7ec91693d78c20cb5d1a
 Requires: Rcpp
+
+Package: png
+Source: CRAN
+Version: 0.1-7
+Hash: 421d7d6e0fb4bd885ecbd909b6456b8b
+
+Package: praise
+Source: CRAN
+Version: 1.0.0
+Hash: 77da8f1df873a4b91e5c4a68fe2fb1b6
 
 Package: prettyunits
 Source: CRAN
@@ -573,6 +599,20 @@ Version: 0.6.0
 Hash: 0f276e160b5cfee10f1fae1ef5e79339
 Requires: htmltools, shiny, shinydashboard
 
+Package: shinytest
+Source: CRAN
+Version: 1.3.0
+Hash: c5b8b319c4ef79d75006056701b77e2c
+Requires: R6, assertthat, callr, crayon, debugme, digest, htmlwidgets,
+    httpuv, httr, jsonlite, parsedate, pingr, rematch, shiny, testthat,
+    webdriver, withr
+
+Package: showimage
+Source: CRAN
+Version: 1.0.0
+Hash: f058f6b423455d7267a39f920b1d1a64
+Requires: png
+
 Package: sourcetools
 Source: CRAN
 Version: 0.1.7
@@ -593,6 +633,12 @@ Package: sys
 Source: CRAN
 Version: 2.1
 Hash: 5ce312d2f816b21f602cb81fe4659a0b
+
+Package: testthat
+Source: CRAN
+Version: 2.0.1
+Hash: 777eb6e94f5a62bf6320fecf0175bbbb
+Requires: R6, cli, crayon, digest, magrittr, praise, rlang, withr
 
 Package: tibble
 Source: CRAN
@@ -649,6 +695,13 @@ Package: viridisLite
 Source: CRAN
 Version: 0.3.0
 Hash: 78bb072c4f9e729a283d4c40ec93f9c6
+
+Package: webdriver
+Source: CRAN
+Version: 1.0.5
+Hash: 886b77eebfb8ba4fbfa31935fb8fd19b
+Requires: R6, base64enc, callr, curl, debugme, httr, jsonlite,
+    showimage, withr
 
 Package: whisker
 Source: CRAN
