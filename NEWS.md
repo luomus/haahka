@@ -1,12 +1,20 @@
-## 0.3.3 (2019-02-XX)
+## 0.3.3 (2019-02-04)
+
+- App name changed to "Haahka"
 
 ### Bug fixes
 
+- Internally, default species is now enforced more strongly.
+
 ### New features
+
+- Google Analytics tracking added.
 
 ### UI changes
 
 - Species selector layout narrower than before.
+- Species selector larger with larger text.
+- Change feedback email addresses.
 
 ## 0.3.2 (2019-02-03)
 
