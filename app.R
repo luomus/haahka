@@ -276,6 +276,9 @@ LICENSE <- METADATA[["License"]]
 AUTHOR <- METADATA[["Author"]]
 AUTHOREMAIL <- METADATA[["AuthorEmail"]]
 
+# Where should feedback be sent
+FEEDBACK <- "halias@halias.fi"
+
 # FIXME: hard coded for now
 DATA_VERSION <- 1.1
 DATA_URL <- "https://www.tringa.fi/hangon-lintuasema/hankodata/"
@@ -609,6 +612,9 @@ server <- function(input, output, session) {
                 paste0(app_prefix, ": ", VERSION),
                 br(),
                 paste0(data_prefix, ": ", DATA_VERSION),
+                br(),
+                i18n()$t("Palaute: "),
+                a(href = paste0("mailto:", FEEDBACK), FEEDBACK),
                 br(),
                 br(),
                 a(href = REPO_URL,
