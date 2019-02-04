@@ -362,7 +362,8 @@ ui <- dashboardPage(
     # ui-body ------------------------------------------------------------------
     dashboardBody(
         tags$head(
-            tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+            tags$link(rel = "stylesheet", type = "text/css", href = "custom.css"),
+            includeScript("google-analytics.js")
         ),
 
         # Species observations tab ---------------------------------------------
