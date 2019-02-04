@@ -1,3 +1,13 @@
+## 0.3.3 (2019-02-XX)
+
+### Bug fixes
+
+### New features
+
+### UI changes
+
+- Species selector layout narrower than before.
+
 ## 0.3.2 (2019-02-03)
 
 ### Bug fixes
