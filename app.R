@@ -645,7 +645,7 @@ server <- function(input, output, session) {
         spps <- get_species_names(name_field)
         
         selected_sp <- sp_data %>% 
-          dplyr::filter(Species_Abb == INTENDED_SPECIES) %>% 
+          dplyr::filter(Species_Abb == DEFAULT_SPECIES) %>% 
           dplyr::pull(Sci_name)
         selected_sp <- spps[which(spps == selected_sp)]
 
