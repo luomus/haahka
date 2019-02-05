@@ -1,6 +1,7 @@
 library(ggsci)
 library(glue)
 library(highcharter)
+library(logger)
 library(lubridate)
 library(markdown)
 library(officer)
