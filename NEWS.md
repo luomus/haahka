@@ -1,3 +1,12 @@
+## 0.3.5 (2019-02-05)
+
+- HOTFIX: Defining globals on the process level is a *really* bad idea, because 
+  different users will interfere with each other. Moving all globals to server 
+  (session) level should solve much of the erratic behaviour seen on selecting the 
+  species and language.
+- Utility functions not specific to Shiny architecture have been moved to a 
+  separate file.
+
 ## 0.3.4 (2019-02-04)
 
 - App name changed to "Haahka"
