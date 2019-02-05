@@ -14,6 +14,11 @@ library(shinyWidgets)
 library(tidyverse)
 library(yaml)
 
+# Set up logger -----------------------------------------------------------
+
+logger::log_layout(layout_glue_colors)
+logger::log_threshold(TRACE)
+
 # Utilities ---------------------------------------------------------------
 
 source("R/00_utils.R")
