@@ -333,6 +333,20 @@ Source: CRAN
 Version: 0.2.1
 Hash: 88926ad9c43581fd0822a37c8ed09f05
 
+Package: logger
+Source: github
+Version: 0.1
+Hash: ceca6106f0f183de7dcf73c0b968bc60
+GithubRepo: logger
+GithubUsername: daroczig
+GithubRef: master
+GithubSha1: a95357242c0db5bed93d3c0266ab5f05ff43539e
+RemoteHost: api.github.com
+RemoteRepo: logger
+RemoteUsername: daroczig
+RemoteRef: master
+RemoteSha: a95357242c0db5bed93d3c0266ab5f05ff43539e
+
 Package: lubridate
 Source: CRAN
 Version: 1.7.4
@@ -496,6 +510,11 @@ Package: rematch
 Source: CRAN
 Version: 1.0.1
 Hash: ad4faf59e7611117ff165817074c50c7
+
+Package: remotes
+Source: CRAN
+Version: 2.0.2
+Hash: cfcf5e119ed5e6af4b47530ba59101f3
 
 Package: reprex
 Source: CRAN
