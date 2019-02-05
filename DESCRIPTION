@@ -1,4 +1,4 @@
-Title: Halias observation browser
+Title: Haahka bird migration browser
 Author: Joona Lehtomäki
 AuthorUrl: http://jlehtoma.github.io/
 AuthorEmail: joona.lehtomaki@iki.fi
@@ -6,6 +6,6 @@ License: MIT
 DisplayMode: Normal
 Tags: halias, birds
 Type: Shiny 
-URL: https://gitlab.com/tringa-ry/halias-browser
+URL: https://gitlab.com/tringa-ry/haahka
 Version: 0.4.0
 Date: 2019-02-04
