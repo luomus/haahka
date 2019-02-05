@@ -2,12 +2,21 @@ Tämä verkkosovellus on tehty [R-kielellä](https://cran.r-project.org/index.ht
 
 ### Ohjeita
 
+#### Tarkasteltavan lajin valitseminen
+
+Halutun lajin voi valita seuraavin tavoin:
+
+1. Valitsemalla oikea laji pudotusvalikosta
+2. Klikkaamalla hiirellä kerran lajin valintakentää, painamalla kerran 
+   askelpalautinta ("backspace") ja alkamalla sitten kirjoittaa lajin nimeä
+   (joko valitun kielen mukainen tai tieteellinen nimi). Valikko ehdottaa
+   automaattisesti kirjoitetun perusteella sopivaa nimeä.
+
 #### Linkki tiettyyn lajiin
 
 Sovellus luo automaattisesti selaimen osoitekentässä olevaa URL-linkin parametrit, jotka toimivat tunnisteina valitulle lajille ja kielelle. Kopioimalla osoitekentässä olevan URL-linkin voit siis viitata suoraan haluamaasi lajiin (ja kieleen). Esim. seuraava linkki: 
 
-https://haahka.halias.fi/?species=sommol&language=fi
-
+[https://haahka.halias.fi/?\_inputs\_&language="fi"&species="Somateria mollissima"](https://haahka.halias.fi/?_inputs_&language="fi"&species="Somateria mollissima")
 vie suoraan haahkasta kertovalle suomenkieliseslle sivulle.
 
 ### Palaute
