@@ -1,11 +1,18 @@
-## 0.3.5 (2019-02-05)
+## 0.4.0 (2019-02-05)
 
-- HOTFIX: Defining globals on the process level is a *really* bad idea, because 
-  different users will interfere with each other. Moving all globals to server 
-  (session) level should solve much of the erratic behaviour seen on selecting the 
-  species and language.
+### Breaking changes
+
+- The old selector/url architecture gas been completely scrapped. New
+  implementation uses Shiny's bookmarking functionality. While the URLs are
+  not as pretty, the system is much more robust and (hopefully) get's rid
+  of the erratic behavior.
+- WARNING: the URL pattern (passing the parameters) changes completely
+
+### New features
+
 - Utility functions not specific to Shiny architecture have been moved to a 
   separate file.
+- Use `logger` package for fancy logging.
 
 ## 0.3.4 (2019-02-04)
 
