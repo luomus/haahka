@@ -243,6 +243,10 @@ ui <- dashboardPage(
 # Server ------------------------------------------------------------------
 server <- function(input, output, session) {
     
+    # Unique session token
+    session_token <- session$token
+    log_info("Started new session {session_token}")
+  
     # Session specific variables needed to track various states
     INTENDED_LANGUAGE <- "fi"
     INTENDED_SPECIES <- DEFAULT_SPECIES
@@ -255,7 +259,7 @@ server <- function(input, output, session) {
         selected <- input$language
         
         if (length(selected) > 0 && selected %in% translator$languages) {
-            message("Language changed to: ", selected)
+            log_debug("Language changed to: {selected}")
             translator$set_translation_language(selected)
         }
         return(translator)
@@ -1183,7 +1187,7 @@ server <- function(input, output, session) {
               # observeEvent(input$language, {...}) is triggered *before* the
               # value of input$language is changed.
               INTENDED_SPECIES <- tolower(selected_sp$Species_Abb)
-              message("Intended species changed (URL) to: ", INTENDED_SPECIES)
+              logger::log_debug("Intended species changed (URL) to: {INTENDED_SPECIES}")
               # Mark the global variable indivating that the change has been
               # changed from the URL
               REQUEST_FROM_URL <- TRUE
@@ -1230,7 +1234,7 @@ server <- function(input, output, session) {
         
         if (current_sp != INTENDED_SPECIES && !REQUEST_FROM_URL) {
           INTENDED_SPECIES <- current_sp
-          message("Intended species changed (observer) to: ", INTENDED_SPECIES)
+          logger::log_debug("Intended species changed (observer) to: {INTENDED_SPECIES}")
         }
         
         if (REQUEST_FROM_URL) {
@@ -1252,7 +1256,7 @@ server <- function(input, output, session) {
         updateSelectInput(session, "species", 
                           selected = spps[which(spps == selected_sp$Sci_name)])
         
-        message("Species changed to: ", INTENDED_SPECIES)  
+        logger::log_debug("Species changed to: {INTENDED_SPECIES}")  
     })
     
     observeEvent(i18n(), {
@@ -1281,6 +1285,10 @@ server <- function(input, output, session) {
     observeEvent(input$median_info, {
       req(input$language)
       create_popup(session, "median_info-", input$language) 
+    })
+    
+    session$onSessionEnded(function() {
+      logger::log_info("Session {session_token} stopped")
     })
 }
 
