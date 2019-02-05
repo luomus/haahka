@@ -29,9 +29,9 @@
       "se": "Version av data"
     },
     {
-      "fi": "Valitse laji",
-      "en": "Select species",
-      "se": "Välj art"
+      "fi": "Valitse laji listasta tai tyhjennä kenttä ja kirjoita lajinimi",
+      "en": "Select species from list or clear the field and type in species name",
+      "se": "Välj en art från listan eller rensa fältet och skriv namnet"
     },
     {
       "fi": "Viittausohje",
@@ -167,6 +167,11 @@
       "fi": "Lisenssi",
       "en": "License",
       "se": "Licens"
+    },
+    {
+      "fi": "Palaute: ",
+      "en": "Feedback: ",
+      "se": "Återkoppling: "
     }
     ]
 }
