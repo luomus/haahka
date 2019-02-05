@@ -134,7 +134,8 @@ jscode <-
 '
 
 # UI ----------------------------------------------------------------------
-ui <- dashboardPage(
+ui <- function(request) {
+  dashboardPage(
     
     title = "Haahka - muuttolintuselain",
     
@@ -237,12 +238,22 @@ ui <- dashboardPage(
         )
       )
     )
-)
+  )
+}
 
 
 # Server ------------------------------------------------------------------
 server <- function(input, output, session) {
+
+    # Bookmarking -------------------------------------------------------------
+
     
+    # Bookmarking excludes
+    setBookmarkExclude(c("bm1", "change_info", "GetScreenWidth", 
+                         "language-selectized", "local_info", "median_info",
+                         "migration_info", "sidebarCollapsed", 
+                         "sidebarItemExpanded", "species-selectized"))
+  
     # Unique session token
     session_token <- session$token
     log_info("Started new session {session_token}")
@@ -1165,98 +1176,21 @@ server <- function(input, output, session) {
     })
     
     # OBSERVERS ----------------------------------------------------------------
-    
-    # Update values based on an URL query
+
     observe({
-        # Parse the query string from the current URL
-        query <- parseQueryString(session$clientData$url_search)
-        # Update species selector based on the query.
-        # NOTE: nothing will happen if the 3+3 abbreviation provided as an
-        # URL parameter is not found.
-        if (!is.null(query[['species']])) {
-            # Capitalize for join
-            sp_abb <- toupper(query[['species']])
-            # Get the same name format as used in the species selector
-            spps <- get_species_names("fi")
-            # Join to get the 3+3 species abbreviation
-            selected_sp <- sp_data %>% 
-                dplyr::filter(Species_Abb == sp_abb)
-            
-            if (tolower(selected_sp$Species_Abb) != INTENDED_SPECIES) {
-              # Intended language needs to be update first because the 
-              # observeEvent(input$language, {...}) is triggered *before* the
-              # value of input$language is changed.
-              INTENDED_SPECIES <<- tolower(selected_sp$Species_Abb)
-              logger::log_debug("Intended species changed (URL) to: {INTENDED_SPECIES}")
-              # Mark the global variable indivating that the change has been
-              # changed from the URL
-              REQUEST_FROM_URL <<- TRUE
-            }
-        }
-        # Update language selector based in the query.
-        if (!is.null(query[['language']])) {
-            url_language <- tolower(query[['language']])
-            # Global variable INTENDED_LANGUAGE tracks the current intended 
-            # language (i.e. the one user wants to use). Default value is "".
-            # Change the language selector only if the language provided in the
-            # URL query is different to the intended language and if the 
-            # provided language actually exists in the translator.
-            if (url_language != INTENDED_LANGUAGE & url_language %in% translator$languages) {
-                # Intended language needs to be update first because the 
-                # observeEvent(input$language, {...}) is triggered *before* the
-                # value of input$language is changed.
-                INTENDED_LANGUAGE <<- url_language
-                updateSelectInput(session, "language",
-                                  label = i18n()$t("Kieli"),
-                                  selected = url_language)
-            }
-        }
+      # Trigger this observer every time an input changes
+      reactiveValuesToList(input)
+      session$doBookmark()
     })
     
-    # Whenever the language selector is used, update the URL to match
-    observeEvent(input$language, {
-        current_sp <- get_species_abbr()
-        current_lang <- input$language
-        # Update the intended language if needed
-        if (current_lang != INTENDED_LANGUAGE) {
-            INTENDED_LANGUAGE <<- current_lang
-        }
-        query_string <- paste0("?species=", current_sp, 
-                               "&language=", INTENDED_LANGUAGE)
-        session$updateQueryString(query_string, mode = "push")
-        
+    # Update URL on each bookmarking
+    onBookmarked(function(url) {
+      updateQueryString(url)
     })
     
-    # Whenever the species selector is used, update the URL to match
+    # Used only for logging
     observeEvent(input$species, {
-        current_sp <- get_species_abbr()
-        current_lang <- input$language
-        
-        if (current_sp != INTENDED_SPECIES && !REQUEST_FROM_URL) {
-          INTENDED_SPECIES <<- current_sp
-          logger::log_debug("Intended species changed (observer) to: {INTENDED_SPECIES}")
-        }
-        
-        if (REQUEST_FROM_URL) {
-          REQUEST_FROM_URL <<- FALSE
-        }
-        
-        query_string <- paste0("?species=", INTENDED_SPECIES, 
-                               "&language=", current_lang)
-        session$updateQueryString(query_string, mode = "push")
-        
-        # Capitalize for join
-        sp_abb <- toupper(INTENDED_SPECIES)
-        # Get the same name format as used in the species selector
-        spps <- get_species_names("fi")
-        # Join to get the 3+3 species abbreviation
-        selected_sp <- sp_data %>% 
-          dplyr::filter(Species_Abb == sp_abb)
-        
-        updateSelectInput(session, "species", 
-                          selected = spps[which(spps == selected_sp$Sci_name)])
-        
-        logger::log_debug("Species changed to: {INTENDED_SPECIES}")  
+        logger::log_debug("Species changed to: {input$species}")  
     })
     
     observeEvent(i18n(), {
@@ -1292,4 +1226,4 @@ server <- function(input, output, session) {
     })
 }
 
-shinyApp(ui, server)
+shinyApp(ui, server, enableBookmarking = "url")
