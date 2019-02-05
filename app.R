@@ -1186,11 +1186,11 @@ server <- function(input, output, session) {
               # Intended language needs to be update first because the 
               # observeEvent(input$language, {...}) is triggered *before* the
               # value of input$language is changed.
-              INTENDED_SPECIES <- tolower(selected_sp$Species_Abb)
+              INTENDED_SPECIES <<- tolower(selected_sp$Species_Abb)
               logger::log_debug("Intended species changed (URL) to: {INTENDED_SPECIES}")
               # Mark the global variable indivating that the change has been
               # changed from the URL
-              REQUEST_FROM_URL <- TRUE
+              REQUEST_FROM_URL <<- TRUE
             }
         }
         # Update language selector based in the query.
@@ -1205,7 +1205,7 @@ server <- function(input, output, session) {
                 # Intended language needs to be update first because the 
                 # observeEvent(input$language, {...}) is triggered *before* the
                 # value of input$language is changed.
-                INTENDED_LANGUAGE <- url_language
+                INTENDED_LANGUAGE <<- url_language
                 updateSelectInput(session, "language",
                                   label = i18n()$t("Kieli"),
                                   selected = url_language)
@@ -1219,7 +1219,7 @@ server <- function(input, output, session) {
         current_lang <- input$language
         # Update the intended language if needed
         if (current_lang != INTENDED_LANGUAGE) {
-            INTENDED_LANGUAGE <- current_lang
+            INTENDED_LANGUAGE <<- current_lang
         }
         query_string <- paste0("?species=", current_sp, 
                                "&language=", INTENDED_LANGUAGE)
@@ -1233,12 +1233,12 @@ server <- function(input, output, session) {
         current_lang <- input$language
         
         if (current_sp != INTENDED_SPECIES && !REQUEST_FROM_URL) {
-          INTENDED_SPECIES <- current_sp
+          INTENDED_SPECIES <<- current_sp
           logger::log_debug("Intended species changed (observer) to: {INTENDED_SPECIES}")
         }
         
         if (REQUEST_FROM_URL) {
-          REQUEST_FROM_URL <- FALSE
+          REQUEST_FROM_URL <<- FALSE
         }
         
         query_string <- paste0("?species=", INTENDED_SPECIES, 
