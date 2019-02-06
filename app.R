@@ -79,7 +79,7 @@ FEEDBACK <- "halias@halias.fi"
 
 # FIXME: hard coded for now
 DATA_VERSION <- 1.1
-DATA_URL <- "https://www.tringa.fi/hangon-lintuasema/hankodata/"
+DATA_URL <- "https://www.halias.fi/pitkaaikaisaineisto/"
 
 # Define the size of the tiling window for data averaging
 WINDOW_SIZE <- 5
