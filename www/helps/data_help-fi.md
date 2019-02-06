@@ -1,4 +1,4 @@
-[Lintuaseman aineistosta](https://www.tringa.fi/hangon-lintuasema/haliasdata/) 
+[Lintuaseman aineistosta](https://www.halias.fi/pitkaaikaisaineisto/) 
 on avoimesti ladattavissa päiväkohtaiset lajisummat aseman toiminnan alusta 
 vuonna 1979 lähtien eri havainnointitavoittain: 
 
@@ -8,11 +8,11 @@ vuonna 1979 lähtien eri havainnointitavoittain:
 4. lisäalueen paikalliset sekä
 5. yömuuttavat. 
 
-Aineisto on zip-tiedostossa, ja sen voi ladata [Tringan sivuilta](https://www.tringa.fi/hangon-lintuasema/haliasdata/) lisenssin 
+Aineisto on zip-tiedostossa, ja sen voi ladata [Haliaksen sivuilta](https://www.halias.fi/pitkaaikaisaineisto/) lisenssin 
 CC BY mukaisesti (versio 4.0). Aineistoon tulee viitata seuraavasti:
 
 ```  
-Helsingin Seudun Lintutieteellinen Yhdistys Tringa ry (2018) Hangon lintuaseman aineisto: päiväsummat (versio 1.1). Ladattu osoitteesta http://www.tringa.fi/hangon-lintuasema/haliasdata <Päivä-Kuukausi-Vuosi>.
+Helsingin Seudun Lintutieteellinen Yhdistys Tringa ry (2018) Hangon lintuaseman aineisto: päiväsummat (versio 1.1). Ladattu osoitteesta https://www.halias.fi/pitkaaikaisaineisto/ <Päivä-Kuukausi-Vuosi>.
 ```
 
 Aineistonkeruumenetelmät on kuvattu mm. julkaisussa Lehikoinen & Vähätalo 
