@@ -7,3 +7,9 @@
 
   ga('create', 'UA-49829586-3', 'auto');
   ga('send', 'pageview');
+
+  $(document).on('change', '#species', function(e) {
+    ga('send', 'event', 'widget', 'select data', $(e.currentTarget).val());
+    console.log($(e.currentTarget).val());
+  });
+  
