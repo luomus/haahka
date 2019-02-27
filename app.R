@@ -258,11 +258,6 @@ server <- function(input, output, session) {
     session_token <- session$token
     log_info("Started new session {session_token}")
   
-    # Session specific variables needed to track various states
-    INTENDED_LANGUAGE <- "fi"
-    INTENDED_SPECIES <- DEFAULT_SPECIES
-    REQUEST_FROM_URL <- FALSE
-  
     # REACTIVES ----------------------------------------------------------------
     
     # i18n() -------------------------------------------------------------------
