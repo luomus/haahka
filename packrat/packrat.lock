@@ -341,11 +341,6 @@ GithubRepo: logger
 GithubUsername: daroczig
 GithubRef: master
 GithubSha1: a95357242c0db5bed93d3c0266ab5f05ff43539e
-RemoteHost: api.github.com
-RemoteRepo: logger
-RemoteUsername: daroczig
-RemoteRef: master
-RemoteSha: a95357242c0db5bed93d3c0266ab5f05ff43539e
 
 Package: lubridate
 Source: CRAN
