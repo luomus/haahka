@@ -27,7 +27,7 @@ source("R/00_utils.R")
 
 load("data/sp_yearly_1_2.RData")
 
-# FIXME: distinct shoulnd't be needed
+# FIXME: distinct shouldn't be needed
 # FIXME: perhaps move all pre-processing to halias-observations
 dat <- dat %>% 
     # Remove duplicate rows
@@ -246,7 +246,6 @@ ui <- function(request) {
 server <- function(input, output, session) {
 
     # Bookmarking -------------------------------------------------------------
-
     
     # Bookmarking excludes
     setBookmarkExclude(c("bm1", "change_info", "GetScreenWidth", 
@@ -257,7 +256,7 @@ server <- function(input, output, session) {
     # Unique session token
     session_token <- session$token
     log_info("Started new session {session_token}")
-  
+    
     # REACTIVES ----------------------------------------------------------------
     
     # i18n() -------------------------------------------------------------------
@@ -698,9 +697,6 @@ server <- function(input, output, session) {
 
         if (!is.null(obs_current)) {    
         
-            epochs <- obs_current %>% 
-                dplyr::select(day, begin, med, end)
-            
             # Tile each variable
             plot_data_begin <- obs_current %>% 
                 dplyr::select(sp, day, begin) %>% 
