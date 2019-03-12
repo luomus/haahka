@@ -1,3 +1,16 @@
+## 0.4.1 (2019-03-12)
+
+- Packrat packages are updated.
+
+### Bug fixes
+
+- Previously changing the language using the language selector an *after* setting
+  the language using URL parameter caused an infinite update loop (see 
+  [issue](https://gitlab.com/tringa-ry/haahka/issues/15)). This is now fixed. As
+  a result, the language selector label is not constructed dynamically, but
+  instead all language translations ("Kieli / Språk / Language") are always
+  shown on the label.
+
 ## 0.4.0 (2019-02-05)
 
 ### Breaking changes
