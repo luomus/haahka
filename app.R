@@ -124,6 +124,9 @@ PB_LIST <- list(
     )
 )
 
+CHOICES <- translator$languages
+names(CHOICES) <- purrr::map_chr(CHOICES, get_languages)
+
 # This Javascript is needed for resizing the median day graph dynamically 
 # depeding on the size of the current viewport
 jscode <-
@@ -147,7 +150,10 @@ ui <- function(request) {
     ),
     # ui-sidebar ---------------------------------------------------------------
     dashboardSidebar(collapsed = FALSE,
-                     uiOutput("render_language"),
+                     #uiOutput("render_language"),
+                     selectInput("language",
+                                 label = "Kieli / Språk / Language",
+                                 choices = CHOICES),
                      hr(),
                      sidebarMenuOutput("sidebarmenu"),
                      uiOutput("render_sidebarfooter")
@@ -363,19 +369,6 @@ server <- function(input, output, session) {
     }
     
     # OUTPUTS ------------------------------------------------------------------
-    
-    # render_lanugage ----------------------------------------------------------
-    output$render_language <- renderUI({
-        
-        choices <- translator$languages
-        names(choices) <- purrr::map_chr(choices, get_languages)
-        
-        payload <- selectInput("language",
-                               label = i18n()$t("Kieli"),
-                               choices = choices, 
-                               selected = input$language)
-        return(payload)
-    })
     
     # render_sidebarmenu -------------------------------------------------------
     output$sidebarmenu <- renderMenu({
@@ -1184,9 +1177,11 @@ server <- function(input, output, session) {
         logger::log_debug("Species changed to: {input$species}")  
     })
     
+    observeEvent(input$language, {
+      updateSelectInput(session, "language", selected = input$language)  
+    })
+    
     observeEvent(i18n(), {
-        updateSelectInput(session, "language", label = i18n()$t("Kieli"), 
-                          selected = input$language)
         updateSelectInput(session, "species", label =  i18n()$t("Valitse laji"), 
                           choices = get_species_names(input$language), 
                           selected = input$species)
