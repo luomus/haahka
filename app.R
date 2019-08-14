@@ -399,6 +399,10 @@ server <- function(input, output, session) {
             br(),
             a(href = "https://kordelin.fi/en/frontpage",
               img(src = "img/kordelin_logo_300_173.png")
+            ),
+            br(),
+            a(href = "https://www.tringa.fi",
+              img(src = "img/tringa_logo_300_300.png")
             )
         )
       )
