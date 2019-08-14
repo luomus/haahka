@@ -155,7 +155,7 @@ ui <- function(request) {
                                  label = "Kieli / Språk / Language",
                                  choices = CHOICES),
                      hr(),
-                     sidebarMenuOutput("sidebarmenu"),
+                     sidebarMenuOutput("render_sidebarmenu"),
                      uiOutput("render_sidebarfooter")
     ),
     # ui-body ------------------------------------------------------------------
@@ -371,7 +371,7 @@ server <- function(input, output, session) {
     # OUTPUTS ------------------------------------------------------------------
     
     # render_sidebarmenu -------------------------------------------------------
-    output$sidebarmenu <- renderMenu({
+    output$render_sidebarmenu <- renderMenu({
       
         req(input$language)
         
