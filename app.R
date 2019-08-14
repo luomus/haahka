@@ -150,7 +150,6 @@ ui <- function(request) {
     ),
     # ui-sidebar ---------------------------------------------------------------
     dashboardSidebar(collapsed = FALSE,
-                     #uiOutput("render_language"),
                      selectInput("language",
                                  label = "Kieli / Språk / Language",
                                  choices = CHOICES),
