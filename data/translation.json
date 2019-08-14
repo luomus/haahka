@@ -19,6 +19,11 @@
       "se": "Instruktioner"
     },
     {
+      "fi": "Haahkaa tukevat",
+      "en": "Haahka is supported by",
+      "se": "Haahka stöds av"
+    },
+    {
       "fi": "Sovellusversio",
       "en": "App version",
       "se": "Version av app"

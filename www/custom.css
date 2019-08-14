@@ -104,6 +104,17 @@ h5.record {
   font-size: 20px;
 }
 
+.sponsors {
+  font-weight: 700;
+  margin-top: 20px;
+  margin-left: 15px;
+}
+
+.sponsors img {
+  margin: 15px 0 15px 0;
+  width: 75%;
+}
+
 footer {
   position:absolute;
   bottom:0;

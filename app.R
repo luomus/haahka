@@ -154,8 +154,9 @@ ui <- function(request) {
                      selectInput("language",
                                  label = "Kieli / Språk / Language",
                                  choices = CHOICES),
-                     hr(),
                      sidebarMenuOutput("render_sidebarmenu"),
+                     hr(),
+                     uiOutput("render_sponsors"),
                      uiOutput("render_sidebarfooter")
     ),
     # ui-body ------------------------------------------------------------------
@@ -386,6 +387,23 @@ server <- function(input, output, session) {
                              icon = icon("question-circle")
                     )
         )
+    })
+    
+    # render_sponsors ----------------------------------------------------------
+    output$render_sponsors <- renderMenu({
+      
+      req(input$language)
+      
+      payload <- tagList(
+        div(class = "sponsors",
+            i18n()$t("Haahkaa tukevat"),
+            br(),
+            a(href = "https://kordelin.fi/en/frontpage",
+              img(src = "img/kordelin_logo_300_173.png")
+            )
+        )
+      )
+      return(payload)
     })
     
     # render_sidebarfooter -----------------------------------------------------
