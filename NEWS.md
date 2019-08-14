@@ -1,3 +1,20 @@
+## 0.4.2 (2019-08-14)
+
+- Packrat packages are updated.
+
+### Bug fixes
+
+- Left-upper corner logo now links to Haahka, not Halias frontpage.
+
+### UI changes
+
+- Sidebar now has a sponsors section which shows instances that have supported
+the development of Haahka. The placing is not ideal and in the future sponsors
+should be moved to a proper landing page. Initially, the following sponsors
+have been added:
+  - Alfred Kordelinin säätiö
+  - Tringa ry
+
 ## 0.4.1 (2019-03-12)
 
 - Packrat packages are updated.
