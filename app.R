@@ -144,7 +144,7 @@ ui <- function(request) {
     
     # ui-header ----------------------------------------------------------------
     dashboardHeader(
-        title = tags$a(href = "https://www.halias.fi",
+        title = tags$a(href = "https://haahka.halias.fi",
                        tags$img(src = "browser_logo.png", height = "40")
         )
     ),
