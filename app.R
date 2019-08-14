@@ -608,7 +608,7 @@ server <- function(input, output, session) {
         
         plot_data <- obs_current %>% 
             dplyr::select(sp, day, muutto) %>% 
-            as_tsibble(key = id(sp), index = day) %>% 
+            as_tsibble(key = sp, index = day) %>% 
             tile_observations("day", "muutto", WINDOW_SIZE)
         
         if (!is.null(plot_data)) {
@@ -650,7 +650,7 @@ server <- function(input, output, session) {
 
         plot_data <- obs_current %>% 
             dplyr::select(sp, day, paik) %>% 
-            as_tsibble(key = id(sp), index = day) %>% 
+            as_tsibble(key = sp, index = day) %>% 
             tile_observations("day", "paik", WINDOW_SIZE)
         
         if (!is.null(plot_data)) {
@@ -693,19 +693,19 @@ server <- function(input, output, session) {
             # Tile each variable
             plot_data_begin <- obs_current %>% 
                 dplyr::select(sp, day, begin) %>% 
-                as_tsibble(key = id(sp), index = day) %>% 
+                as_tsibble(key = sp, index = day) %>% 
                 tile_observations("day", "begin", WINDOW_SIZE) %>% 
                 dplyr::rename(begin = value_avgs)
             
             plot_data_med <- obs_current %>% 
                 dplyr::select(sp, day, med) %>% 
-                as_tsibble(key = id(sp), index = day) %>% 
+                as_tsibble(key = sp, index = day) %>% 
                 tile_observations("day", "med", WINDOW_SIZE) %>% 
                 dplyr::rename(med = value_avgs)
             
             plot_data_end <- obs_current %>% 
                 dplyr::select(sp, day, end) %>% 
-                as_tsibble(key = id(sp), index = day) %>% 
+                as_tsibble(key = sp, index = day) %>% 
                 tile_observations("day", "end", WINDOW_SIZE) %>% 
                 dplyr::rename(end = value_avgs)
             
