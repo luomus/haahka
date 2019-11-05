@@ -1,3 +1,5 @@
 ^\.httr-oauth$
 ^packrat/
 ^\.Rprofile$
+^renv$
+^renv\.lock$

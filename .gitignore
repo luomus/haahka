@@ -5,6 +5,4 @@
 README.html
 rsconnect
 .httr-oauth
-packrat/lib*/
-packrat/src/
 .directory
