@@ -12,6 +12,7 @@ library(shinydashboard)
 library(shinydashboardPlus)
 library(shinyWidgets)
 library(tidyverse)
+library(tsibble)
 library(yaml)
 
 # Set up logger -----------------------------------------------------------
