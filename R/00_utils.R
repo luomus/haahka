@@ -1,6 +1,5 @@
 library(assertthat)
 library(shiny)
-library(tsibble)
 library(tidyverse)
 
 # Return full language names instead of a language code.
@@ -72,7 +71,7 @@ is_odd <- function(x) {
 # 
 make_date_label <- function(x, lang) {
   
-  assertthat::see_if(is(x, "Date"))
+  assertthat::see_if(inherits(x, "Date"))
   
   # Get the name of month in a given language
   month_name <- get_months(lang, "long")[lubridate::month(x)]
@@ -173,7 +172,7 @@ tile_observations <- function(x, day, value, size) {
   size <- as.integer(size)
   
   # x must be a tsibble
-  assertthat::see_if(is(x) == "tbl_ts")
+  assertthat::see_if(inherits(x, "tbl_ts"))
   
   # size must be an odd integer
   assertthat::on_failure(is_odd) <- function(call, env) {
@@ -206,8 +205,10 @@ tile_observations <- function(x, day, value, size) {
     # Get correct days based on the index vector
     days <- x[[day]][day_index]
     # Calculate the averages
-    avgs <- tsibble::tile_dbl(x[[value]], ~ mean(., na.rm = TRUE), 
-                              .size = size)
+    avgs <- tapply(
+      x[[value]], rep(seq_along(days), each = size)[seq_len(nrow(x))], mean,
+      na.rm = TRUE
+    )
     avgs <- round(avgs, 2)
   }
   
