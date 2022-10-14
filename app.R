@@ -44,12 +44,12 @@ sp_data <- readr::read_csv("data/Halias_sp_v1.2.csv") %>%
 
 # Read pre-processed abundance and phenology stats
 abundance_stats <- readr::read_csv("data/Halias_trend20181230.csv") %>% 
-    dplyr::select(-X1) %>% 
+    dplyr::select(-1) %>% 
     dplyr::mutate(slopeShort = ifelse(is.infinite(slopeShort), NA, slopeShort))
 
 # Read pre-processed record stats
 record_stats <- readr::read_csv("data/Halias_record20181230.csv") %>% 
-    dplyr::select(-X1)
+    dplyr::select(-1)
 
 # Translation data
 translator <- shiny.i18n::Translator$new(translation_json_path = "data/translation.json")
@@ -125,7 +125,7 @@ PB_LIST <- list(
     )
 )
 
-CHOICES <- translator$languages
+CHOICES <- translator$get_languages()
 names(CHOICES) <- purrr::map_chr(CHOICES, get_languages)
 
 # This Javascript is needed for resizing the median day graph dynamically 
@@ -191,7 +191,7 @@ ui <- function(request) {
                                actionButton(
                                  inputId = "migration_info",
                                  label = NULL,
-                                 icon = icon("info-circle",
+                                 icon = icon("info",
                                              class = "icon-info"),
                                  class = "btn-info btn-small-info"
                                )
@@ -204,7 +204,7 @@ ui <- function(request) {
                                actionButton(
                                  inputId = "local_info",
                                  label = NULL,
-                                 icon = icon("info-circle",
+                                 icon = icon("info",
                                              class = "icon-info"),
                                  class = "btn-info btn-small-info"
                                )
@@ -216,7 +216,7 @@ ui <- function(request) {
                                actionButton(
                                  inputId = "change_info",
                                  label = NULL,
-                                 icon = icon("info-circle",
+                                 icon = icon("info",
                                              class = "icon-info"),
                                  class = "btn-info btn-small-info"
                                )
@@ -227,7 +227,7 @@ ui <- function(request) {
                                actionButton(
                                  inputId = "median_info",
                                  label = NULL,
-                                 icon = icon("info-circle",
+                                 icon = icon("info",
                                              class = "icon-info"),
                                  class = "btn-info btn-small-info"
                                )
@@ -270,7 +270,7 @@ server <- function(input, output, session) {
     i18n <- reactive({
         selected <- input$language
         
-        if (length(selected) > 0 && selected %in% translator$languages) {
+        if (length(selected) > 0 && selected %in% translator$get_languages()) {
             log_debug("Language changed to: {selected}")
             translator$set_translation_language(selected)
         }
@@ -384,7 +384,7 @@ server <- function(input, output, session) {
                     ),
                     menuItem(i18n()$t("Ohjeet"), 
                              tabName = "help", 
-                             icon = icon("question-circle")
+                             icon = icon("question")
                     )
         )
     })
@@ -776,29 +776,29 @@ server <- function(input, output, session) {
         # Long term
         if (!is.na(stats_current$slopeLong) & stats_current$slopeLong > 0) {
             lt_number_color <- "green"
-            lt_number_icon <- "fa fa-caret-up"
+            lt_number_icon <- icon("caret-up")
             lt_number <- paste0("+", stats_current$slopeLong, "%")
         } else if (!is.na(stats_current$slopeLong) & stats_current$slopeLong < 0) {
             lt_number_color <- "red"
-            lt_number_icon <- "fa fa-caret-down"
+            lt_number_icon <- icon("caret-down")
             lt_number <- paste0(stats_current$slopeLong, "%")
         } else if (is.na(stats_current$slopeLong) | stats_current$slopeLong == 0) {
             lt_number_color <- "grey"
-            lt_number_icon <- NA
+            lt_number_icon <- icon(NULL)
             lt_number <- "-"
         }
         # Short term
         if (!is.na(stats_current$slopeShort) & stats_current$slopeShort > 0) {
             st_number_color <- "green"
-            st_number_icon <- "fa fa-caret-up"
+            st_number_icon <- icon("caret-up")
             st_number <- paste0("+", stats_current$slopeShort, "%")
         } else if (!is.na(stats_current$slopeShort) & stats_current$slopeShort < 0) {
             st_number_color <- "red"
-            st_number_icon <- "fa fa-caret-down"
+            st_number_icon <- icon("caret-down")
             st_number <- paste0(stats_current$slopeShort, "%")
         } else if (is.na(stats_current$slopeShort) | stats_current$slopeShort == 0) {
             st_number_color <- "grey"
-            st_number_icon <- NA
+            st_number_icon <-icon(NULL)
             st_number <- "-"
         }
         
@@ -819,31 +819,31 @@ server <- function(input, output, session) {
                                width = 6,
                                descriptionBlock(
                                    number = lt_number, 
-                                   number_color = lt_number_color, 
-                                   number_icon = lt_number_icon,
+                                   numberColor = lt_number_color, 
+                                   numberIcon = lt_number_icon,
                                    header = "", 
                                    text = paste(i18n()$t("Pitkän aikavälin muutos")), 
-                                   right_border = TRUE,
-                                   margin_bottom = TRUE
+                                   rightBorder = TRUE,
+                                   marginBottom = TRUE
                                )
                            ),
                            column(
                                width = 6,
                                descriptionBlock(
                                    number = st_number, 
-                                   number_color = st_number_color, 
-                                   number_icon = st_number_icon,
+                                   numberColor = st_number_color, 
+                                   numberIcon = st_number_icon,
                                    header = "", 
                                    text = paste(i18n()$t("Lyhyen aikavälin muutos")), 
-                                   right_border = TRUE,
-                                   margin_bottom = TRUE
+                                   rightBorder = TRUE,
+                                   marginBottom = TRUE
                                )
                            ),
                            column(width = 12,
                                   descriptionBlock(
                                       header = paste(i18n()$t("Päivittäiset keskirunsaudet yhteensä")), 
-                                      right_border = TRUE,
-                                      margin_bottom = FALSE
+                                      rightBorder = TRUE,
+                                      marginBottom = FALSE
                                   )
                            ),
                            column(
@@ -852,8 +852,8 @@ server <- function(input, output, session) {
                                    header = format(round(stats_current$Nbegin, 0),
                                                    big.mark = " "),
                                    text = "1979-1999", 
-                                   right_border = TRUE,
-                                   margin_bottom = FALSE
+                                   rightBorder = TRUE,
+                                   marginBottom = FALSE
                                )
                            ),
                            column(
@@ -862,8 +862,8 @@ server <- function(input, output, session) {
                                    header = format(round(stats_current$Nmed, 0),
                                                    big.mark = " "),
                                    text = "2000-2010", 
-                                   right_border = FALSE,
-                                   margin_bottom = FALSE
+                                   rightBorder = FALSE,
+                                   marginBottom = FALSE
                                )
                            ),
                            column(
@@ -872,8 +872,8 @@ server <- function(input, output, session) {
                                    header = format(round(stats_current$Nend, 0),
                                                    big.mark = " "), 
                                    text = "2011-2017",
-                                   right_border = FALSE,
-                                   margin_bottom = FALSE
+                                   rightBorder = FALSE,
+                                   marginBottom = FALSE
                                )
                            )
                        )
