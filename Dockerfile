@@ -1,0 +1,46 @@
+FROM rocker/r-ver:4.2.1
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      curl \
+      libcurl4-openssl-dev \
+      libssl-dev \
+      libxml2-dev \
+      libz-dev \
+ && apt-get autoremove -y \
+ && apt-get autoclean -y \
+ && rm -rf /var/lib/apt/lists/*
+
+ENV RENV_PATHS_LIBRARY renv/library
+
+COPY renv.lock renv.lock
+
+RUN R -e "install.packages('renv')" \
+ && R -e "renv::restore()"
+
+HEALTHCHECK --interval=1m --timeout=10s \
+  CMD curl -sfI -o /dev/null 0.0.0.0:3838 || exit 1
+
+ENV HOME /home/user
+ENV  OPENBLAS_NUM_THREADS 1
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY app.R /home/user/app.R
+COPY google-analytics.js /home/user/google-analytics.js
+COPY R/ /home/user/R/
+COPY www/ /home/user/www
+COPY data/ /home/user/data
+COPY DESCRIPTION /home/user/DESCRIPTION
+
+RUN  chgrp -R 0 /home/user \
+  && chmod -R g=u /home/user /etc/passwd
+
+WORKDIR /home/user
+
+USER 1000
+
+EXPOSE 3838
+
+ENTRYPOINT ["entrypoint.sh"]
+
+CMD ["R", "-e", "shiny::runApp(port = 3838, host = '0.0.0.0')"]
