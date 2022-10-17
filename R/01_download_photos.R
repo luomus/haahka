@@ -1,49 +1,57 @@
 #!/usr/bin/env Rscript
-library(googledrive)
-library(here)
-library(tidyverse)
 
-# FIXME: Add instructions on how to authorize with Google Drive
-
-# Helper functions --------------------------------------------------------
-
-# Download a file from Google Drive
+# Download a file from laji.fi
 #
-# @param x dribble row
+# @param taxon taxon shortcode
 # @param path character string local path where to save the file
 #
-download_file <- function(x, path) {
+download_file <- function(taxon, path = "www/img/sp_images") {
   
   if (!file.exists(path)) {
     dir.create(path, recursive = TRUE)
   }
-  # Build target file name. The format is XXX-YYYYYY.ext, where XXX are three 
-  # digits, YYYYYY is the species abbreviation and ext should be jpg, though 
-  # few pngs are there as well. YYYYYY should be in upper, but is delivered 
-  # in lower as well. Make it all upper.
-  body <- unlist(strsplit(x$name, "\\."))[1]
-  ext <- unlist(strsplit(x$name, "\\."))[2]
-  path <- file.path(path, paste0(toupper(body), ".", tolower(ext)))
+
+  taxon_id <- httr::RETRY(
+    "GET", 
+    url = "https://laji.fi",
+    path = file.path("api", "taxa", "search"),
+    query = list(query = taxon)
+  )
+
+  taxon_id <- httr::content(taxon_id)
+
+  taxon_id <- taxon_id[[1L]]
+
+  taxon_id <- taxon_id[["id"]]
   
-  # Download file
-  googledrive::drive_download(googledrive::as_id(x$id), path = path, 
-                              overwrite = TRUE)
-  return(invisible(NULL))
+  res <- httr::RETRY(
+    "GET",
+    url = "https://laji.fi",
+    path = file.path("api", "taxa", taxon_id, "media")
+  )
+
+  res <- httr::content(res)
+
+  if (length(res) > 0L) {
+
+    res <- res[[1L]]
+    
+    download.file(
+      res[["largeURL"]],
+      file.path(
+        path,
+        paste(taxon, tools::file_ext(res[["largeURL"]]), sep = ".")
+      )
+    )
+  
+  }
+
+  res
+
 }
 
-# Process Drive content ---------------------------------------------------
-
-# Set the URL
-"https://drive.google.com/drive/folders/1dJx9KHHTB0SsWfNeIPYT3oOzr6TaXht9" %>% 
-  # Transform URL to id
-  googledrive::as_id() %>% 
-  # Get Drive directory object
-  googledrive::drive_get() %>% 
-  # List photo files in the directory
-  googledrive::drive_ls() %>% 
-  # Process each row (i.e. file) in the dribble rowwise
-  dplyr::rowwise() %>% 
-  # Download files
-  dplyr::do(download_file(., path = here::here("www/img/sp_images/org")))
-
-            
+# Process downloads ---------------------------------------------------
+taxa <- scan("data/taxa.txt", "character")
+meta_data <- lapply(scan("data/taxa.txt", "character"), download_file)
+names(meta_data) <- taxa
+saveRDS(meta_data, "data/photo_metadata.rds")

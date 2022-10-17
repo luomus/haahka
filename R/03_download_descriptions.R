@@ -1,51 +1,36 @@
 #!/usr/bin/env Rscript
-library(googledrive)
-library(here)
-library(tidyverse)
 
-# FIXME: Add instructions on how to authorize with Google Drive
-
-# Helper functions --------------------------------------------------------
-
-# Download a file from Google Drive
+# Download a taxon description from laji.fi
 #
-# @param x dribble row
-# @param path character string local path where to save the file
-#
-download_file <- function(x, path) {
-  
-  if (!file.exists(path)) {
-    dir.create(path)
-  }
-  # Build target file name. The format is XXX-YYYYYY.ext, where XXX are three 
-  #!/usr/bin/env Rscript
-  
-  # digits, YYYYYY is the species abbreviation and ext should be jpg, though 
-  # few pngs are there as well. YYYYYY should be in upper, but is delivered 
-  # in lower as well. Make it all upper.
-  body <- unlist(strsplit(x$name, "\\."))[1]
-  ext <- unlist(strsplit(x$name, "\\."))[2]
-  path <- file.path(path, paste0(toupper(body), ".", tolower(ext)))
-  
-  # Download file
-  googledrive::drive_download(googledrive::as_id(x$id), path = path, 
-                              overwrite = TRUE)
-  return(invisible(NULL))
+# @param taxon taxon shortcode
+
+download_descriptions <- function(taxon) {
+
+  taxon_id <- httr::RETRY(
+    "GET", 
+    url = "https://laji.fi",
+    path = file.path("api", "taxa", "search"),
+    query = list(query = taxon)
+  )
+
+  taxon_id <- httr::content(taxon_id)
+
+  taxon_id <- taxon_id[[1L]]
+
+  taxon_id <- taxon_id[["id"]]
+
+  res <- httr::RETRY(
+    "GET",
+    url = "https://laji.fi",
+    path = file.path("api", "taxa", taxon_id, "descriptions")
+  )
+
+  httr::content(res)
+
 }
 
-# Process Drive content ---------------------------------------------------
-
-# Set the URL
-"https://drive.google.com/drive/folders/1wNUn4PY47jr5b77QkOMmjI7-fwIcFv2i" %>% 
-  # Transform URL to id
-  googledrive::as_id() %>% 
-  # Get Drive directory object
-  googledrive::drive_get() %>% 
-  # List photo files in the directory
-  googledrive::drive_ls() %>% 
-  # Process each row (i.e. file) in the dribble rowwise
-  dplyr::rowwise() %>% 
-  # Download files
-  dplyr::do(download_file(., path = here::here("data/descriptions")))
-
-            
+# Process downloads ---------------------------------------------------
+taxa <- scan("data/taxa.txt", "character")
+descriptions <- lapply(scan("data/taxa.txt", "character"), download_descriptions)
+names(descriptions) <- taxa
+saveRDS(descriptions, "data/descriptions.rds")
