@@ -6,3 +6,4 @@ README.html
 rsconnect
 .httr-oauth
 .directory
+.env

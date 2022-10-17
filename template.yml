@@ -1,0 +1,123 @@
+kind: Template
+apiVersion: v1
+parameters:
+  - name: APP
+    required: true
+    value: haahka
+  - name: BRANCH
+    required: true
+  - name: GIT_HOST
+    required: true
+    value: https://github.com
+  - name: ORG
+    required: true
+    value: luomus
+  - name: TAG
+    required: true
+    value: latest
+  - name: APP_PORT
+    required: true
+    value: "3838"
+  - name: HOST
+    required: true
+  - name: GITHUB_SECRET
+    required: true
+    generate: expression
+    from: "[a-zA-Z0-9]{64}"
+metadata:
+  name: ${APP}
+objects:
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    name: ${APP}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${APP}-${BRANCH}:${TAG}
+    source:
+      type: Git
+      git:
+        uri: ${GIT_HOST}/${ORG}/${APP}.git
+        ref: ${BRANCH}
+    strategy:
+      type: Docker
+    triggers:
+    - type: ConfigChange
+    - type: GitHub
+      github:
+        secret: ${GITHUB_SECRET}
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: ${APP}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    lookupPolicy:
+      local: true
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    name: ${APP}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    replicas: 1
+    selector:
+      app: ${APP}
+      deploymentconfig: ${APP}-${BRANCH}
+    template:
+      metadata:
+        labels:
+          app: ${APP}
+          deploymentconfig: ${APP}-${BRANCH}
+      spec:
+        containers:
+        - image: ${APP}-${BRANCH}:${TAG}
+          name: ${APP}-${BRANCH}
+          ports:
+          - containerPort: ${APP_PORT}
+    triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+        - ${APP}-${BRANCH}
+        from:
+          kind: ImageStreamTag
+          name: ${APP}-${BRANCH}:${TAG}
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: ${APP}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    ports:
+    - name: ${APP_PORT}
+      port: ${APP_PORT}
+      targetPort: ${{APP_PORT}}
+    selector:
+      app: ${APP}
+      deploymentconfig: ${APP}-${BRANCH}
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: ${APP}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    host: ${HOST}
+    port:
+      targetPort: ${APP_PORT}
+    tls:
+      termination: edge
+    to:
+      kind: Service
+      name: ${APP}-${BRANCH}
+    wildcardPolicy: None
