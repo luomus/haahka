@@ -4,6 +4,7 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends \
       curl \
       libcurl4-openssl-dev \
+      libmagick++-dev \
       libssl-dev \
       libxml2-dev \
       libz-dev \
