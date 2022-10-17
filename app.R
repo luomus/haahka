@@ -55,12 +55,7 @@ record_stats <- readr::read_csv("data/Halias_record20181230.csv") %>%
 translator <- shiny.i18n::Translator$new(translation_json_path = "data/translation.json")
 
 # Text and image metadata
-metadata <- readr::read_csv("data/text_and_image_reference.csv") %>% 
-  # Rename Kuvauspaikka
-  dplyr::rename(Kuvauspaikka = dplyr::starts_with("Kuvauspaikka")) %>% 
-  # If kuvauspaikka is NA, the place is Halias
-  dplyr::mutate(Kuvauspaikka = ifelse(is.na(Kuvauspaikka), 
-                                      "Halias", Kuvauspaikka))
+metadata <- readRDS("data/photo_metadata.rds")
   
 # Global variables --------------------------------------------------------
 
@@ -293,9 +288,7 @@ server <- function(input, output, session) {
     # get_current_meta ---------------------------------------------------------
     get_current_meta <- reactive({
       sp_current <- get_current_sp()
-      current_meta <-  metadata %>% 
-        dplyr::filter(Lajilyhenne == sp_current$Species_Abb)
-      return(current_meta)
+      metadata[[sp_current$Species_Abb]]
     })
     
     # get_current_records ------------------------------------------------------
@@ -476,26 +469,22 @@ server <- function(input, output, session) {
     output$render_citation <- renderUI({
       
       req(input$language)
-      
-      current_meta <- get_current_meta()
+
       current_sp <- get_current_sp()
       
       # Define metadata for the selected species
-      author <- parse_author(current_meta$Kirjoittaja)
-      year <- current_meta$Vuosi
-      data_version <- current_meta$Aineistoversio
       now <- format(Sys.time(), format = "%Y-%m-%d")
       
       title <- i18n()$t("Viittausohje")
-      text_fi <- glue::glue("{author} {year}: {current_sp$FIN_name}. ",
+      text_fi <- glue::glue("{current_sp$FIN_name}. ",
                             "Julkaisussa: Hangon lintuasema: Asemalla havaittujen lintulajien esiintyminen. ",
-                            "Versio {data_version} [{DATA_URL}] [Viitattu {now}]")
-      text_se <- glue::glue("{author} {year}: {current_sp$SWE_name}. ",
+                            "Versio {VERSION} [{DATA_URL}] [Viitattu {now}]")
+      text_se <- glue::glue("{current_sp$SWE_name}. ",
                             "I: Hangö fågelstation: Förekomst av arter vid fågelstationen.",
-                            "Version {data_version} [{DATA_URL}] [Citerad {now}]")
-      text_en <- glue::glue("{author} {year}: {current_sp$ENG_name}. ",
+                            "Version {VERSION} [{DATA_URL}] [Citerad {now}]")
+      text_en <- glue::glue("{current_sp$ENG_name}. ",
                             "In: Hanko Bird Observatory: Occurrence of species at the observatory. ",
-                            "Version {data_version} [{DATA_URL}] [Cited {now}]")
+                            "Version {VERSION} [{DATA_URL}] [Cited {now}]")
             
       if (input$language == "fi") {
         payload <- tagList(
@@ -533,29 +522,19 @@ server <- function(input, output, session) {
             # The actual file path is needed to figure out if the file exists
             # FIXME: does not work with multiple files!
             img_file <- list.files(file.path("www", "img", "sp_images"),
-                                   pattern = paste0("[0-9]{3}(-|_)(", sp_abbr, ")"),
+                                   pattern = paste0("(", sp_abbr, ")"),
                                    full.names = TRUE)
             
             if (length(img_file) > 0 && file.exists(img_file)) {
                 # Photo credit
-                photo_credit <- current_meta$Kuvaaja
-                photo_date <- current_meta$Päivämäärä
-                photo_date <- ifelse(is.na(photo_date), "", photo_date)
-                photo_place <- current_meta$Kuvauspaikka
-                if (photo_date == "") {
-                  photo_date_place <- paste0("(", photo_place, ")")
-                } else {
-                  photo_date_place <- paste0("(", 
-                                             paste0(c(photo_date, photo_place),
-                                                    collapse = ", "), ")")
-                }
+                caption <- current_meta$caption
                 # Get file basename
                 file_basename <- basename(img_file)
                 # If the file does exist, use tags instead of rendering the image
                 # directly. This way the browser will cache the image.
                 payload <- shiny::div(shiny::img(src = glue::glue("img/sp_images/{file_basename}"),
                                                  width = "90%", class = "description"),
-                                      shiny::p(glue::glue("Ⓒ {photo_credit} {photo_date_place}"), 
+                                      shiny::p(shiny::HTML(caption), 
                                                class = "description"),
                                       shiny::br())
             } else {
@@ -614,7 +593,8 @@ server <- function(input, output, session) {
                         shiny::h3(sci_name, class = "description sci-name"),
                         shiny::br(),
                         uiOutput("render_image"),
-                        shiny::p(i18n()$t("Kuvausteksti tulossa myöhemmin"), class = "description")
+                        shiny::p(i18n()$t("Kuvausteksti tulossa myöhemmin"), class = "description"),
+                        uiOutput("render_citation")
                     )
                 )
             }
