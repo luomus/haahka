@@ -18,6 +18,13 @@ set +a
 
 BRANCH=$(git symbolic-ref --short -q HEAD)
 
+if [ "$BRANCH" != "main" ]; then
+
+  FINBIF_ACCESS_TOKEN=$FINBIF_DEV_ACCESS_TOKEN
+  FINBIF_API_URL=$FINBIF_DEV_API_URL
+
+fi
+
 if [ $i = "build" ]; then
 
   ITEM=".items[0]"
@@ -47,4 +54,8 @@ fi
 oc process -f $f \
   -p BRANCH=$BRANCH \
   -p HOST=$HOST \
+  -p FINBIF_ACCESS_TOKEN=$FINBIF_ACCESS_TOKEN \
+  -p FINBIF_API_URL=$FINBIF_API_URL \
+  -p FINBIF_WAREHOUSE=$FINBIF_WAREHOUSE \
+  -p FINBIF_EMAIL=$FINBIF_EMAIL \
   | jq $ITEM
