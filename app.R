@@ -26,16 +26,8 @@ source("R/00_utils.R")
 
 # Load data ---------------------------------------------------------------
 
-load("data/sp_yearly_1_2.RData")
+dat <- readRDS("data/data.rds")
 
-# FIXME: distinct shouldn't be needed
-# FIXME: perhaps move all pre-processing to halias-observations
-dat <- dat %>% 
-    # Remove duplicate rows
-    dplyr::distinct() %>% 
-    # Round all numeric columns (numbers of observed individuals)
-    dplyr::mutate_if(is.numeric, round, digits = 2)
-    
 # Read species definition data
 sp_data <- readr::read_csv("data/Halias_sp_v1.2.csv") %>% 
     dplyr::arrange(Species_code) %>% 
@@ -282,7 +274,7 @@ server <- function(input, output, session) {
     # get_current_data ---------------------------------------------------------
     get_current_data <- reactive({
         sp_current <- get_current_sp()
-        return(dplyr::filter(dat, sp == sp_current$Species_Abb) )
+        return(dplyr::filter(dat, sp == sp_current$Sci_name) )
     })
     
     # get_current_meta ---------------------------------------------------------
@@ -726,7 +718,7 @@ server <- function(input, output, session) {
                 hchart(type = "line", 
                        hcaes(x = day, y = value, group = epoch),
                        # order of epochs c("begin", "end", "med")
-                       name = c("1979-1999", "2000-2010", "2011-2017"),
+                       name = c("1979-1999", "2000-2010", "2011-2020"),
                        color = ggsci::pal_d3("category10")(3)) %>% 
                 hc_yAxis(title = list(text = i18n()$t("Yksilöä / havaintopäivä"))) %>% 
                 hc_xAxis(title = list(text = ""),
@@ -789,9 +781,9 @@ server <- function(input, output, session) {
                        status = "danger",
                        footer = tagList(
                            p(
-                               i18n()$t("Pitkän aikavälin muutos = keskirunsauden muutos aikajaksolta 1979-1999 aikajaksolle 2011-2017."),
+                               i18n()$t("Pitkän aikavälin muutos = keskirunsauden muutos aikajaksolta 1979-1999 aikajaksolle 2011-2020."),
                                br(),
-                               i18n()$t("Lyhyen aikavälin muutos = keskirunsauden muutos aikajaksolta 2000-2010 aikajaksolle 2011-2017.")
+                               i18n()$t("Lyhyen aikavälin muutos = keskirunsauden muutos aikajaksolta 2000-2010 aikajaksolle 2011-2020.")
                            )
                        ),
                        fluidRow(
@@ -851,7 +843,7 @@ server <- function(input, output, session) {
                                descriptionBlock(
                                    header = format(round(stats_current$Nend, 0),
                                                    big.mark = " "), 
-                                   text = "2011-2017",
+                                   text = "2011-2020",
                                    rightBorder = FALSE,
                                    marginBottom = FALSE
                                )
@@ -906,7 +898,7 @@ server <- function(input, output, session) {
                                    ifelse(season == "aphen", tolower(i18n()$t("Syys")), NA)),
                    # Make epochs factors
                    epoch = factor(epoch, levels = c("begin", "med", "end"),
-                                  labels = rev(c("1979-1999", "2000-2010", "2011-2017")),
+                                  labels = rev(c("1979-1999", "2000-2010", "2011-2020")),
                                   ordered = TRUE),
                    # Numeric value of the factors is needed so that highcharts
                    # can plot the factors on y-axis. Note that Javascript
@@ -926,7 +918,7 @@ server <- function(input, output, session) {
             hchart(type = "scatter", 
                    hcaes(x = date, y = epochnum, group = epoch),
                    # order of epochs c("begin", "end", "med")
-                   name = c("1979-1999", "2000-2010", "2011-2017"),
+                   name = c("1979-1999", "2000-2010", "2011-2020"),
                    color = ggsci::pal_d3("category10")(3)) %>% 
             hc_yAxis(title = list(text = ""),
                      min = 0,
