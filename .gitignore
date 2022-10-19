@@ -7,5 +7,3 @@ rsconnect
 .httr-oauth
 .directory
 .env
-data/descriptions.rds
-data/photo_metadata.rds
