@@ -59,6 +59,22 @@
       "Hash": "45f0398006e83a5b10b72a90663d8d8c",
       "Requirements": []
     },
+    "RSQLite": {
+      "Package": "RSQLite",
+      "Version": "2.2.18",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "a4a3bcd8a9380e04c86876d73a085b8f",
+      "Requirements": [
+        "DBI",
+        "Rcpp",
+        "bit64",
+        "blob",
+        "memoise",
+        "pkgconfig",
+        "plogr"
+      ]
+    },
     "Rcpp": {
       "Package": "Rcpp",
       "Version": "1.0.9",
@@ -409,15 +425,15 @@
     },
     "finbif": {
       "Package": "finbif",
-      "Version": "0.7.0.9000",
+      "Version": "0.7.0.9001",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "luomus",
       "RemoteRepo": "finbif",
       "RemoteRef": "dev",
-      "RemoteSha": "55342669b3a12594790dfb04e11effd8740c811d",
-      "Hash": "28852afdeb9ef2f32b49ea20d0bc4c43",
+      "RemoteSha": "ecb72d906567dcfff20991d51d5d35ffbf28a07b",
+      "Hash": "26ba1687111ee71fb988c92ba373e09a",
       "Requirements": [
         "digest",
         "httr",
@@ -882,10 +898,10 @@
     },
     "markdown": {
       "Package": "markdown",
-      "Version": "1.1",
+      "Version": "1.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "61e4a10781dd00d7d81dd06ca9b94e95",
+      "Hash": "295690cfe43b7ea23de079b52c134b13",
       "Requirements": [
         "mime",
         "xfun"
@@ -1003,6 +1019,14 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "01f28d4278f15c76cddbea05899c5d6f",
+      "Requirements": []
+    },
+    "plogr": {
+      "Package": "plogr",
+      "Version": "0.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "09eb987710984fc2905c7129c7d85e65",
       "Requirements": []
     },
     "prettyunits": {
