@@ -1,3 +1,7 @@
+## 0.5.0.9000 (2022-10-25)
+
+- Connecting data with FinBIF.
+
 ## 0.4.2 (2019-08-14)
 
 - Packrat packages are updated.

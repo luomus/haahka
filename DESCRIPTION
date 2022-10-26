@@ -1,11 +1,10 @@
 Title: Haahka bird migration browser
-Author: Joona Lehtomäki
-AuthorUrl: http://jlehtoma.github.io/
-AuthorEmail: joona.lehtomaki@iki.fi
+Author: William Morris & Joona Lehtomaki
+AuthorEmail: helpdesk@laji.fi
 License: MIT
 DisplayMode: Normal
 Tags: halias, birds
 Type: Shiny 
-URL: https://gitlab.com/tringa-ry/haahka
-Version: 0.4.2
-Date: 2019-08-14
+URL: https://github.com/luomus/haahka
+Version: 0.5.0.9000
+Date: 2022-10-26
