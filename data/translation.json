@@ -6,7 +6,7 @@
       "fi": "Kieli",
       "en": "Language",
       "se": "Språk"
-      
+
     },
     {
       "fi": "Lajikohtaiset havainnot",
@@ -27,11 +27,6 @@
       "fi": "Sovellusversio",
       "en": "App version",
       "se": "Version av app"
-    },
-    {
-      "fi": "Aineistoversio",
-      "en": "Data version",
-      "se": "Version av data"
     },
     {
       "fi": "Valitse laji listasta tai tyhjennä kenttä ja kirjoita lajinimi",
@@ -84,14 +79,14 @@
       "se": "Förändring i abundans"
     },
     {
-      "fi": "Pitkän aikavälin muutos = keskirunsauden muutos aikajaksolta 1979-1999 aikajaksolle 2011-2017.",
-      "en": "Long term change = change in average abundance from 1979-1999 to 2011-2017.",
-      "se": "Långfristig förändring = förändring i medelabundans från 1979-1999 till 2011-2017."
+      "fi": "Pitkän aikavälin muutos = keskirunsauden muutos aikajaksolta 1979-1999 aikajaksolle 2011-2020.",
+      "en": "Long term change = change in average abundance from 1979-1999 to 2011-2020.",
+      "se": "Långfristig förändring = förändring i medelabundans från 1979-1999 till 2011-2020."
     },
     {
-      "fi": "Lyhyen aikavälin muutos = keskirunsauden muutos aikajaksolta 2000-2010 aikajaksolle 2011-2017.",
-      "en": "Short term change = change in average abundance from 2000-2010 to 2011-2017.",
-      "se": "Kortfristig förändring = förändring i medelabundans från 2000-2010 till 2011-2017."
+      "fi": "Lyhyen aikavälin muutos = keskirunsauden muutos aikajaksolta 2000-2010 aikajaksolle 2011-2020.",
+      "en": "Short term change = change in average abundance from 2000-2010 to 2011-2020.",
+      "se": "Kortfristig förändring = förändring i medelabundans från 2000-2010 till 2011-2020."
     },
     {
       "fi": "Pitkän aikavälin muutos",
