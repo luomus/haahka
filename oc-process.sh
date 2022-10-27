@@ -38,13 +38,21 @@ elif [ $i = "deploy" ]; then
 
   ITEM=".items[2]"
 
-elif [ $i = "service" ]; then
+elif [ $i = "volume" ]; then
 
   ITEM=".items[3]"
 
-elif [ $i = "route" ]; then
+elif [ $i = "service" ]; then
 
   ITEM=".items[4]"
+
+elif [ $i = "route" ]; then
+
+  ITEM=".items[5]"
+
+elif [ $i = "job" ]; then
+
+  ITEM=".items[6]"
 
 else
 

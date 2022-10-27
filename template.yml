@@ -15,6 +15,35 @@ parameters:
   - name: TAG
     required: true
     value: latest
+  - name: STORAGE
+    required: true
+    value: "20Gi"
+  - name: CRON
+    required: true
+    value: job
+  - name: CRON_SCHEDULE
+    required: true
+    value: "0 20 * * *"
+  - name: CRON_CMD
+    required: true
+    value: '["Rscript", "--vanilla", "update.R"]'
+  - name: CRON_LIMIT
+    required: true
+    value: "7"
+  - name: CRON_CONCURRENCY
+    required: true
+    value: "Forbid"
+  - name: PATH
+    required: true
+    value: /home/user/data
+  - name: FINBIF_ACCESS_TOKEN
+    required: true
+  - name: FINBIF_API_URL
+    required: true
+  - name: FINBIF_EMAIL
+    required: true
+  - name: FINBIF_WAREHOUSE
+    required: true
   - name: APP_PORT
     required: true
     value: "3838"
@@ -79,8 +108,15 @@ objects:
         containers:
         - image: ${APP}-${BRANCH}:${TAG}
           name: ${APP}-${BRANCH}
+          volumeMounts:
+          - mountPath: ${PATH}
+            name: ${APP}-${BRANCH}
           ports:
           - containerPort: ${APP_PORT}
+        volumes:
+        - name: ${APP}-${BRANCH}
+          persistentVolumeClaim:
+            claimName: ${APP}-${BRANCH}
     triggers:
     - type: ConfigChange
     - type: ImageChange
@@ -91,6 +127,17 @@ objects:
         from:
           kind: ImageStreamTag
           name: ${APP}-${BRANCH}:${TAG}
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+   name: ${APP}-${BRANCH}
+  spec:
+    accessModes:
+    - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    resources:
+      requests:
+        storage: ${STORAGE}
 - kind: Service
   apiVersion: v1
   metadata:
@@ -121,3 +168,40 @@ objects:
       kind: Service
       name: ${APP}-${BRANCH}
     wildcardPolicy: None
+- kind: CronJob
+  apiVersion: batch/v1beta1
+  metadata:
+    name: ${APP}-${BRANCH}
+  spec:
+    schedule: ${CRON_SCHEDULE}
+    concurrencyPolicy: ${CRON_CONCURRENCY}
+    successfulJobsHistoryLimit: ${{CRON_LIMIT}}
+    failedJobsHistoryLimit: ${{CRON_LIMIT}}
+    jobTemplate:
+      spec:
+        template:
+          metadata:
+            labels:
+              app: ${APP}
+          spec:
+            containers:
+            - name: ${APP}-${BRANCH}-${CRON}
+              image: ${APP}-${BRANCH}:${TAG}
+              command: ${{CRON_CMD}}
+              volumeMounts:
+              - mountPath: ${PATH}
+                name: ${APP}-${BRANCH}
+              env:
+              - name: FINBIF_ACCESS_TOKEN
+                value: ${FINBIF_ACCESS_TOKEN}
+              - name: FINBIF_API_URL
+                value: ${FINBIF_API_URL}
+              - name: FINBIF_EMAIL
+                value: ${FINBIF_EMAIL}
+              - name: FINBIF_WAREHOUSE
+                value: ${FINBIF_WAREHOUSE}
+            volumes:
+            - name: ${APP}-${BRANCH}
+              persistentVolumeClaim:
+                claimName: ${APP}-${BRANCH}
+            restartPolicy: Never

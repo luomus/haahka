@@ -30,7 +30,6 @@ COPY app.R /home/user/app.R
 COPY google-analytics.js /home/user/google-analytics.js
 COPY R/ /home/user/R/
 COPY www/ /home/user/www
-COPY data/ /home/user/data
 COPY DESCRIPTION /home/user/DESCRIPTION
 
 RUN  chgrp -R 0 /home/user \
