@@ -31,10 +31,10 @@ source("R/00_utils.R")
 con <- dbConnect(SQLite(), "data/db.sqlite")
 
 # Read species definition data
-sp_data <- readRDS("data/taxa.rds")
+sp_data <- readRDS("taxa.rds")
 
 # Translation data
-translator <- shiny.i18n::Translator$new(translation_json_path = "data/translation.json")
+translator <- shiny.i18n::Translator$new(translation_json_path = "translation.json")
 
 # Text and image metadata
 metadata <- readRDS("data/photo_metadata.rds")

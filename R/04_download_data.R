@@ -14,7 +14,7 @@ options(
   finbif_use_cache = FALSE
 )
 
-taxa <- readRDS("data/taxa.rds")
+taxa <- readRDS("taxa.rds")
 
 filter <- c(collection = "HR.2931")
 
