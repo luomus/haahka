@@ -111,6 +111,15 @@ objects:
           volumeMounts:
           - mountPath: ${PATH}
             name: ${APP}-${BRANCH}
+          env:
+          - name: FINBIF_ACCESS_TOKEN
+            value: ${FINBIF_ACCESS_TOKEN}
+          - name: FINBIF_API_URL
+            value: ${FINBIF_API_URL}
+          - name: FINBIF_EMAIL
+            value: ${FINBIF_EMAIL}
+          - name: FINBIF_WAREHOUSE
+            value: ${FINBIF_WAREHOUSE}
           ports:
           - containerPort: ${APP_PORT}
         volumes:
