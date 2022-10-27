@@ -35,7 +35,8 @@ COPY R/ /home/user/R/
 COPY www/ /home/user/www
 COPY DESCRIPTION /home/user/DESCRIPTION
 
-RUN  chgrp -R 0 /home/user \
+RUN  mkdir -p /home/user/var \
+  && chgrp -R 0 /home/user \
   && chmod -R g=u /home/user /etc/passwd
 
 WORKDIR /home/user
