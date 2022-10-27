@@ -6,13 +6,13 @@
 # @param path character string local path where to save the file
 #
 download_file <- function(taxon, path = "www/img/sp_images") {
-  
+
   if (!file.exists(path)) {
     dir.create(path, recursive = TRUE)
   }
 
   taxon_id <- httr::RETRY(
-    "GET", 
+    "GET",
     url = "https://laji.fi",
     path = file.path("api", "taxa", "search"),
     query = list(query = taxon)
@@ -23,7 +23,7 @@ download_file <- function(taxon, path = "www/img/sp_images") {
   taxon_id <- taxon_id[[1L]]
 
   taxon_id <- taxon_id[["id"]]
-  
+
   res <- httr::RETRY(
     "GET",
     url = "https://laji.fi",
@@ -35,7 +35,7 @@ download_file <- function(taxon, path = "www/img/sp_images") {
   if (length(res) > 0L) {
 
     res <- res[[1L]]
-    
+
     download.file(
       res[["largeURL"]],
       file.path(
@@ -43,7 +43,7 @@ download_file <- function(taxon, path = "www/img/sp_images") {
         paste(taxon, tools::file_ext(res[["largeURL"]]), sep = ".")
       )
     )
-  
+
   }
 
   res
@@ -51,7 +51,8 @@ download_file <- function(taxon, path = "www/img/sp_images") {
 }
 
 # Process downloads ---------------------------------------------------
-taxa <- scan("data/taxa.txt", "character")
-meta_data <- lapply(scan("data/taxa.txt", "character"), download_file)
+taxa <- readRDS("taxa.rds")
+taxa <- taxa[["Species_Abb"]]
+meta_data <- lapply(taxa, download_file)
 names(meta_data) <- taxa
 saveRDS(meta_data, "data/photo_metadata.rds")

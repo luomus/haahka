@@ -7,7 +7,7 @@
 download_descriptions <- function(taxon) {
 
   taxon_id <- httr::RETRY(
-    "GET", 
+    "GET",
     url = "https://laji.fi",
     path = file.path("api", "taxa", "search"),
     query = list(query = taxon)
@@ -30,7 +30,8 @@ download_descriptions <- function(taxon) {
 }
 
 # Process downloads ---------------------------------------------------
-taxa <- scan("data/taxa.txt", "character")
-descriptions <- lapply(scan("data/taxa.txt", "character"), download_descriptions)
+taxa <- readRDS("taxa.rds")
+taxa <- taxa[["Species_Abb"]]
+descriptions <- lapply(taxa, download_descriptions)
 names(descriptions) <- taxa
 saveRDS(descriptions, "data/descriptions.rds")
