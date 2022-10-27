@@ -26,6 +26,8 @@ logger::log_threshold(TRACE)
 
 source("R/00_utils.R")
 
+if (!file.exists("data/db.sqlite")) source("update.R")
+
 # Connect database ---------------------------------------------------------------
 
 con <- dbConnect(SQLite(), "data/db.sqlite")
