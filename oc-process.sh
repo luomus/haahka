@@ -20,6 +20,7 @@ BRANCH=$(git symbolic-ref --short -q HEAD)
 
 if [ "$BRANCH" != "main" ]; then
 
+  HOST=$HOST_DEV
   FINBIF_ACCESS_TOKEN=$FINBIF_DEV_ACCESS_TOKEN
   FINBIF_API_URL=$FINBIF_DEV_API_URL
 
