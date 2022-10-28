@@ -18,7 +18,7 @@ taxa <- readRDS("taxa.rds")
 
 filter <- c(collection = "HR.2931")
 
-con <- dbConnect(SQLite(), "data/db.sqlite")
+con <- dbConnect(SQLite(), "data/db-staging.sqlite")
 
 if (!dbExistsTable(con, "last_update")) {
 
@@ -45,9 +45,10 @@ if (!isTRUE(last_update > fb_last_mod(filter = filter))) {
     ) |>
     mutate(
       period = case_when(
-        year < 2000 ~ "begin",
-        between(year, 2000, 2010) ~ "med",
-        year > 2010 ~ "end"
+        year < 2000 ~ "p1",
+        between(year, 2000, 2009) ~ "p2",
+        between(year, 2010, 2019) ~ "p3",
+        year > 2019 ~ "p4"
       )
     ) |>
     copy_to(
@@ -68,9 +69,13 @@ if (!isTRUE(last_update > fb_last_mod(filter = filter))) {
 
 }
 
+n_periods <- 4L
+
 copy_to(
   con,
-  data.frame(day = rep(1:366, each = 3L), period = c("begin", "med", "end")),
+  data.frame(
+    day = rep(1:366, each = n_periods),
+    period = paste0("p", seq_len(n_periods))),
   "periods"
 )
 
@@ -95,6 +100,8 @@ for (i in seq_len(nrow(taxa))) {
   aue <- taxa[[i, "aue"]] - 100L
   if (aue < 1) aue <- 366L + aue
 
+  message(sprintf("INFO [%s] Checking %s...", Sys.time(), sp))
+
   last_update <-
     tbl(con, "last_update") |>
     filter(tbl == !!sp) |>
@@ -104,6 +111,8 @@ for (i in seq_len(nrow(taxa))) {
   last_mod <- fb_last_mod(sp, filter = filter)
 
   if (length(last_mod) > 0L && !isTRUE(last_update > last_mod)) {
+
+    message(sprintf("INFO [%s] Updating %s...", Sys.time(), sp))
 
     data_tbl_name <- paste0(sp, "_data")
 
@@ -179,8 +188,8 @@ for (i in seq_len(nrow(taxa))) {
       names_from = period, names_sep = "", values_from = c(N, aphen, sphen)
     ) |>
     mutate(
-      slopeLong = round((Nend - Nbegin) / Nbegin * 100L),
-      slopeShort = round((Nend - Nmed) / Nmed * 100L)
+      slopeLong = round((Np4 - Np1) / Np1 * 100L),
+      slopeShort = round((Np4 - Np3) / Np3 * 100L)
     ) |>
     collect() |>
     copy_to(
