@@ -454,14 +454,14 @@ server <- function(input, output, session) {
 
       title <- i18n()$t("Viittausohje")
       text_fi <- glue::glue("{current_sp$FIN_name}. ",
-                            "Julkaisussa: Hangon lintuasema: Asemalla havaittujen lintulajien esiintyminen. ",
-                            "Versio {VERSION} [{DATA_URL}] [Viitattu {now}]")
+                            "Helsingin Seudun Lintutieteellinen Yhdistys Tringa ry. Hangon lintuaseman aineisto: päiväsummat.",
+                            "[{DATA_URL}] [Viitattu {now}]")
       text_se <- glue::glue("{current_sp$SWE_name}. ",
-                            "I: Hangö fågelstation: Förekomst av arter vid fågelstationen.",
-                            "Version {VERSION} [{DATA_URL}] [Citerad {now}]")
+                            "Helsingforstraktens Ornitologiska Förening Tringa rf. Dataset från Hangö fågelstation: dagliga totalantal.",
+                            "[{DATA_URL}] [Citerad {now}]")
       text_en <- glue::glue("{current_sp$ENG_name}. ",
-                            "In: Hanko Bird Observatory: Occurrence of species at the observatory. ",
-                            "Version {VERSION} [{DATA_URL}] [Cited {now}]")
+                            "Ornithological society of Helsinki Tringa ry. Data of the Hanko Bird Observatory: Day counts.",
+                            "[{DATA_URL}] [Cited {now}]")
 
       if (input$language == "fi") {
         payload <- tagList(
