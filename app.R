@@ -713,7 +713,7 @@ server <- function(input, output, session) {
                 tidyr::gather(epoch, value, -day) %>%
                 dplyr::mutate(
                   epoch = forcats::fct_relevel(
-                    epoch, "totalbegin", "totalmed", "totalend"
+                    epoch, "totalp1", "totalp2", "totalp3", "totalp4"
                   )
                 )
 
