@@ -5,7 +5,7 @@
 # @param taxon taxon shortcode
 # @param path character string local path where to save the file
 #
-download_file <- function(taxon, path = "www/img/sp_images") {
+download_file <- function(taxon, path = "data/sp_images/org") {
 
   if (!file.exists(path)) {
     dir.create(path, recursive = TRUE)
@@ -51,6 +51,7 @@ download_file <- function(taxon, path = "www/img/sp_images") {
 }
 
 # Process downloads ---------------------------------------------------
+if (!dir.exists("data/sp_images/org")) dir.create("data/sp_images/org")
 taxa <- readRDS("taxa.rds")
 taxa <- taxa[["Species_Abb"]]
 meta_data <- lapply(taxa, download_file)

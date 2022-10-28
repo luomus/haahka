@@ -28,6 +28,8 @@ source("R/00_utils.R")
 
 if (!file.exists("data/db.sqlite")) source("update.R")
 
+system("cp -r data/sp_images www/img/sp_images")
+
 # Connect database ---------------------------------------------------------------
 
 con <- dbConnect(SQLite(), "data/db.sqlite")
