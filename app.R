@@ -674,33 +674,42 @@ server <- function(input, output, session) {
         if (!is.null(obs_current)) {
 
             # Tile each variable
-            plot_data_begin <- obs_current %>%
-                dplyr::select(day, totalbegin) %>%
+            plot_data_p1 <- obs_current %>%
+                dplyr::select(day, totalp1) %>%
                 collect() %>%
                 mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
                 as_tsibble(index = day) %>%
-                tile_observations("day", "totalbegin", WINDOW_SIZE) %>%
-                dplyr::rename(totalbegin = value_avgs)
+                tile_observations("day", "totalp1", WINDOW_SIZE) %>%
+                dplyr::rename(totalp1 = value_avgs)
 
-            plot_data_med <- obs_current %>%
-                dplyr::select(day, totalmed) %>%
+            plot_data_p2 <- obs_current %>%
+                dplyr::select(day, totalp2) %>%
                 collect() %>%
                 mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
                 as_tsibble(index = day) %>%
-                tile_observations("day", "totalmed", WINDOW_SIZE) %>%
-                dplyr::rename(totalmed = value_avgs)
+                tile_observations("day", "totalp2", WINDOW_SIZE) %>%
+                dplyr::rename(totalp2 = value_avgs)
 
-            plot_data_end <- obs_current %>%
-                dplyr::select(day, totalend) %>%
+            plot_data_p3 <- obs_current %>%
+                dplyr::select(day, totalp3) %>%
                 collect() %>%
                 mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
                 as_tsibble(index = day) %>%
-                tile_observations("day", "totalend", WINDOW_SIZE) %>%
-                dplyr::rename(totalend = value_avgs)
+                tile_observations("day", "totalp3", WINDOW_SIZE) %>%
+                dplyr::rename(totalp3 = value_avgs)
 
-            plot_data <- plot_data_begin %>%
-                dplyr::left_join(., plot_data_med, by = c("day" = "day")) %>%
-                dplyr::left_join(., plot_data_end, by = c("day" = "day")) %>%
+            plot_data_p4 <- obs_current %>%
+              dplyr::select(day, totalp4) %>%
+              collect() %>%
+              mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
+              as_tsibble(index = day) %>%
+              tile_observations("day", "totalp4", WINDOW_SIZE) %>%
+              dplyr::rename(totalp4 = value_avgs)
+
+            plot_data <- plot_data_p1 %>%
+                dplyr::left_join(., plot_data_p2, by = c("day" = "day")) %>%
+                dplyr::left_join(., plot_data_p3, by = c("day" = "day")) %>%
+                dplyr::left_join(., plot_data_p4, by = c("day" = "day")) %>%
                 tidyr::gather(epoch, value, -day) %>%
                 dplyr::mutate(
                   epoch = forcats::fct_relevel(
@@ -717,8 +726,8 @@ server <- function(input, output, session) {
                 hchart(type = "line",
                        hcaes(x = day, y = value, group = epoch),
                        # order of epochs c("begin", "end", "med")
-                       name = c("1979-1999", "2000-2010", "2011-2020"),
-                       color = ggsci::pal_d3("category10")(3)) %>%
+                       name = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
+                       color = ggsci::pal_d3("category10")(4)) %>%
                 hc_yAxis(title = list(text = i18n()$t("Yksilöä / havaintopäivä"))) %>%
                 hc_xAxis(title = list(text = ""),
                          type = "datetime",
@@ -780,9 +789,9 @@ server <- function(input, output, session) {
                        status = "danger",
                        footer = tagList(
                            p(
-                               i18n()$t("Pitkän aikavälin muutos = keskirunsauden muutos aikajaksolta 1979-1999 aikajaksolle 2011-2020."),
+                               i18n()$t("Pitkän aikavälin muutos = keskirunsauden muutos aikajaksolta 1979-1999 aikajaksolle 2020-."),
                                br(),
-                               i18n()$t("Lyhyen aikavälin muutos = keskirunsauden muutos aikajaksolta 2000-2010 aikajaksolle 2011-2020.")
+                               i18n()$t("Lyhyen aikavälin muutos = keskirunsauden muutos aikajaksolta 2010-2019 aikajaksolle 2020-.")
                            )
                        ),
                        fluidRow(
@@ -818,9 +827,9 @@ server <- function(input, output, session) {
                                   )
                            ),
                            column(
-                               width = 4,
+                               width = 3,
                                descriptionBlock(
-                                   header = format(round(stats_current$Nbegin, 0),
+                                   header = format(round(stats_current$Np1, 0),
                                                    big.mark = " "),
                                    text = "1979-1999",
                                    rightBorder = TRUE,
@@ -828,21 +837,31 @@ server <- function(input, output, session) {
                                )
                            ),
                            column(
-                               width = 4,
+                               width = 3,
                                descriptionBlock(
-                                   header = format(round(stats_current$Nmed, 0),
+                                   header = format(round(stats_current$Np2, 0),
                                                    big.mark = " "),
-                                   text = "2000-2010",
+                                   text = "2000-2009",
                                    rightBorder = FALSE,
                                    marginBottom = FALSE
                                )
                            ),
                            column(
-                               width = 4,
+                               width = 3,
                                descriptionBlock(
-                                   header = format(round(stats_current$Nend, 0),
+                                   header = format(round(stats_current$Np3, 0),
                                                    big.mark = " "),
-                                   text = "2011-2020",
+                                   text = "2010-2019",
+                                   rightBorder = FALSE,
+                                   marginBottom = FALSE
+                               )
+                           ),
+                           column(
+                               width = 3,
+                               descriptionBlock(
+                                   header = format(round(stats_current$Np4, 0),
+                                                   big.mark = " "),
+                                   text = "2020-",
                                    rightBorder = FALSE,
                                    marginBottom = FALSE
                                )
@@ -882,7 +901,7 @@ server <- function(input, output, session) {
             collect() %>%
             # Select only median values (Julian days) for i) the three epochs
             # and ii) spring and autumn
-            select(sphenbegin, sphenmed, sphenend, aphenbegin, aphenmed, aphenend) %>%
+            select(sphenp1, sphenp2, sphenp3, sphenp4, aphenp1, aphenp2, aphenp3, aphenp4) %>%
             # Make data tidy (long)
             gather(variable, value) %>%
             # Split variables into two new columns
@@ -893,8 +912,8 @@ server <- function(input, output, session) {
                    season = ifelse(season == "s", tolower(i18n()$t("Kevät")),
                                    ifelse(season == "a", tolower(i18n()$t("Syys")), NA)),
                    # Make epochs factors
-                   epoch = factor(epoch, levels = c("begin", "med", "end"),
-                                  labels = rev(c("1979-1999", "2000-2010", "2011-2020")),
+                   epoch = factor(epoch, levels = c("p1", "p2", "p3", "p4"),
+                                  labels = rev(c("1979-1999", "2000-2009", "2010-2019", "2020-")),
                                   ordered = TRUE),
                    # Numeric value of the factors is needed so that highcharts
                    # can plot the factors on y-axis. Note that Javascript
@@ -914,11 +933,11 @@ server <- function(input, output, session) {
             hchart(type = "scatter",
                    hcaes(x = date, y = epochnum, group = epoch),
                    # order of epochs c("begin", "end", "med")
-                   name = c("1979-1999", "2000-2010", "2011-2020"),
-                   color = ggsci::pal_d3("category10")(3)) %>%
+                   name = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
+                   color = ggsci::pal_d3("category10")(4)) %>%
             hc_yAxis(title = list(text = ""),
                      min = 0,
-                     max = 2,
+                     max = 3,
                      categories = rev(levels(plot_data$epoch))) %>%
             hc_xAxis(title = list(text = ""),
                      type = "datetime",

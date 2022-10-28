@@ -1,3 +1,4 @@
 descriptions.rds
 photo_metadata.rds
 db.sqlite
+db-staging.sqlite

@@ -241,3 +241,5 @@ for (i in seq_len(nrow(taxa))) {
 }
 
 dbDisconnect(con)
+
+file.copy("data/db-staging.sqlite", "data/db.sqlite", overwrite = TRUE)
