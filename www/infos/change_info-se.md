@@ -2,7 +2,7 @@
 
 #### Vad visar grafen?
 
-Grafen granskar hur artens individantal och fenologi sett ut under olika perioder: 1979–1999, 2000–2010 och 2011–. Med att jämföra de olika färgade kurvornas toppar, kan du studera huruvida det har skett förändringar i artens sträcktidpunkter eller abundans.
+Grafen granskar hur artens individantal och fenologi sett ut under olika perioder: 1979-1999, 2000-2009, 2010-2019 and 2020-. Med att jämföra de olika färgade kurvornas toppar, kan du studera huruvida det har skett förändringar i artens sträcktidpunkter eller abundans.
 
 #### Hur har detta räknats ut?
 
