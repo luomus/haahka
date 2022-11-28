@@ -378,6 +378,10 @@ server <- function(input, output, session) {
             br(),
             a(href = "https://www.tringa.fi",
               img(src = "img/tringa_logo_300_300.png")
+            ),
+            br(),
+            a(href = "https://laji.fi/",
+              img(src = "https://cdn.laji.fi/images/logos/LAJI_FI_valk.png")
             )
         )
       )
