@@ -382,6 +382,10 @@ server <- function(input, output, session) {
             br(),
             a(href = "https://laji.fi/",
               img(src = "https://cdn.laji.fi/images/logos/LAJI_FI_valk.png")
+            ),
+            br(),
+            a(href = "https://luomus.fi/",
+              img(src = "https://cdn.laji.fi/images/partners/luomus_fi_blue_smaller.gif")
             )
         )
       )
