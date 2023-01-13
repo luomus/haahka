@@ -42,6 +42,7 @@ translator <- shiny.i18n::Translator$new(translation_json_path = "translation.js
 
 # Text and image metadata
 metadata <- readRDS("data/photo_metadata.rds")
+descriptions <- readRDS("data/descriptions.rds")
 
 # Global variables --------------------------------------------------------
 
@@ -274,6 +275,12 @@ server <- function(input, output, session) {
     get_current_meta <- reactive({
       sp_current <- get_current_sp()
       metadata[[sp_current$Species_Abb]]
+    })
+
+    # get_current_description --------------------------------------------------
+    get_current_description <- reactive({
+      sp_current <- get_current_sp()
+      descriptions[[sp_current$Species_Abb]]
     })
 
     # get_current_records ------------------------------------------------------
@@ -535,7 +542,9 @@ server <- function(input, output, session) {
     output$render_description <- renderUI({
 
         current_sp <- get_current_sp()
-        current_meta <- get_current_meta()
+        current_desc <- get_current_description()
+
+        description <- parse_description(current_desc, input$language)
 
         if (!is.null(current_sp)) {
             # Define species names
@@ -550,43 +559,18 @@ server <- function(input, output, session) {
               common_name <- current_sp$SWE_name
             }
 
-            # Try reading the description docx file
-            docx_file <- list.files(file.path("data", "descriptions"),
-                                    pattern = paste0("[0-9]{3}-(", sp_abbr, ")"),
-                                    full.names = TRUE)
-
-            if (length(docx_file) > 0 && file.exists(docx_file) && input$language == "fi") {
-
-                docx_content <- officer::docx_summary(officer::read_docx(docx_file))
-
-                payload <- withTags(
-                    div(
-                        shiny::h2(common_name, class = "description"),
-                        shiny::h3(sci_name, class = "description sci-name"),
-                        shiny::br(),
-                        uiOutput("render_image"),
-                        docx_content %>%
-                            dplyr::rowwise() %>%
-                            do(row = parse_description(.$style_name, .$text)) %>%
-                            as.list(),
-                        br(),
-                        uiOutput("render_citation")
-                    )
+            withTags(
+                div(
+                    shiny::h2(common_name, class = "description"),
+                    shiny::h3(sci_name, class = "description sci-name"),
+                    shiny::br(),
+                    uiOutput("render_image"),
+                    shiny::div(shiny::HTML(description), class = "description"),
+                    shiny::br(),
+                    uiOutput("render_citation")
                 )
-            } else {
-                payload <- withTags(
-                    shiny::div(
-                        shiny::h2(common_name, class = "description"),
-                        shiny::h3(sci_name, class = "description sci-name"),
-                        shiny::br(),
-                        uiOutput("render_image"),
-                        shiny::p(i18n()$t("Kuvausteksti tulossa myöhemmin"), class = "description"),
-                        uiOutput("render_citation")
-                    )
-                )
-            }
+            )
 
-            return(payload)
         }
     })
 
