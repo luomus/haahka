@@ -120,7 +120,7 @@ for (i in seq_len(nrow(taxa))) {
 
     records_tbl_name <- paste0(sp, "_records")
 
-    if (dbExistsTable(con, data_tbl_name)) dbRemoveTable(con, records_tbl_name)
+    if (dbExistsTable(con, records_tbl_name)) dbRemoveTable(con, records_tbl_name)
 
     stats_tbl_name <- paste0(sp, "_stats")
 
