@@ -5,6 +5,7 @@ RUN apt-get update \
       curl \
       libcurl4-openssl-dev \
       libmagick++-dev \
+      libsodium-dev \
       libssl-dev \
       libxml2-dev \
       libz-dev \

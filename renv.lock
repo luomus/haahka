@@ -1035,6 +1035,29 @@
       "Hash": "09eb987710984fc2905c7129c7d85e65",
       "Requirements": []
     },
+    "plumber": {
+      "Package": "plumber",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "8b65a7a00ef8edc5ddc6fabf0aff1194",
+      "Requirements": [
+        "R6",
+        "crayon",
+        "ellipsis",
+        "httpuv",
+        "jsonlite",
+        "lifecycle",
+        "magrittr",
+        "mime",
+        "promises",
+        "rlang",
+        "sodium",
+        "stringi",
+        "swagger",
+        "webutils"
+      ]
+    },
     "prettyunits": {
       "Package": "prettyunits",
       "Version": "1.1.1",
@@ -1428,6 +1451,14 @@
         "waiter"
       ]
     },
+    "sodium": {
+      "Package": "sodium",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3606bb09e0914edd4fc8313b500dcd5e",
+      "Requirements": []
+    },
     "sourcetools": {
       "Package": "sourcetools",
       "Version": "0.1.7-1",
@@ -1460,6 +1491,14 @@
         "vctrs"
       ]
     },
+    "swagger": {
+      "Package": "swagger",
+      "Version": "3.33.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f28d25ed70c903922254157c11b0081d",
+      "Requirements": []
+    },
     "sys": {
       "Package": "sys",
       "Version": "3.4.1",
@@ -1483,6 +1522,14 @@
         "rlang",
         "vctrs"
       ]
+    },
+    "tictoc": {
+      "Package": "tictoc",
+      "Version": "1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e1a2cb41e4be769a941c90c11469db90",
+      "Requirements": []
     },
     "tidyr": {
       "Package": "tidyr",
@@ -1677,6 +1724,17 @@
         "R6",
         "htmltools",
         "shiny"
+      ]
+    },
+    "webutils": {
+      "Package": "webutils",
+      "Version": "1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "75d8b5b05fe22659b54076563f83f26a",
+      "Requirements": [
+        "curl",
+        "jsonlite"
       ]
     },
     "withr": {
