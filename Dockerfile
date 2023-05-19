@@ -4,6 +4,8 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends \
       curl \
       libcurl4-openssl-dev \
+      libharfbuzz-dev \
+      libfribidi-dev \
       libmagick++-dev \
       libsodium-dev \
       libssl-dev \
