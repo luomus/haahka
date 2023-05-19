@@ -529,7 +529,7 @@
       "RemoteUsername": "luomus",
       "RemoteRepo": "finbif",
       "RemoteRef": "dev",
-      "RemoteSha": "9c8835915574c68a8278ad13c66ae462116ba156",
+      "RemoteSha": "f2a7691959d57cd74e9d9796c28eb2267de45a5c",
       "Requirements": [
         "R",
         "digest",
@@ -538,7 +538,7 @@
         "lutz",
         "utils"
       ],
-      "Hash": "61f607911349ebde3f580d288c83ca75"
+      "Hash": "9f9b2afcce65c6226c936f222979244a"
     },
     "fontawesome": {
       "Package": "fontawesome",
