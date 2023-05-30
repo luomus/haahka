@@ -522,14 +522,14 @@
     },
     "finbif": {
       "Package": "finbif",
-      "Version": "0.8.0.9006",
+      "Version": "0.9.0.9000",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "luomus",
       "RemoteRepo": "finbif",
       "RemoteRef": "dev",
-      "RemoteSha": "f2a7691959d57cd74e9d9796c28eb2267de45a5c",
+      "RemoteSha": "eae5f3a82e802a7c58ef9fce6833ffa95b4e7b6d",
       "Requirements": [
         "R",
         "digest",
@@ -538,7 +538,7 @@
         "lutz",
         "utils"
       ],
-      "Hash": "9f9b2afcce65c6226c936f222979244a"
+      "Hash": "d09aea6201f46b58d250bb08dbc066ae"
     },
     "fontawesome": {
       "Package": "fontawesome",
@@ -903,7 +903,7 @@
     },
     "igraph": {
       "Package": "igraph",
-      "Version": "1.4.2",
+      "Version": "1.4.3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -919,7 +919,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "3e476b375c746d899fd53a7281d78191"
+      "Hash": "f7f74f5fbff27d52b1283ac512bc5430"
     },
     "isoband": {
       "Package": "isoband",
@@ -954,7 +954,7 @@
     },
     "knitr": {
       "Package": "knitr",
-      "Version": "1.42",
+      "Version": "1.43",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -966,7 +966,7 @@
         "xfun",
         "yaml"
       ],
-      "Hash": "8329a9bcc82943c8069104d4be3ee22d"
+      "Hash": "9775eb076713f627c07ce41d8199d8f6"
     },
     "labeling": {
       "Package": "labeling",
@@ -1766,10 +1766,10 @@
     },
     "sys": {
       "Package": "sys",
-      "Version": "3.4.1",
+      "Version": "3.4.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "34c16f1ef796057bfa06d3f4ff818a5d"
+      "Hash": "3a1be13d68d47a8cd0bfd74739ca1555"
     },
     "systemfonts": {
       "Package": "systemfonts",
