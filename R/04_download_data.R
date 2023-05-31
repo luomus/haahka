@@ -9,9 +9,10 @@ options(
   finbif_api_url = Sys.getenv("FINBIF_API_URL"),
   finbif_warehouse_query = Sys.getenv("FINBIF_WAREHOUSE"),
   finbif_email = Sys.getenv("FINBIF_EMAIL"),
-  finbif_rate_limit = 100L,
+  finbif_rate_limit = Inf,
   finbif_hide_progress = TRUE,
-  finbif_use_cache = FALSE
+  finbif_use_cache = FALSE,
+  finbif_use_cache_metadata = TRUE
 )
 
 taxa <- readRDS("taxa.rds")
