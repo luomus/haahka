@@ -143,8 +143,12 @@ ui <- function(request) {
     # ui-body ------------------------------------------------------------------
     dashboardBody(
         tags$head(
-            tags$link(rel = "stylesheet", type = "text/css", href = "custom.css"),
-            includeScript("google-analytics.js")
+          tags$link(rel = "stylesheet", type = "text/css", href = "custom.css"),
+          tags$script(
+            defer = NA,
+            `data-domain` = "haahka.laji.fi",
+            src = "https://plausible.io/js/script.js"
+          )
         ),
 
         # Species observations tab ---------------------------------------------
