@@ -33,7 +33,6 @@ COPY app.R /home/user/app.R
 COPY update.R /home/user/update.R
 COPY taxa.rds /home/user/taxa.rds
 COPY translation.json /home/user/translation.json
-COPY google-analytics.js /home/user/google-analytics.js
 COPY R/ /home/user/R/
 COPY www/ /home/user/www
 COPY DESCRIPTION /home/user/DESCRIPTION
