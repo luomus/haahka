@@ -1,4 +1,4 @@
-FROM ghcr.io/luomus/base-r-image@sha256:30d060ac692fd5914e3ef8c4acdaa84c930fa75320df1f301de93a140138b67c
+FROM ghcr.io/luomus/base-r-image@sha256:7b02c5e1679ea46fa44e1d8ad8a56551fff2f90779e509676a378670e8e85517
 
 COPY renv.lock /home/user/renv.lock
 COPY app.R /home/user/app.R
