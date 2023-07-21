@@ -1,5 +1,5 @@
 kind: Template
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 parameters:
   - name: APP
     required: true
@@ -121,7 +121,7 @@ objects:
           - name: FINBIF_WAREHOUSE
             value: ${FINBIF_WAREHOUSE}
           ports:
-          - containerPort: ${APP_PORT}
+          - containerPort: ${{APP_PORT}}
         volumes:
         - name: ${APP}-${BRANCH}
           persistentVolumeClaim:
@@ -156,7 +156,7 @@ objects:
   spec:
     ports:
     - name: ${APP_PORT}
-      port: ${APP_PORT}
+      port: ${{APP_PORT}}
       targetPort: ${{APP_PORT}}
     selector:
       app: ${APP}
@@ -170,7 +170,7 @@ objects:
   spec:
     host: ${HOST}
     port:
-      targetPort: ${APP_PORT}
+      targetPort: ${{APP_PORT}}
     tls:
       termination: edge
     to:
