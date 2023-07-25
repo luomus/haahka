@@ -5,18 +5,23 @@
 Small typos or grammatical errors in documentation may be edited so long as the
 changes are made in the _source_ file.
 
+*  YES: you edit a roxygen comment in a `.R` file below `R/`.
+*  NO: you edit an `.Rd` file below `man/`.
+
 ### Prerequisites
 
 Before you make a substantial pull request, you should always file an issue and
-make sure someone from the team agrees that it’s a problem.
+make sure someone from the team agrees that it’s a problem. If you’ve found a
+bug, create an associated issue and illustrate the bug with a minimal
+[reprex](https://www.tidyverse.org/help/#reprex).
 
 ### Pull request process
 
 *  We recommend that you create a Git branch for each pull request (PR).
 *  New code should follow the style used in the project.
-*  For user-facing changes, add a section to the top of `NEWS.Rd` below the
-current development version header describing the changes made followed by your
-username, and links to relevant issue(s)/PR(s).
+*  We use [roxygen2](https://cran.r-project.org/package=roxygen2), with
+[Markdown syntax](https://cran.r-project.org/web/packages/roxygen2/vignettes/markdown.html),
+for documentation.
 
 ### Code of Conduct
 
