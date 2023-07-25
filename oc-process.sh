@@ -26,7 +26,7 @@ if [ "$BRANCH" != "main" ]; then
 
 fi
 
-if [ $i = "build" ]; then
+if [ $i = "volume" ]; then
 
   ITEM=".items[0]"
 
@@ -34,11 +34,11 @@ elif [ $i = "image" ]; then
 
   ITEM=".items[1]"
 
-elif [ $i = "deploy" ]; then
+elif [ $i = "build" ]; then
 
   ITEM=".items[2]"
 
-elif [ $i = "volume" ]; then
+elif [ $i = "deploy" ]; then
 
   ITEM=".items[3]"
 
