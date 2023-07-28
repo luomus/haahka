@@ -13,6 +13,7 @@ COPY download_descriptions.R /home/user/download_descriptions.R
 COPY download_data.R /home/user/download_data.R
 COPY www/ /home/user/www
 COPY DESCRIPTION /home/user/DESCRIPTION
+COPY NAMESPACE /home/user/NAMESPACE
 
 RUN R -e "renv::restore()" \
  && R -e 'remotes::install_local(dependencies = FALSE, upgrade = FALSE)' \
