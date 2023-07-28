@@ -1,10 +1,13 @@
 library(ggsci)
 library(glue)
 library(highcharter)
+library(httr2)
 library(logger)
 library(lubridate)
 library(markdown)
 library(officer)
+library(pool)
+library(RPostgres)
 library(shiny)
 library(shiny.i18n)
 library(shinycssloaders)
@@ -14,40 +17,38 @@ library(shinyWidgets)
 library(tidyverse)
 library(tsibble)
 library(yaml)
-library(DBI)
-library(RSQLite)
+library(haahka)
 
-# Set up logger -----------------------------------------------------------
+req <- request(paste0(Sys.getenv("API_HOST"), ":", Sys.getenv("API_PORT")))
+
+# Set up logger ----------------------------------------------------------------
 
 logger::log_layout(layout_glue_colors)
 logger::log_threshold(TRACE)
 
-# Utilities ---------------------------------------------------------------
+# Images -----------------------------------------------------------------------
 
-source("R/00_utils.R")
+download.file(paste0(req, "/data/sp_images.zip"), "www/img/sp_images.zip")
 
-if (!file.exists("data/db.sqlite")) source("update.R")
+unzip("www/img/sp_images.zip", "www/img/sp_images")
 
-system("cp -r data/sp_images www/img/sp_images")
+unlink("www/img/sp_images.zip")
 
-# Connect database ---------------------------------------------------------------
+# Connect database -------------------------------------------------------------
 
-con <- dbConnect(SQLite(), "data/db.sqlite")
+con <- dbPool(Postgres(), dbname = Sys.getenv("DB_NAME"))
 
 # Read species definition data
 sp_data <- readRDS("taxa.rds")
 
 # Translation data
-translator <- shiny.i18n::Translator$new(translation_json_path = "translation.json")
+translator <- shiny.i18n::Translator$new(
+  translation_json_path = "translation.json"
+)
 
 # Text and image metadata
-metadata <- readRDS("data/photo_metadata.rds")
-descriptions <- readRDS("data/descriptions.rds")
-
-# Global variables --------------------------------------------------------
-
-## NOTE: never use globals for anything but reading as they are shared across
-## sessions!
+metadata <- readRDS(url(paste0(req, "/data/photo_metadata.rds")))
+descriptions <- readRDS(url(paste0(req, "/data/descriptions.rds")))
 
 # Get the app metadata from the DESCRIPTION file
 METADATA <- yaml::yaml.load_file("DESCRIPTION")
@@ -77,33 +78,34 @@ XMIN <- datetime_to_timestamp(as.Date('2000-01-01', tz = 'UTC'))
 XMAX <- datetime_to_timestamp(as.Date('2000-12-31', tz = 'UTC'))
 # Year x-axis labels in languages different than English
 X_YEARLY_LABELS <- list(
-    "fi" = get_months("fi", "short"),
-    "en" = get_months("en", "short"),
-    "se" = get_months("se", "short")
+  "fi" = get_months("fi", "short"),
+  "en" = get_months("en", "short"),
+  "se" = get_months("se", "short")
 )
 
 # Color of the plotBands (background bars for months)
 PB_COLOR <- "rgba(240, 240, 245, 0.4)"
+
 # Define x-axis ranges for plotBands
 PB_LIST <- list(
-    list(from = get_timestamp("2000-02-01"), to = get_timestamp("2000-03-01"),
-         color = PB_COLOR
-    ),
-    list(from = get_timestamp("2000-04-01"), to = get_timestamp("2000-05-01"),
-         color = PB_COLOR
-    ),
-    list(from = get_timestamp("2000-06-01"), to = get_timestamp("2000-07-01"),
-         color = PB_COLOR
-    ),
-    list(from = get_timestamp("2000-08-01"), to = get_timestamp("2000-09-01"),
-         color = PB_COLOR
-    ),
-    list(from = get_timestamp("2000-10-01"), to = get_timestamp("2000-11-01"),
-         color = PB_COLOR
-    ),
-    list(from = get_timestamp("2000-12-01"), to = get_timestamp("2000-12-31"),
-         color = PB_COLOR
-    )
+  list(from = get_timestamp("2000-02-01"), to = get_timestamp("2000-03-01"),
+    color = PB_COLOR
+  ),
+  list(from = get_timestamp("2000-04-01"), to = get_timestamp("2000-05-01"),
+    color = PB_COLOR
+  ),
+  list(from = get_timestamp("2000-06-01"), to = get_timestamp("2000-07-01"),
+    color = PB_COLOR
+  ),
+  list(from = get_timestamp("2000-08-01"), to = get_timestamp("2000-09-01"),
+    color = PB_COLOR
+  ),
+  list(from = get_timestamp("2000-10-01"), to = get_timestamp("2000-11-01"),
+    color = PB_COLOR
+  ),
+  list(from = get_timestamp("2000-12-01"), to = get_timestamp("2000-12-31"),
+    color = PB_COLOR
+  )
 )
 
 CHOICES <- translator$get_languages()
@@ -111,14 +113,14 @@ names(CHOICES) <- purrr::map_chr(CHOICES, get_languages)
 
 # This Javascript is needed for resizing the median day graph dynamically
 # depeding on the size of the current viewport
-jscode <-
-  '$(document).on("shiny:connected", function(e) {
-  var jsWidth = screen.width;
-  Shiny.onInputChange("GetScreenWidth",jsWidth);
-});
+jscode <- '
+  $(document).on("shiny:connected", function(e) {
+    var jsWidth = screen.width;
+    Shiny.onInputChange("GetScreenWidth",jsWidth);
+  });
 '
 
-# UI ----------------------------------------------------------------------
+# UI ---------------------------------------------------------------------------
 ui <- function(request) {
   dashboardPage(
 
@@ -126,118 +128,127 @@ ui <- function(request) {
 
     # ui-header ----------------------------------------------------------------
     dashboardHeader(
-        title = tags$a(href = "https://haahka.laji.fi",
-                       tags$img(src = "browser_logo.png", height = "40")
-        )
+      title = tags$a(href = "https://haahka.laji.fi",
+        tags$img(src = "browser_logo.png", height = "40")
+      )
     ),
     # ui-sidebar ---------------------------------------------------------------
-    dashboardSidebar(collapsed = FALSE,
-                     selectInput("language",
-                                 label = "Kieli / Språk / Language",
-                                 choices = CHOICES),
-                     sidebarMenuOutput("render_sidebarmenu"),
-                     hr(),
-                     uiOutput("render_sponsors"),
-                     uiOutput("render_sidebarfooter")
+    dashboardSidebar(
+      collapsed = FALSE,
+      selectInput(
+        "language",
+        label = "Kieli / Språk / Language",
+        choices = CHOICES
+      ),
+      sidebarMenuOutput("render_sidebarmenu"),
+      hr(),
+      uiOutput("render_sponsors"),
+      uiOutput("render_sidebarfooter")
     ),
     # ui-body ------------------------------------------------------------------
     dashboardBody(
-        tags$head(
-          tags$link(rel = "stylesheet", type = "text/css", href = "custom.css"),
-          tags$script(
-            defer = NA,
-            `data-domain` = "haahka.laji.fi",
-            src = "https://plausible.io/js/script.js"
+      tags$head(
+        tags$link(rel = "stylesheet", type = "text/css", href = "custom.css"),
+        tags$script(
+          defer = NA,
+          `data-domain` = "haahka.laji.fi",
+          src = "https://plausible.io/js/script.js"
+        )
+      ),
+      # Species observations tab ---------------------------------------------
+      tabItems(
+        tabItem(
+          tabName = "species",
+          fluidPage(
+            # Inject the JS bit
+            tags$script(jscode),
+            fluidRow(
+              column(
+                6,
+                box(
+                  width = 12,
+                  uiOutput("render_species")
+                ),
+                box(
+                  width = 12,
+                  withSpinner(
+                    uiOutput("render_description"),
+                    type = 8,
+                    size = 0.5
+                  )
+                )
+              ),
+              column(
+                6,
+                box(
+                  width = 12,
+                  withSpinner(
+                    highchartOutput("migration", height = "300px"),
+                    type = 8,
+                    size = 0.5
+                  ),
+                  actionButton(
+                    inputId = "migration_info",
+                    label = NULL,
+                    icon = icon("info", class = "icon-info"),
+                    class = "btn-info btn-small-info"
+                  )
+                ),
+                box(
+                  width = 12,
+                  withSpinner(
+                    highchartOutput("local", height = "300px"),
+                    type = 8,
+                    size = 0.5
+                  ),
+                  actionButton(
+                    inputId = "local_info",
+                    label = NULL,
+                    icon = icon("info", class = "icon-info"),
+                    class = "btn-info btn-small-info"
+                  )
+                ),
+                box(
+                  width = 12,
+                  withSpinner(
+                    highchartOutput("change", height = "300px"),
+                      type = 8,
+                      size = 0.5
+                    ),
+                    actionButton(
+                      inputId = "change_info",
+                      label = NULL,
+                      icon = icon("info", class = "icon-info"),
+                      class = "btn-info btn-small-info"
+                    )
+                 ),
+                 box(
+                    width = 12,
+                    uiOutput("render_median"),
+                    actionButton(
+                      inputId = "median_info",
+                      label = NULL,
+                      icon = icon("info", class = "icon-info"),
+                      class = "btn-info btn-small-info"
+                    )
+                 ),
+                 uiOutput("change_numbers"),
+                 uiOutput("records")
+              )
+            )
           )
         ),
-
-        # Species observations tab ---------------------------------------------
-        tabItems(
-            tabItem(tabName = "species",
-            fluidPage(
-                # Inject the JS bit
-                tags$script(jscode),
-                fluidRow(
-                    column(6,
-                           box(width = 12,
-                               uiOutput("render_species")
-                           ),
-                           box(
-                             width = 12,
-                             withSpinner(uiOutput("render_description"), type = 8,
-                                         size = 0.5)
-                           )
-                    ),
-                    column(6,
-                           box(
-                               width = 12,
-                               withSpinner(highchartOutput("migration", height = "300px"),
-                                           type = 8, size = 0.5),
-                               actionButton(
-                                 inputId = "migration_info",
-                                 label = NULL,
-                                 icon = icon("info",
-                                             class = "icon-info"),
-                                 class = "btn-info btn-small-info"
-                               )
-
-                           ),
-                           box(
-                               width = 12,
-                               withSpinner(highchartOutput("local", height = "300px"),
-                                           type = 8, size = 0.5),
-                               actionButton(
-                                 inputId = "local_info",
-                                 label = NULL,
-                                 icon = icon("info",
-                                             class = "icon-info"),
-                                 class = "btn-info btn-small-info"
-                               )
-                           ),
-                           box(
-                               width = 12,
-                               withSpinner(highchartOutput("change", height = "300px"),
-                                           type = 8, size = 0.5),
-                               actionButton(
-                                 inputId = "change_info",
-                                 label = NULL,
-                                 icon = icon("info",
-                                             class = "icon-info"),
-                                 class = "btn-info btn-small-info"
-                               )
-                           ),
-                           box(
-                               width = 12,
-                               uiOutput("render_median"),
-                               actionButton(
-                                 inputId = "median_info",
-                                 label = NULL,
-                                 icon = icon("info",
-                                             class = "icon-info"),
-                                 class = "btn-info btn-small-info"
-                               )
-                           ),
-                           uiOutput("change_numbers"),
-                           uiOutput("records")
-                    )
-                )
-            )
-
-        ),
         # Help tab -------------------------------------------------------------
-        tabItem(tabName = "help",
-                uiOutput("render_helpsections")
-        )
+        tabItem(tabName = "help", uiOutput("render_helpsections"))
       )
     )
   )
 }
 
-
-# Server ------------------------------------------------------------------
+# Server -----------------------------------------------------------------------
 server <- function(input, output, session) {
 
-    # Bookmarking -------------------------------------------------------------
+    # Bookmarking --------------------------------------------------------------
 
     # Bookmarking excludes
     setBookmarkExclude(c("bm1", "change_info", "GetScreenWidth",
@@ -339,8 +350,8 @@ server <- function(input, output, session) {
                 dplyr::select(!!name_field) %>%
                 purrr::pluck(1)
 
-            # Get also the scientific names; these will be used in the labels and
-            # to subset the data
+            # Get the scientific names; these will be used in the labels and to
+            # subset the data
             spps <- sp_data %>%
                 dplyr::select(Sci_name) %>%
                 purrr::pluck(1)
@@ -437,7 +448,7 @@ server <- function(input, output, session) {
         return(payload)
     })
 
-    # render_species ----------------------------------------------------------
+    # render_species -----------------------------------------------------------
     output$render_species <- renderUI({
 
         if (is.null(input$language)) {
