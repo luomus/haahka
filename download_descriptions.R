@@ -35,4 +35,4 @@ taxa <- readRDS("taxa.rds")
 taxa <- taxa[["Species_Abb"]]
 descriptions <- lapply(taxa, download_descriptions)
 names(descriptions) <- taxa
-saveRDS(descriptions, "data/descriptions.rds")
+saveRDS(descriptions, "var/data/descriptions.rds")

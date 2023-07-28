@@ -18,10 +18,12 @@ resize_all <- function(src_path, dst_path) {
 
   resize_photo <- function(x, path = ".", width = 900) {
 
-    assertthat::assert_that(width > 0,
-                            msg = "Width must be positive integer")
-    assertthat::validate_that(width < 2000,
-                              msg = "Rescaling to a large value, probably not a good idea")
+    assertthat::assert_that(
+      width > 0, msg = "Width must be positive integer"
+    )
+    assertthat::validate_that(
+      width < 2000, msg = "Rescaling to a large value, probably not a good idea"
+    )
 
     pb$tick()
 
@@ -44,12 +46,13 @@ resize_all <- function(src_path, dst_path) {
 }
 
 # Where are the photos?
-src_path <- here::here("data/sp_images/org/")
-dst_path <- here::here("data/sp_images/")
+src_path <- here::here("var/data/sp_images/org/")
+dst_path <- here::here("var/data/sp_images/resized/")
 
 resize_all(src_path, dst_path)
 
-# Delete original files
-unlink(src_path)
-
-system("cp -r data/sp_images www/img/sp_images")
+# Zip files
+zip(
+  "var/data/sp_images.zip",
+  list.files("var/data/sp_images/resized", full.names = TRUE)
+)

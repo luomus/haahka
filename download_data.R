@@ -19,8 +19,6 @@ taxa <- readRDS("taxa.rds")
 
 filter <- c(collection = "HR.2931")
 
-con <- dbConnect(SQLite(), "data/db-staging.sqlite")
-
 if (!dbExistsTable(con, "last_update")) {
 
   copy_to(
@@ -240,7 +238,3 @@ for (i in seq_len(nrow(taxa))) {
   }
 
 }
-
-dbDisconnect(con)
-
-file.copy("data/db-staging.sqlite", "data/db.sqlite", overwrite = TRUE)
