@@ -1,3 +1,13 @@
+log_file_name <- sprintf("var/logs/update-%s.txt", Sys.Date())
+
+log_file <- file(log_file_name, open = "wt")
+
+sink(log_file)
+
+sink(log_file, type = "message")
+
+con <- pool::dbPool(RPostgres::Postgres(), dbname = Sys.getenv("DB_NAME"))
+
 res <- tryCatch(
   {
 
@@ -23,3 +33,10 @@ res <- tryCatch(
 cat(res, file = "var/status/success.txt")
 
 cat(format(Sys.time(), usetz = TRUE), file = "var/status/last-update.txt")
+
+pool::poolClose(con)
+
+sink(type = "message")
+
+sink()
+

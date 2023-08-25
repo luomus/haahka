@@ -30,27 +30,12 @@ function(req, res) {
 #* @serializer unboxedJSON
 function() {
 
-  on.exit({
-
-    sink(type = "message")
-
-    sink()
-
-  })
-
-  log_file_name <- sprintf("var/logs/job-%s.txt", Sys.Date())
-
-  log_file <- file(log_file_name, open = "wt")
-
-  sink(log_file)
-
-  sink(log_file, type = "message")
-
-  promises::future_promise({
-    con <- pool::dbPool(RPostgres::Postgres(), dbname = Sys.getenv("DB_NAME"))
-    source("update.R")
-    pool::poolClose(con)
-  })
+  callr::r_bg(
+    source,
+    args = list(file = "update.R"),
+    poll_connection = FALSE,
+    cleanup = FALSE
+  )
 
   "success"
 
@@ -70,7 +55,4 @@ function() {
 list()
 
 #* @assets ./var/status /status
-list()
-
-#* @assets ./var/data /data
 list()
