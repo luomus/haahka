@@ -40,3 +40,4 @@ sink(type = "message")
 
 sink()
 
+file.copy(log_file_name, "var/logs/update-latest.txt", TRUE)
