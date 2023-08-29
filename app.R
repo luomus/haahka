@@ -19,7 +19,9 @@ library(tsibble)
 library(yaml)
 library(haahka)
 
-req <- request(paste0(Sys.getenv("API_HOST"), ":", Sys.getenv("API_PORT")))
+req <- request(
+  paste0("http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT"))
+)
 
 # Set up logger ----------------------------------------------------------------
 
