@@ -28,7 +28,7 @@ logger::log_threshold(TRACE)
 
 # Images -----------------------------------------------------------------------
 
-download.file(paste0(req, "/data/sp_images.zip"), "www/img/sp_images.zip")
+download.file(paste0(req$url, "/data/sp_images.zip"), "www/img/sp_images.zip")
 
 unzip("www/img/sp_images.zip", "www/img/sp_images")
 
