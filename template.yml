@@ -312,7 +312,7 @@ objects:
             failureThreshold: 5
             periodSeconds: 30
           readinessProbe:
-            httpGet:
+            exec:
               command: ${{DB_HEALTHCHECK}}
             initialDelaySeconds: 5
             periodSeconds: 5
