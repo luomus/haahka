@@ -555,7 +555,7 @@
     },
     "finbif": {
       "Package": "finbif",
-      "Version": "0.9.1",
+      "Version": "0.9.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -566,7 +566,7 @@
         "lutz",
         "utils"
       ],
-      "Hash": "c8d49c8bcf841796e238eb5eb7848149"
+      "Hash": "6dd86b33fb872bfdb5076296d23b3ae2"
     },
     "fontawesome": {
       "Package": "fontawesome",
