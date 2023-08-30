@@ -51,6 +51,9 @@ function() {
   ""
 }
 
+#* @assets ./var/data /data
+list()
+
 #* @assets ./var/logs /logs
 list()
 
