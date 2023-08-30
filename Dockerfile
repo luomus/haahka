@@ -1,5 +1,8 @@
 FROM ghcr.io/luomus/base-r-image@sha256:d338429f1471be27280ce833695db60248a17305b25db9dc5aa500b63b1a7c92
 
+ENV STATUS_DIR="var/status"
+ENV LOG_DIR="var/logs"
+
 COPY renv.lock /home/user/renv.lock
 COPY app.R /home/user/app.R
 COPY api.R /home/user/api.R
