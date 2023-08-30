@@ -229,10 +229,10 @@ for (i in seq_len(nrow(taxa))) {
       am__ = dense_rank((year + day / 1000) * am_),
       sl__ = dense_rank((year + day / 1000) * sl_),
       al__ = dense_rank((year + day / 1000) * al_),
-      sm_ = sm__ == max(sm__, na.rm = TRUE) | sm__ == max(sm__, na.rm = TRUE) - 1L & sm_,
-      am_ = am__ == max(am__, na.rm = TRUE) | am__ == max(am__, na.rm = TRUE) - 1L & am_,
-      sl_ = sl__ == max(sl__, na.rm = TRUE) | sl__ == max(sl__, na.rm = TRUE) - 1L & sl_,
-      al_ = al__ == max(al__, na.rm = TRUE) | al__ == max(al__, na.rm = TRUE) - 1L & al_
+      sm_ = sm__ == max(sm__, na.rm = TRUE) | sm__ == max(sm__, na.rm = TRUE) - 1L & sm_ == 1,
+      am_ = am__ == max(am__, na.rm = TRUE) | am__ == max(am__, na.rm = TRUE) - 1L & am_ == 1,
+      sl_ = sl__ == max(sl__, na.rm = TRUE) | sl__ == max(sl__, na.rm = TRUE) - 1L & sl_ == 1,
+      al_ = al__ == max(al__, na.rm = TRUE) | al__ == max(al__, na.rm = TRUE) - 1L & al_ == 1
     ) |>
     filter(sm_ | am_ | sl_ | al_) |>
     compute(records_tbl_name, temporary = FALSE)
