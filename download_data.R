@@ -205,8 +205,8 @@ for (i in seq_len(nrow(taxa))) {
       names_from = period, names_sep = "", values_from = c(N, aphen, sphen)
     ) |>
     mutate(
-      slopeLong = round((Np4 - Np1) / Np1 * 100L),
-      slopeShort = round((Np4 - Np3) / Np3 * 100L)
+      slopeLong = ifelse(Np1 == 0, NA_real_, round((Np4 - Np1) / Np1 * 100L)),
+      slopeShort = ifelse(Np3 == 0, NA_real_, round((Np4 - Np3) / Np3 * 100L))
     ) |>
     collect() |>
     copy_to(
