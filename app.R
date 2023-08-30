@@ -32,7 +32,7 @@ logger::log_threshold(TRACE)
 
 download.file(paste0(req$url, "/data/sp_images.zip"), "www/img/sp_images.zip")
 
-unzip("www/img/sp_images.zip", "www/img/sp_images")
+unzip("www/img/sp_images.zip", exdir = "www/img/sp_images")
 
 unlink("www/img/sp_images.zip")
 
