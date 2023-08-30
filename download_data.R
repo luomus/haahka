@@ -57,8 +57,6 @@ if (!isTRUE(last_update > fb_last_mod(filter = filter))) {
       con, df = _, name = "events", temporary = FALSE, overwrite = TRUE
     )
 
-
-
   last_update_tbl <- tbl(con2, "last_update")
 
   last_update_row <- copy_inline(
@@ -223,10 +221,10 @@ for (i in seq_len(nrow(taxa))) {
       am = ifelse(between(day, !!aub, !!aue), am, 0L),
       sl = ifelse(between(day, !!spb, !!spe), Local, 0L),
       al = ifelse(between(day, !!aub, !!aue), al, 0L),
-      sm_ = sm == max(sm, na.rm = TRUE),
-      am_ = am == max(am, na.rm = TRUE),
-      sl_ = sl == max(sl, na.rm = TRUE),
-      al_ = al == max(al, na.rm = TRUE),
+      sm_ = ifelse(sm == max(sm, na.rm = TRUE), 1, 0),
+      am_ = ifelse(am == max(am, na.rm = TRUE), 1, 0),
+      sl_ = ifelse(sl == max(sl, na.rm = TRUE), 1, 0),
+      al_ = ifelse(al == max(al, na.rm = TRUE), 1, 0),
       sm__ = dense_rank((year + day / 1000) * sm_),
       am__ = dense_rank((year + day / 1000) * am_),
       sl__ = dense_rank((year + day / 1000) * sl_),
