@@ -183,10 +183,18 @@ for (i in seq_len(nrow(taxa))) {
     mutate(
       n = switch(!!type, m = muutto, p = paik, pm = total),
       sn = ifelse(between(day, !!spb, !!spe), n, 0L),
-      s = cumsum(ifelse(is.na(sn), 0, sn)) / sum(sn, na.rm = TRUE) > .5,
+      s = ifelse(
+        max(sn, na.rm = TRUE) == 0,
+        FALSE,
+        cumsum(ifelse(is.na(sn), 0, sn)) / sum(sn, na.rm = TRUE) > .5
+      ),
       an = ifelse(day <= 266L, lead(n, 100L), lag(n, 266L)),
       an = ifelse(between(day, !!aub, !!aue), an, 0L),
-      a = cumsum(ifelse(is.na(an), 0, an)) / sum(an, na.rm = TRUE) > .5,
+      a = ifelse(
+        max(an, na.rm = TRUE) == 0,
+        FALSE,
+        cumsum(ifelse(is.na(an), 0, an)) / sum(an, na.rm = TRUE) > .5
+      ),
     ) |>
     summarise(
       N = sum(total, na.rm = TRUE),
@@ -229,10 +237,14 @@ for (i in seq_len(nrow(taxa))) {
       am__ = dense_rank((year + day / 1000) * am_),
       sl__ = dense_rank((year + day / 1000) * sl_),
       al__ = dense_rank((year + day / 1000) * al_),
-      sm_ = sm__ == max(sm__, na.rm = TRUE) | sm__ == max(sm__, na.rm = TRUE) - 1L & sm_ == 1,
-      am_ = am__ == max(am__, na.rm = TRUE) | am__ == max(am__, na.rm = TRUE) - 1L & am_ == 1,
-      sl_ = sl__ == max(sl__, na.rm = TRUE) | sl__ == max(sl__, na.rm = TRUE) - 1L & sl_ == 1,
-      al_ = al__ == max(al__, na.rm = TRUE) | al__ == max(al__, na.rm = TRUE) - 1L & al_ == 1
+      sm_ = sm__ == max(sm__, na.rm = TRUE) |
+        sm__ == max(sm__, na.rm = TRUE) - 1L & sm_ == 1,
+      am_ = am__ == max(am__, na.rm = TRUE) |
+        am__ == max(am__, na.rm = TRUE) - 1L & am_ == 1,
+      sl_ = sl__ == max(sl__, na.rm = TRUE) |
+        sl__ == max(sl__, na.rm = TRUE) - 1L & sl_ == 1,
+      al_ = al__ == max(al__, na.rm = TRUE) |
+        al__ == max(al__, na.rm = TRUE) - 1L & al_ == 1
     ) |>
     filter(sm_ | am_ | sl_ | al_) |>
     compute(records_tbl_name, temporary = FALSE)
