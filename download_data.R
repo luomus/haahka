@@ -1,9 +1,12 @@
 library(DBI)
+library(RPostgres)
 library(dplyr)
 library(dbplyr)
 library(finbif)
 library(RSQLite)
 library(tidyr)
+
+con <- dbConnect(Postgres(), dbname = Sys.getenv("DB_NAME"))
 
 options(
   finbif_api_url = Sys.getenv("FINBIF_API_URL"),
@@ -54,10 +57,19 @@ if (!isTRUE(last_update > fb_last_mod(filter = filter))) {
       con, df = _, name = "events", temporary = FALSE, overwrite = TRUE
     )
 
+
+
+  last_update_tbl <- tbl(con2, "last_update")
+
+  last_update_row <- copy_inline(
+    con,
+    data.frame(tbl = "events", date = as.character(Sys.Date()))
+  )
+
   rows_upsert(
-    tbl(con, "last_update"),
+    last_update_tbl,
+    last_update_row,
     by = "tbl",
-    data.frame(tbl = "events", date = as.character(Sys.Date())),
     copy = TRUE,
     in_place = TRUE
   )
@@ -238,3 +250,5 @@ for (i in seq_len(nrow(taxa))) {
   }
 
 }
+
+DBI::dbDisconnect(con)
