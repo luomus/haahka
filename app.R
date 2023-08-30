@@ -49,8 +49,8 @@ translator <- shiny.i18n::Translator$new(
 )
 
 # Text and image metadata
-metadata <- readRDS(url(paste0(req, "/data/photo_metadata.rds")))
-descriptions <- readRDS(url(paste0(req, "/data/descriptions.rds")))
+metadata <- readRDS(url(paste0(req$url, "/data/photo_metadata.rds")))
+descriptions <- readRDS(url(paste0(req$url, "/data/descriptions.rds")))
 
 # Get the app metadata from the DESCRIPTION file
 METADATA <- yaml::yaml.load_file("DESCRIPTION")
