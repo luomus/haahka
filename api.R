@@ -1,12 +1,8 @@
 suppressPackageStartupMessages({
 
-  library(future, quietly = TRUE)
-  library(RPostgres, quietly = TRUE)
-  library(pool, quietly = TRUE)
+  library(callr, quietly = TRUE)
 
 })
-
-con <- dbPool(Postgres(), dbname = Sys.getenv("DB_NAME"))
 
 #* @filter secret
 function(req, res) {
@@ -30,7 +26,7 @@ function(req, res) {
 #* @serializer unboxedJSON
 function() {
 
-  callr::r_bg(
+  r_bg(
     source,
     args = list(file = "update.R"),
     poll_connection = FALSE,
