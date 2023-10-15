@@ -1006,6 +1006,9 @@ server <- function(input, output, session) {
                 if (is.numeric(res)) {
                     res <- format(res, big.mark = " ")[[1L]]
                 } else {
+
+                  if (season == "a") res <- res + 100
+
                   res <- paste(res, collapse = i18n()$t(" ja "))
                 }
 
