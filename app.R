@@ -56,7 +56,7 @@ window_size <- 5
 default_species <- "CYGCYG"
 time_units <- 30 * 24 * 3600 * 1000
 xmin <- highcharter::datetime_to_timestamp(as.Date("2000-01-01", tz = "UTC"))
-xmax <- highcharter:datetime_to_timestamp(as.Date("2000-12-31", tz = "UTC"))
+xmax <- highcharter::datetime_to_timestamp(as.Date("2000-12-31", tz = "UTC"))
 x_yearly_labels <- list(
   "fi" = haahka::get_months("fi", "short"),
   "en" = haahka::get_months("en", "short"),
