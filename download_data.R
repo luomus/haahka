@@ -57,7 +57,7 @@ if (!isTRUE(last_update > fb_last_mod(filter = filter))) {
       con, df = _, name = "events", temporary = FALSE, overwrite = TRUE
     )
 
-  last_update_tbl <- tbl(con2, "last_update")
+  last_update_tbl <- tbl(con, "last_update")
 
   last_update_row <- copy_inline(
     con,
