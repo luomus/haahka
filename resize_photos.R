@@ -54,5 +54,6 @@ resize_all(src_path, dst_path)
 # Zip files
 zip(
   "var/data/sp_images.zip",
-  list.files("var/data/sp_images/resized", full.names = TRUE)
+  list.files("var/data/sp_images/resized", full.names = TRUE),
+  flags = "-j"
 )
