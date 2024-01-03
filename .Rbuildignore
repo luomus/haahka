@@ -4,10 +4,10 @@
 ^renv\.lock$
 ^R/_disable_autoload\.R$
 ^\.env$
-^01_download_photos\.R$
-^02_resize_photos\.R$
-^03_download_descriptions\.R$
-^04_download_data\.R$
+^download_photos\.R$
+^resize_photos\.R$
+^download_descriptions\.R$
+^download_data\.R$
 ^CODE_OF_CONDUCT\.md$
 ^CONTRIBUTING\.md$
 ^Dockerfile$
