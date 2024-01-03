@@ -547,18 +547,22 @@
     },
     "finbif": {
       "Package": "finbif",
-      "Version": "0.9.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
+      "Version": "0.9.3.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "luomus",
+      "RemoteRepo": "finbif",
+      "RemoteRef": "dev",
+      "RemoteSha": "a6a21abd559726583eed65397e23427d5b87065d",
       "Requirements": [
         "R",
         "digest",
         "httr",
-        "lubridate",
         "lutz",
         "utils"
       ],
-      "Hash": "532db6b9bc7b0aa611ce24e987454313"
+      "Hash": "ce88f77251496e56c50624f65282559a"
     },
     "fontawesome": {
       "Package": "fontawesome",
