@@ -1,14 +1,12 @@
-#!/usr/bin/env Rscript
+library(httr, warn.conflicts = FALSE, quietly = TRUE)
+library(utils, warn.conflicts = FALSE, quietly = TRUE)
 
-# Download a file from laji.fi
-#
-# @param taxon taxon shortcode
-# @param path character string local path where to save the file
-#
 download_file <- function(taxon, path = "var/data/sp_images/org") {
 
   if (!file.exists(path)) {
+
     dir.create(path, recursive = TRUE)
+
   }
 
   taxon_id <- httr::RETRY(
@@ -36,7 +34,7 @@ download_file <- function(taxon, path = "var/data/sp_images/org") {
 
     res <- res[[1L]]
 
-    download.file(
+    utils::download.file(
       res[["largeURL"]],
       file.path(
         path,
@@ -50,7 +48,6 @@ download_file <- function(taxon, path = "var/data/sp_images/org") {
 
 }
 
-# Process downloads ---------------------------------------------------
 if (!dir.exists("var/data/sp_images/org")) dir.create("var/data/sp_images/org")
 taxa <- readRDS("taxa.rds")
 taxa <- taxa[["Species_Abb"]]

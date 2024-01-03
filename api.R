@@ -26,7 +26,7 @@ function(req, res) {
 #* @serializer unboxedJSON
 function() {
 
-  r_bg(
+  callr::r_bg(
     source,
     args = list(file = "update.R"),
     poll_connection = FALSE,

@@ -1,8 +1,4 @@
-#!/usr/bin/env Rscript
-
-# Download a taxon description from laji.fi
-#
-# @param taxon taxon shortcode
+library(httr, warn.conflicts = FALSE, quietly = TRUE)
 
 download_descriptions <- function(taxon) {
 
@@ -30,7 +26,6 @@ download_descriptions <- function(taxon) {
 
 }
 
-# Process downloads ---------------------------------------------------
 taxa <- readRDS("taxa.rds")
 taxa <- taxa[["Species_Abb"]]
 descriptions <- lapply(taxa, download_descriptions)

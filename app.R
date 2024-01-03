@@ -1,1252 +1,1385 @@
-library(ggsci)
-library(glue)
-library(highcharter)
-library(httr2)
-library(logger)
-library(lubridate)
-library(markdown)
-library(officer)
-library(pool)
-library(RPostgres)
-library(shiny)
-library(shiny.i18n)
-library(shinycssloaders)
-library(shinydashboard)
-library(shinydashboardPlus)
-library(shinyWidgets)
-library(tidyverse)
-library(tsibble)
-library(yaml)
-library(haahka)
+library(dplyr, warn.conflicts = FALSE, quietly = TRUE)
+library(forcats, warn.conflicts = FALSE, quietly = TRUE)
+library(ggsci, warn.conflicts = FALSE, quietly = TRUE)
+library(glue, warn.conflicts = FALSE, quietly = TRUE)
+library(highcharter, warn.conflicts = FALSE, quietly = TRUE)
+library(httr2, warn.conflicts = FALSE, quietly = TRUE)
+library(logger, warn.conflicts = FALSE, quietly = TRUE)
+library(pool, warn.conflicts = FALSE, quietly = TRUE)
+library(purrr, warn.conflicts = FALSE, quietly = TRUE)
+library(RPostgres, warn.conflicts = FALSE, quietly = TRUE)
+library(shiny, warn.conflicts = FALSE, quietly = TRUE)
+library(shiny.i18n, warn.conflicts = FALSE, quietly = TRUE)
+library(shinycssloaders, warn.conflicts = FALSE, quietly = TRUE)
+library(shinydashboard, warn.conflicts = FALSE, quietly = TRUE)
+library(shinydashboardPlus, warn.conflicts = FALSE, quietly = TRUE)
+library(shinyWidgets, warn.conflicts = FALSE, quietly = TRUE)
+library(tidyr, warn.conflicts = FALSE, quietly = TRUE)
+library(tsibble, warn.conflicts = FALSE, quietly = TRUE)
+library(utils, warn.conflicts = FALSE, quietly = TRUE)
+library(yaml, warn.conflicts = FALSE, quietly = TRUE)
+library(haahka, warn.conflicts = FALSE, quietly = TRUE)
 
-req <- request(
+req <- httr2::request(
   paste0("http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT"))
 )
-
-# Set up logger ----------------------------------------------------------------
 
 logger::log_layout(layout_glue_colors)
 logger::log_threshold(TRACE)
 
-# Images -----------------------------------------------------------------------
-
 download.file(paste0(req$url, "/data/sp_images.zip"), "www/img/sp_images.zip")
 
-unzip("www/img/sp_images.zip", exdir = "www/img/sp_images")
+utils::unzip("www/img/sp_images.zip", exdir = "www/img/sp_images")
 
 unlink("www/img/sp_images.zip")
 
-# Connect database -------------------------------------------------------------
+con <- pool::dbPool(RPostgres::Postgres(), dbname = Sys.getenv("DB_NAME"))
 
-con <- dbPool(Postgres(), dbname = Sys.getenv("DB_NAME"))
-
-# Read species definition data
 sp_data <- readRDS("taxa.rds")
 
-# Translation data
 translator <- shiny.i18n::Translator$new(
   translation_json_path = "translation.json"
 )
 
-# Text and image metadata
 metadata <- readRDS(url(paste0(req$url, "/data/photo_metadata.rds")))
+
 descriptions <- readRDS(url(paste0(req$url, "/data/descriptions.rds")))
 
-# Get the app metadata from the DESCRIPTION file
-METADATA <- yaml::yaml.load_file("DESCRIPTION")
-VERSION <- METADATA[["Version"]]
-REPO_URL <- METADATA[["URL"]]
-LICENSE <- METADATA[["License"]]
-AUTHOR <- METADATA[["Author"]]
-AUTHOREMAIL <- METADATA[["AuthorEmail"]]
-
-# Where should feedback be sent
-FEEDBACK <- "helpdesk@laji.fi"
-
-# FIXME: hard coded for now
-DATA_URL <- "https://tun.fi/HR.2931"
-
-# Define the size of the tiling window for data averaging
-WINDOW_SIZE <- 5
-
-# Which species is selected by default?
-DEFAULT_SPECIES <- "CYGCYG"
-
-# Highcharts options
-## How many milliseconds in a year?
-X_AXIS_TIME_UNITS = 30 * 24 * 3600 * 1000
-# Year x-axis limits
-XMIN <- datetime_to_timestamp(as.Date('2000-01-01', tz = 'UTC'))
-XMAX <- datetime_to_timestamp(as.Date('2000-12-31', tz = 'UTC'))
-# Year x-axis labels in languages different than English
-X_YEARLY_LABELS <- list(
-  "fi" = get_months("fi", "short"),
-  "en" = get_months("en", "short"),
-  "se" = get_months("se", "short")
+desc <- yaml::yaml.load_file("DESCRIPTION")
+version <- desc[["Version"]]
+repo_url <- desc[["URL"]]
+author <- desc[["Author"]]
+author_email <- desc[["AuthorEmail"]]
+feedback <- "helpdesk@laji.fi"
+data_url <- "https://tun.fi/HR.2931"
+window_size <- 5
+default_species <- "CYGCYG"
+time_units <- 30 * 24 * 3600 * 1000
+xmin <- highcharter::datetime_to_timestamp(as.Date("2000-01-01", tz = "UTC"))
+xmax <- highcharter:datetime_to_timestamp(as.Date("2000-12-31", tz = "UTC"))
+x_yearly_labels <- list(
+  "fi" = haahka::get_months("fi", "short"),
+  "en" = haahka::get_months("en", "short"),
+  "se" = haahka::get_months("se", "short")
 )
-
-# Color of the plotBands (background bars for months)
-PB_COLOR <- "rgba(240, 240, 245, 0.4)"
-
-# Define x-axis ranges for plotBands
-PB_LIST <- list(
-  list(from = get_timestamp("2000-02-01"), to = get_timestamp("2000-03-01"),
-    color = PB_COLOR
+pb_list <- list(
+  list(
+    from = haahka::get_timestamp("2000-02-01"),
+    to = haahka::get_timestamp("2000-03-01"),
+    color = "rgba(240, 240, 245, 0.4)"
   ),
-  list(from = get_timestamp("2000-04-01"), to = get_timestamp("2000-05-01"),
-    color = PB_COLOR
+  list(
+    from = haahka::get_timestamp("2000-04-01"),
+    to = haahka::get_timestamp("2000-05-01"),
+    color = "rgba(240, 240, 245, 0.4)"
   ),
-  list(from = get_timestamp("2000-06-01"), to = get_timestamp("2000-07-01"),
-    color = PB_COLOR
+  list(
+    from = haahka::get_timestamp("2000-06-01"),
+    to = haahka::get_timestamp("2000-07-01"),
+    color = "rgba(240, 240, 245, 0.4)"
   ),
-  list(from = get_timestamp("2000-08-01"), to = get_timestamp("2000-09-01"),
-    color = PB_COLOR
+  list(
+    from = haahka::get_timestamp("2000-08-01"),
+    to = haahka::get_timestamp("2000-09-01"),
+    color = "rgba(240, 240, 245, 0.4)"
   ),
-  list(from = get_timestamp("2000-10-01"), to = get_timestamp("2000-11-01"),
-    color = PB_COLOR
+  list(
+    from = haahka::get_timestamp("2000-10-01"),
+    to = haahka::get_timestamp("2000-11-01"),
+    color = "rgba(240, 240, 245, 0.4)"
   ),
-  list(from = get_timestamp("2000-12-01"), to = get_timestamp("2000-12-31"),
-    color = PB_COLOR
+  list(
+    from = haahka::get_timestamp("2000-12-01"),
+    to = haahka::get_timestamp("2000-12-31"),
+    color = "rgba(240, 240, 245, 0.4)"
   )
 )
 
-CHOICES <- translator$get_languages()
-names(CHOICES) <- purrr::map_chr(CHOICES, get_languages)
+choices <- translator$get_languages()
+names(choices) <- purrr::map_chr(choices, get_languages)
 
-# This Javascript is needed for resizing the median day graph dynamically
-# depeding on the size of the current viewport
-jscode <- '
-  $(document).on("shiny:connected", function(e) {
-    var jsWidth = screen.width;
-    Shiny.onInputChange("GetScreenWidth",jsWidth);
-  });
-'
-
-# UI ---------------------------------------------------------------------------
 ui <- function(request) {
-  dashboardPage(
-
+  shinydashboardPlus::dashboardPage(
     title = "Haahka - muuttolintuselain",
-
-    # ui-header ----------------------------------------------------------------
-    dashboardHeader(
-      title = tags$a(href = "https://haahka.laji.fi",
-        tags$img(src = "browser_logo.png", height = "40")
+    shinydashboardPlus::dashboardHeader(
+      title = shiny::tags$a(href = "https://haahka.laji.fi",
+        shiny::tags$img(src = "browser_logo.png", height = "40")
       )
     ),
-    # ui-sidebar ---------------------------------------------------------------
-    dashboardSidebar(
+    shinydashboardPlus::dashboardSidebar(
       collapsed = FALSE,
-      selectInput(
+      shiny::selectInput(
         "language",
         label = "Kieli / Språk / Language",
-        choices = CHOICES
+        choices = choices
       ),
-      sidebarMenuOutput("render_sidebarmenu"),
-      hr(),
-      uiOutput("render_sponsors"),
-      uiOutput("render_sidebarfooter")
+      shinydashboard::sidebarMenuOutput("render_sidebarmenu"),
+      shiny::hr(),
+      shiny::uiOutput("render_sponsors"),
+      shiny::uiOutput("render_sidebarfooter")
     ),
-    # ui-body ------------------------------------------------------------------
-    dashboardBody(
-      tags$head(
-        tags$link(rel = "stylesheet", type = "text/css", href = "custom.css"),
-        tags$script(
+    shinydashboard::dashboardBody(
+      shiny::tags$head(
+        shiny::tags$link(
+          rel = "stylesheet", type = "text/css", href = "custom.css"
+        ),
+        shiny::tags$script(
           defer = NA,
           `data-domain` = "haahka.laji.fi",
           src = "https://plausible.io/js/script.js"
         )
       ),
-      # Species observations tab ---------------------------------------------
-      tabItems(
-        tabItem(
+      shinydashboard::tabItems(
+        shinydashboard::tabItem(
           tabName = "species",
-          fluidPage(
-            # Inject the JS bit
-            tags$script(jscode),
-            fluidRow(
-              column(
+          shiny::fluidPage(
+            shiny::tags$script(
+              '
+                $(document).on("shiny:connected", function(e) {
+                  var jsWidth = screen.width;
+                  Shiny.onInputChange("GetScreenWidth",jsWidth);
+                });
+              '
+            ),
+            shiny::fluidRow(
+              shiny::column(
                 6,
-                box(
-                  width = 12,
-                  uiOutput("render_species")
+                shinydashboardPlus::box(
+                  width = 12, shiny::uiOutput("render_species")
                 ),
-                box(
+                shinydashboardPlus::box(
                   width = 12,
-                  withSpinner(
-                    uiOutput("render_description"),
+                  shinycssloaders::withSpinner(
+                    shiny::uiOutput("render_description"),
                     type = 8,
                     size = 0.5
                   )
                 )
               ),
-              column(
+              shiny::column(
                 6,
-                box(
+                shinydashboardPlus::box(
                   width = 12,
-                  withSpinner(
-                    highchartOutput("migration", height = "300px"),
+                  shinycssloaders::withSpinner(
+                    highcharter::highchartOutput("migration", height = "300px"),
                     type = 8,
                     size = 0.5
                   ),
-                  actionButton(
+                  shiny::actionButton(
                     inputId = "migration_info",
                     label = NULL,
-                    icon = icon("info", class = "icon-info"),
+                    icon = shiny::icon("info", class = "icon-info"),
                     class = "btn-info btn-small-info"
                   )
                 ),
-                box(
+                shinydashboardPlus::box(
                   width = 12,
-                  withSpinner(
-                    highchartOutput("local", height = "300px"),
+                  shinycssloaders::withSpinner(
+                    highcharter::highchartOutput("local", height = "300px"),
                     type = 8,
                     size = 0.5
                   ),
-                  actionButton(
+                  shiny::actionButton(
                     inputId = "local_info",
                     label = NULL,
-                    icon = icon("info", class = "icon-info"),
+                    icon = shiny::icon("info", class = "icon-info"),
                     class = "btn-info btn-small-info"
                   )
                 ),
-                box(
+                shinydashboardPlus::box(
                   width = 12,
-                  withSpinner(
-                    highchartOutput("change", height = "300px"),
-                      type = 8,
-                      size = 0.5
-                    ),
-                    actionButton(
-                      inputId = "change_info",
-                      label = NULL,
-                      icon = icon("info", class = "icon-info"),
-                      class = "btn-info btn-small-info"
-                    )
-                 ),
-                 box(
-                    width = 12,
-                    uiOutput("render_median"),
-                    actionButton(
-                      inputId = "median_info",
-                      label = NULL,
-                      icon = icon("info", class = "icon-info"),
-                      class = "btn-info btn-small-info"
-                    )
-                 ),
-                 uiOutput("change_numbers"),
-                 uiOutput("records")
+                  shinycssloaders::withSpinner(
+                    highcharter::highchartOutput("change", height = "300px"),
+                    type = 8,
+                    size = 0.5
+                  ),
+                  shiny::actionButton(
+                    inputId = "change_info",
+                    label = NULL,
+                    icon = shiny::icon("info", class = "icon-info"),
+                    class = "btn-info btn-small-info"
+                  )
+                ),
+                shinydashboardPlus::box(
+                  width = 12,
+                  shiny::uiOutput("render_median"),
+                  shiny::actionButton(
+                    inputId = "median_info",
+                    label = NULL,
+                    icon = shiny::icon("info", class = "icon-info"),
+                    class = "btn-info btn-small-info"
+                  )
+                ),
+                shiny::uiOutput("change_numbers"),
+                shiny::uiOutput("records")
               )
             )
           )
         ),
-        # Help tab -------------------------------------------------------------
-        tabItem(tabName = "help", uiOutput("render_helpsections"))
+        shinydashboard::tabItem(
+          tabName = "help", shiny::uiOutput("render_helpsections")
+        )
       )
     )
   )
 }
 
-# Server -----------------------------------------------------------------------
 server <- function(input, output, session) {
 
-    # Bookmarking --------------------------------------------------------------
+  shiny::setBookmarkExclude(
+    c(
+      "bm1",
+      "change_info",
+      "GetScreenWidth",
+      "language-selectized",
+      "local_info",
+      "median_info",
+      "migration_info",
+      "sidebarCollapsed",
+      "sidebarItemExpanded",
+      "species-selectized"
+    )
+  )
 
-    # Bookmarking excludes
-    setBookmarkExclude(c("bm1", "change_info", "GetScreenWidth",
-                         "language-selectized", "local_info", "median_info",
-                         "migration_info", "sidebarCollapsed",
-                         "sidebarItemExpanded", "species-selectized"))
+  logger::log_info("Started new session {session$token}")
 
-    # Unique session token
-    session_token <- session$token
-    log_info("Started new session {session_token}")
+  i18n <- shiny::reactive({
+    selected <- input$language
+    if (length(selected) > 0 && selected %in% translator$get_languages()) {
+      logger::log_debug("Language changed to: {selected}")
+      translator$set_translation_language(selected)
+    }
+    translator
+  })
 
-    # REACTIVES ----------------------------------------------------------------
+  get_current_sp <- shiny::reactive({
+    shiny::req(input$species)
+    dplyr::filter(sp_data, Sci_name == input$species)
+  })
 
-    # i18n() -------------------------------------------------------------------
-    i18n <- reactive({
-        selected <- input$language
+  get_current_data <- shiny::reactive({
+    sp_current <- get_current_sp()
+    dplyr::tbl(con, paste0(sp_current$Species_Abb, "_data"))
+  })
 
-        if (length(selected) > 0 && selected %in% translator$get_languages()) {
-            log_debug("Language changed to: {selected}")
-            translator$set_translation_language(selected)
-        }
-        return(translator)
-    })
+  get_current_meta <- shiny::reactive({
+    sp_current <- get_current_sp()
+    metadata[[sp_current$Species_Abb]]
+  })
 
-    # get_current_sp -----------------------------------------------------------
-    get_current_sp <- reactive({
-        shiny::req(input$species)
+  get_current_description <- shiny::reactive({
+    sp_current <- get_current_sp()
+    descriptions[[sp_current$Species_Abb]]
+  })
 
-        return(dplyr::filter(sp_data, Sci_name == input$species))
-    })
+  get_current_records <- shiny::reactive({
+    sp_current <- get_current_sp()
+    dplyr::tbl(con, paste0(sp_current$Species_Abb, "_records"))
+  })
 
-    # get_current_data ---------------------------------------------------------
-    get_current_data <- reactive({
-        sp_current <- get_current_sp()
-        return(tbl(con, paste0(sp_current$Species_Abb, "_data")))
-    })
+  get_current_stats <- shiny::reactive({
+    sp_current <- get_current_sp()
+    dplyr::tbl(con, paste0(sp_current$Species_Abb, "_stats"))
+  })
 
-    # get_current_meta ---------------------------------------------------------
-    get_current_meta <- reactive({
-      sp_current <- get_current_sp()
-      metadata[[sp_current$Species_Abb]]
-    })
+  create_popup <- function(session, filebody, lang_suffix) {
+    content_file <- file.path(
+      "www", "infos", paste0(filebody, lang_suffix, ".md")
+    )
+    if (file.exists(content_file)) {
+      shinyWidgets::sendSweetAlert(
+        session = session,
+        title = NULL,
+        text = shiny::tagList(shiny::includeMarkdown(content_file)),
+        html = TRUE
+      )
+    }
+  }
 
-    # get_current_description --------------------------------------------------
-    get_current_description <- reactive({
-      sp_current <- get_current_sp()
-      descriptions[[sp_current$Species_Abb]]
-    })
+  get_species_names <- function(lang) {
 
-    # get_current_records ------------------------------------------------------
-    get_current_records <- reactive({
-        sp_current <- get_current_sp()
-        current_stats <- tbl(con, paste0(sp_current$Species_Abb, "_records"))
-        return(current_stats)
-    })
+    if (!is.null(lang)) {
 
-    # get_current_stats --------------------------------------------------------
-    get_current_stats <- reactive({
-        sp_current <- get_current_sp()
-        current_stats <- tbl(con, paste0(sp_current$Species_Abb, "_stats"))
-        return(current_stats)
-    })
+      if (lang == "fi") {
 
-    # get_species_abbr ---------------------------------------------------------
-    get_species_abbr <- reactive({
-        current_sp <- get_current_sp()
-        sp_abbr <- tolower(current_sp$Species_Abb)
-        return(sp_abbr)
-    })
+        name_field <- "FIN_name"
 
-    # HELPERS ------------------------------------------------------------------
+      } else if (lang == "en") {
 
-    create_popup <- function(session, filebody, lang_suffix) {
-      content_file <- file.path("www", "infos",
-                                paste0(filebody, lang_suffix, ".md"))
-      if (file.exists(content_file)) {
-        sendSweetAlert(
-          session = session,
-          title = NULL,
-          text = tagList(
-            includeMarkdown(content_file)
-          ),
-          html = TRUE
-        )
+        name_field <- "ENG_name"
+
+      } else if (lang == "se") {
+
+        name_field <- "SWE_name"
+
       }
+
+      sp_names <-
+        sp_data %>%
+        dplyr::select(!!name_field) %>%
+        purrr::pluck(1)
+
+      spps <-
+        sp_data %>%
+        dplyr::select(Sci_name) %>%
+        purrr::pluck(1)
+
+      sp_names <- paste0(sp_names, " (", spps, ")")
+      names(spps) <- sp_names
+
+      spps
+
     }
+  }
 
-    get_species_names <- function(lang) {
-        if (!is.null(lang)) {
-            if (lang == "fi") {
-                name_field <- "FIN_name"
-            } else if (lang == "en") {
-                name_field <- "ENG_name"
-            } else if (lang == "se") {
-                name_field <- "SWE_name"
-          }
+  output$render_sidebarmenu <- shinydashboard::renderMenu({
 
-            sp_names <- sp_data %>%
-                dplyr::select(!!name_field) %>%
-                purrr::pluck(1)
+    shiny::req(input$language)
 
-            # Get the scientific names; these will be used in the labels and to
-            # subset the data
-            spps <- sp_data %>%
-                dplyr::select(Sci_name) %>%
-                purrr::pluck(1)
+    shinydashboard::sidebarMenu(
+      id = "tabs",
+      shinydashboard::menuItem(
+        i18n()$t("Lajikohtaiset havainnot"),
+        tabName = "species",
+        selected = TRUE,
+        icon = shiny::icon("binoculars")
+      ),
+      shinydashboard::menuItem(
+        i18n()$t("Ohjeet"), tabName = "help", icon = shiny::icon("question")
+      )
+    )
+  })
 
-            sp_names <- paste0(sp_names, " (", spps, ")")
+  output$render_sponsors <- shinydashboard::renderMenu({
 
-            # Create a named character vector
-            names(spps) <- sp_names
+    shiny::req(input$language)
 
-            return(spps)
-        }
-    }
-
-    # OUTPUTS ------------------------------------------------------------------
-
-    # render_sidebarmenu -------------------------------------------------------
-    output$render_sidebarmenu <- renderMenu({
-
-        req(input$language)
-
-        sidebarMenu(id = "tabs",
-                    menuItem(i18n()$t("Lajikohtaiset havainnot"),
-                             tabName = "species",
-                             selected = TRUE,
-                             icon = icon("binoculars")
-                    ),
-                    menuItem(i18n()$t("Ohjeet"),
-                             tabName = "help",
-                             icon = icon("question")
-                    )
-        )
-    })
-
-    # render_sponsors ----------------------------------------------------------
-    output$render_sponsors <- renderMenu({
-
-      req(input$language)
-
-      payload <- tagList(
-        div(class = "sponsors",
-            i18n()$t("Haahkaa tukevat"),
-            br(),
-            a(href = "https://kordelin.fi/en/frontpage",
-              img(src = "img/kordelin_logo_300_173.png")
-            ),
-            br(),
-            a(href = "https://www.tringa.fi",
-              img(src = "img/tringa_logo_300_300.png")
-            ),
-            br(),
-            a(href = "https://laji.fi/",
-              img(src = "https://cdn.laji.fi/images/logos/LAJI_FI_valk.png")
-            ),
-            br(),
-            a(href = "https://luomus.fi/",
-              img(src = "https://cdn.laji.fi/images/partners/luomus_fi_blue_smaller.gif")
-            )
+    shiny::tagList(
+      shiny::div(
+        class = "sponsors",
+        i18n()$t("Haahkaa tukevat"),
+        shiny::br(),
+        shiny::a(
+          href = "https://kordelin.fi/en/frontpage",
+          shiny::img(src = "img/kordelin_logo_300_173.png")
+        ),
+        shiny::br(),
+        shiny::a(
+          href = "https://www.tringa.fi",
+          shiny::img(src = "img/tringa_logo_300_300.png")
+        ),
+        shiny::br(),
+        shiny::a(
+          href = "https://laji.fi/",
+          shiny::img(src = "https://cdn.laji.fi/images/logos/LAJI_FI_valk.png")
+        ),
+        shiny::br(),
+        shiny::a(
+          href = "https://luomus.fi/",
+          shiny::img(
+            src =
+              "https://cdn.laji.fi/images/partners/luomus_fi_blue_smaller.gif"
+          )
         )
       )
-      return(payload)
-    })
+    )
 
-    # render_sidebarfooter -----------------------------------------------------
-    output$render_sidebarfooter <- renderMenu({
+  })
 
-        req(input$language)
+  output$render_sidebarfooter <- shinydashboard::renderMenu({
 
-        app_prefix <- i18n()$t("Sovellusversio")
+    shiny::req(input$language)
 
-        payload <- tagList(
-            HTML("<footer>"),
-            div(class = "footer-content",
-                strong("Muuttolintuselain Haahka"),
-                br(),
-                paste0(app_prefix, ": ", VERSION),
-                br(),
-                i18n()$t("Palaute: "),
-                a(href = paste0("mailto:", FEEDBACK), FEEDBACK),
-                br(),
-                br(),
-                a(href = REPO_URL,
-                  gsub("https://", "", REPO_URL)),
-                br(),
-                br(),
-                "© 2018 ",
-                a(href = paste0("mailto:", AUTHOREMAIL), AUTHOR),
-                br(),
-                br(),
-                a(href = "https://opensource.org/licenses/MIT", "MIT"),
-                paste0(" ", tolower(i18n()$t("Lisenssi")))
-            ),
-            HTML("</footer>")
+    app_prefix <- i18n()$t("Sovellusversio")
+
+    shiny::tagList(
+      shiny::HTML("<footer>"),
+      shiny::div(
+        class = "footer-content",
+        shiny::strong("Muuttolintuselain Haahka"),
+        shiny::br(),
+        paste0(app_prefix, ": ", version),
+        shiny::br(),
+        i18n()$t("Palaute: "),
+        shiny::a(href = paste0("mailto:", feedback), feedback),
+        shiny::br(),
+        shiny::br(),
+        shiny::a(href = repo_url, gsub("https://", "", repo_url)),
+        shiny::br(),
+        shiny::br(),
+        "© 2018 ",
+        shiny::a(href = paste0("mailto:", author_email), author),
+        shiny::br(),
+        shiny::br(),
+        shiny::a(href = "https://opensource.org/licenses/MIT", "MIT"),
+        paste0(" ", tolower(i18n()$t("Lisenssi")))
+      ),
+      shiny::HTML("</footer>")
+    )
+  })
+
+  output$render_species <- shiny::renderUI({
+
+    if (is.null(input$language)) {
+
+      name_field <- "fi"
+
+    } else {
+
+      name_field <- input$language
+
+    }
+
+    spps <- get_species_names(name_field)
+
+    selected_sp <-
+      sp_data %>%
+      dplyr::filter(Species_Abb == default_species) %>%
+      dplyr::pull(Sci_name)
+
+    selected_sp <- spps[which(spps == selected_sp)]
+
+    shiny::div(
+      id = "large",
+      shiny::selectInput(
+        "species",
+        label = i18n()$t(
+          "Valitse laji listasta tai tyhjennä kenttä ja kirjoita lajinimi"
+        ),
+        choices = spps,
+        selected = selected_sp
+      )
+    )
+
+  })
+
+  output$render_citation <- renderUI({
+
+    shiny::req(input$language)
+
+    current_sp <- get_current_sp()
+
+    now <- format(Sys.time(), format = "%Y-%m-%d")
+
+    title <- i18n()$t("Viittausohje")
+
+    text_fi <- glue::glue(
+      "{current_sp$FIN_name}. ",
+      "Helsingin Seudun Lintutieteellinen Yhdistys Tringa ry. ",
+      "Hangon lintuaseman aineisto: päiväsummat.",
+      "[{data_url}] [Viitattu {now}]"
+    )
+
+    text_se <- glue::glue(
+      "{current_sp$SWE_name}. ",
+      "Helsingforstraktens Ornitologiska Förening Tringa rf. ",
+      "Dataset från Hangö fågelstation: dagliga totalantal.",
+      "[{data_url}] [Citerad {now}]"
+    )
+
+    text_en <- glue::glue(
+      "{current_sp$ENG_name}. ",
+      "Ornithological society of Helsinki Tringa ry. ",
+      "Data of the Hanko Bird Observatory: Day counts.",
+      "[{data_url}] [Cited {now}]"
+    )
+
+    if (input$language == "fi") {
+
+      payload <- shiny::tagList(
+        shiny::h4(title), shiny::p(text_fi, shiny::br(), text_en)
+      )
+
+    } else if (input$language == "se") {
+
+      payload <- shiny::tagList(
+        shiny::h4(title), shiny::p(text_se, shiny::br(), text_en)
+      )
+
+    } else if (input$language == "en") {
+
+      payload <- shiny::tagList(shiny::h4(title), shiny::p(text_en))
+
+    }
+
+    shiny::tagList(shiny::div(payload, class = "description"))
+
+  })
+
+  output$render_image <- shiny::renderUI({
+
+    current_sp <- get_current_sp()
+
+    current_meta <- get_current_meta()
+
+    if (!is.null(current_sp)) {
+
+      sp_abbr <- current_sp$Species_Abb
+
+      img_file <- list.files(
+        file.path("www", "img", "sp_images"),
+        pattern = paste0("(", sp_abbr, ")"),
+        full.names = TRUE
+      )
+
+      if (length(img_file) > 0 && file.exists(img_file)) {
+
+        caption <- current_meta$caption
+
+        file_basename <- basename(img_file)
+
+        payload <- shiny::div(
+          shiny::img(
+            src = glue::glue("img/sp_images/{file_basename}"),
+            width = "90%",
+            class = "description"
+          ),
+          shiny::p(shiny::HTML(caption), class = "description"),
+          shiny::br()
         )
-        return(payload)
-    })
 
-    # render_species -----------------------------------------------------------
-    output$render_species <- renderUI({
+      } else {
 
-        if (is.null(input$language)) {
-            # By default, the names are Finnish
-            name_field <- "fi"
-        } else {
-            name_field <- input$language
-        }
-
-        spps <- get_species_names(name_field)
-
-        selected_sp <- sp_data %>%
-          dplyr::filter(Species_Abb == DEFAULT_SPECIES) %>%
-          dplyr::pull(Sci_name)
-        selected_sp <- spps[which(spps == selected_sp)]
-
-        payload <- div(id = "large",
-                       selectInput("species",
-                                   label = i18n()$t("Valitse laji listasta tai tyhjennä kenttä ja kirjoita lajinimi"),
-                                   choices = spps,
-                                   selected = selected_sp)
+        payload <- shiny::p(
+          i18n()$t("Kuvausteksti tulossa myöhemmin"), class = "description"
         )
-        return(payload)
-    })
 
-    # render_citation ----------------------------------------------------------
-    output$render_citation <- renderUI({
-
-      req(input$language)
-
-      current_sp <- get_current_sp()
-
-      # Define metadata for the selected species
-      now <- format(Sys.time(), format = "%Y-%m-%d")
-
-      title <- i18n()$t("Viittausohje")
-      text_fi <- glue::glue("{current_sp$FIN_name}. ",
-                            "Helsingin Seudun Lintutieteellinen Yhdistys Tringa ry. Hangon lintuaseman aineisto: päiväsummat.",
-                            "[{DATA_URL}] [Viitattu {now}]")
-      text_se <- glue::glue("{current_sp$SWE_name}. ",
-                            "Helsingforstraktens Ornitologiska Förening Tringa rf. Dataset från Hangö fågelstation: dagliga totalantal.",
-                            "[{DATA_URL}] [Citerad {now}]")
-      text_en <- glue::glue("{current_sp$ENG_name}. ",
-                            "Ornithological society of Helsinki Tringa ry. Data of the Hanko Bird Observatory: Day counts.",
-                            "[{DATA_URL}] [Cited {now}]")
-
-      if (input$language == "fi") {
-        payload <- tagList(
-          h4(title),
-          p(text_fi,
-            br(),
-            text_en)
-        )
-      } else if (input$language == "se") {
-        payload <- tagList(
-          h4(title),
-          p(text_se,
-            br(),
-            text_en)
-        )
-      } else if (input$language == "en") {
-        payload <- tagList(
-          h4(title),
-          p(text_en)
-        )
       }
 
-      return(tagList(div(payload, class = "description")))
-    })
+      payload
 
-    # render_image -------------------------------------------------------------
-    output$render_image <- renderUI({
+    }
 
-        current_sp <- get_current_sp()
-        current_meta <- get_current_meta()
+  })
 
-        if (!is.null(current_sp)) {
-            sp_abbr <- current_sp$Species_Abb
+  output$render_description <- shiny::renderUI({
 
-            # The actual file path is needed to figure out if the file exists
-            # FIXME: does not work with multiple files!
-            img_file <- list.files(file.path("www", "img", "sp_images"),
-                                   pattern = paste0("(", sp_abbr, ")"),
-                                   full.names = TRUE)
+    current_sp <- get_current_sp()
 
-            if (length(img_file) > 0 && file.exists(img_file)) {
-                # Photo credit
-                caption <- current_meta$caption
-                # Get file basename
-                file_basename <- basename(img_file)
-                # If the file does exist, use tags instead of rendering the image
-                # directly. This way the browser will cache the image.
-                payload <- shiny::div(shiny::img(src = glue::glue("img/sp_images/{file_basename}"),
-                                                 width = "90%", class = "description"),
-                                      shiny::p(shiny::HTML(caption),
-                                               class = "description"),
-                                      shiny::br())
-            } else {
-                payload <- shiny::p(i18n()$t("Kuvausteksti tulossa myöhemmin"), class = "description")
-            }
-            return(payload)
-        }
-    })
+    current_desc <- get_current_description()
 
-    # render_description -------------------------------------------------------
-    output$render_description <- renderUI({
+    description <- haahka::parse_description(current_desc, input$language)
 
-        current_sp <- get_current_sp()
-        current_desc <- get_current_description()
+    if (!is.null(current_sp)) {
 
-        description <- parse_description(current_desc, input$language)
+      sp_abbr <- current_sp$Species_Abb
 
-        if (!is.null(current_sp)) {
-            # Define species names
-            sp_abbr <- current_sp$Species_Abb
-            sci_name <- current_sp$Sci_name
+      sci_name <- current_sp$Sci_name
 
-            if (input$language == "en") {
-                common_name <- current_sp$ENG_name
-            } else if (input$language == "fi") {
-                common_name <- current_sp$FIN_name
-            } else if (input$language == "se") {
-              common_name <- current_sp$SWE_name
-            }
+      if (input$language == "en") {
 
-            withTags(
-                div(
-                    shiny::h2(common_name, class = "description"),
-                    shiny::h3(sci_name, class = "description sci-name"),
-                    shiny::br(),
-                    uiOutput("render_image"),
-                    shiny::div(shiny::HTML(description), class = "description"),
-                    shiny::br(),
-                    uiOutput("render_citation")
-                )
+        common_name <- current_sp$ENG_name
+
+      } else if (input$language == "fi") {
+
+        common_name <- current_sp$FIN_name
+
+      } else if (input$language == "se") {
+
+        common_name <- current_sp$SWE_name
+
+      }
+
+      shiny::withTags(
+        shiny::div(
+          shiny::h2(common_name, class = "description"),
+          shiny::h3(sci_name, class = "description sci-name"),
+          shiny::br(),
+          shiny::uiOutput("render_image"),
+          shiny::div(shiny::HTML(description), class = "description"),
+          shiny::br(),
+          shiny::uiOutput("render_citation")
+        )
+      )
+
+    }
+
+  })
+
+  output$migration <- highcharter::renderHighchart({
+
+    obs_current <- get_current_data()
+
+    plot_data <-
+      obs_current %>%
+      dplyr::select(day, muutto) %>%
+      dplyr::collect() %>%
+      dplyr::mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
+      tsibble::as_tsibble(index = day) %>%
+      haahka::tile_observations("day", "muutto", window_size)
+
+    if (!is.null(plot_data)) {
+
+      hcoptslang <- getOption("highcharter.lang")
+
+      hcoptslang$shortMonths <- x_yearly_labels[[input$language]]
+
+      options(highcharter.lang = hcoptslang)
+
+      highcharter::hchart(
+        plot_data,
+        type = "line",
+        highcharter::hcaes(x = day, y = value_avgs),
+        name = i18n()$t("Muuttajamäärien keskiarvot"),
+        color = "#1f78b4"
+      ) %>%
+        highcharter::hc_yAxis(
+          title = list(text = i18n()$t("Yksilöä / havaintopäivä"))
+        ) %>%
+        highcharter::hc_xAxis(
+          title = list(text = ""),
+          type = "datetime",
+          min = xmin,
+          max = xmax,
+          dateTimeLabelFormats = list(month = "%b"),
+          tickInterval = time_units,
+          plotBands = pb_list
+        ) %>%
+        highcharter::hc_plotOptions(
+          line = list(marker = list(enabled = input$show_markers)),
+          spline = list(marker = list(enabled = input$show_markers))
+        ) %>%
+        highcharter::hc_title(text = i18n()$t("Muuttajamäärien keskiarvot")) %>%
+        highcharter::hc_tooltip(
+          crosshairs = TRUE, backgroundColor = "#FCFFC5", xDateFormat = "%b %d"
+        ) %>%
+        highcharter::hc_exporting(enabled = TRUE) %>%
+        highcharter::hc_chart(zoomType = "xy")
+
+    }
+
+  })
+
+  output$local <- highcharter::renderHighchart({
+
+    obs_current <- get_current_data()
+
+    plot_data <-
+      obs_current %>%
+      dplyr::select(day, paik) %>%
+      dplyr::collect() %>%
+      dplyr::mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
+      tsibble::as_tsibble(index = day) %>%
+      haakha::tile_observations("day", "paik", window_size)
+
+    if (!is.null(plot_data)) {
+
+      hcoptslang <- getOption("highcharter.lang")
+
+      hcoptslang$shortMonths <- x_yearly_labels[[input$language]]
+
+      options(highcharter.lang = hcoptslang)
+
+      highcharter::hchart(
+        plot_data,
+        type = "line",
+        highcharter::hcaes(x = day, y = value_avgs),
+        name = i18n()$t("Paikallisten määrien keskiarvot"),
+        color = "#1f78b4"
+      ) %>%
+        highcharter::hc_yAxis(
+          title = list(text = i18n()$t("Yksilöä / havaintopäivä"))
+        ) %>%
+        highcharter::hc_xAxis(
+          title = list(text = ""),
+          type = "datetime",
+          min = xmin,
+          max = xmax,
+          dateTimeLabelFormats = list(month = "%b"),
+          tickInterval = time_units,
+          plotBands = pb_list
+        ) %>%
+        highcharter::hc_title(
+          text = i18n()$t("Paikallisten määrien keskiarvot")
+        ) %>%
+        highcharter::hc_tooltip(
+          crosshairs = TRUE, backgroundColor = "#FCFFC5", xDateFormat = "%b %d"
+        ) %>%
+        highcharter::hc_exporting(enabled = TRUE) %>%
+        highcharter::hc_chart(zoomType = "xy")
+
+    }
+
+  })
+
+  output$change <- highcharter::renderHighchart({
+
+    obs_current <- get_current_data()
+
+    if (!is.null(obs_current)) {
+
+      plot_data_p1 <-
+        obs_current %>%
+        dplyr::select(day, totalp1) %>%
+        dplyr::collect() %>%
+        dplyr::mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
+        tsibble::as_tsibble(index = day) %>%
+        haahka::tile_observations("day", "totalp1", window_size) %>%
+        dplyr::rename(totalp1 = value_avgs)
+
+      plot_data_p2 <-
+        obs_current %>%
+        dplyr::select(day, totalp2) %>%
+        dplyr::collect() %>%
+        dplyr::mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
+        tsibble::as_tsibble(index = day) %>%
+        haahka::tile_observations("day", "totalp2", window_size) %>%
+        dplyr::rename(totalp2 = value_avgs)
+
+      plot_data_p3 <-
+        obs_current %>%
+        dplyr::select(day, totalp3) %>%
+        dplyr::collect() %>%
+        dplyr::mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
+        tsibble::as_tsibble(index = day) %>%
+        haahka::tile_observations("day", "totalp3", window_size) %>%
+        dplyr::rename(totalp3 = value_avgs)
+
+      plot_data_p4 <-
+        obs_current %>%
+        dplyr::select(day, totalp4) %>%
+        dplyr::collect() %>%
+        dplyr::mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
+        tsibble::as_tsibble(index = day) %>%
+        haahka::tile_observations("day", "totalp4", window_size) %>%
+        dplyr::rename(totalp4 = value_avgs)
+
+      plot_data <-
+        plot_data_p1 %>%
+        dplyr::left_join(plot_data_p2, by = c("day" = "day")) %>%
+        dplyr::left_join(plot_data_p3, by = c("day" = "day")) %>%
+        dplyr::left_join(plot_data_p4, by = c("day" = "day")) %>%
+        tidyr::gather(epoch, value, -day) %>%
+        dplyr::mutate(
+          epoch = forcats::fct_relevel(
+            epoch, "totalp1", "totalp2", "totalp3", "totalp4"
+          )
+        )
+
+      hcoptslang <- getOption("highcharter.lang")
+
+      hcoptslang$shortMonths <- x_yearly_labels[[input$language]]
+
+      options(highcharter.lang = hcoptslang)
+
+      highcharter::hchart(
+        plot_data,
+        type = "line",
+        highcharter::hcaes(x = day, y = value, group = epoch),
+        name = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
+        color = ggsci::pal_d3("category10")(4)
+      ) %>%
+        highcharter::hc_yAxis(
+          title = list(text = i18n()$t("Yksilöä / havaintopäivä"))
+        ) %>%
+        highcharter::hc_xAxis(
+          title = list(text = ""),
+          type = "datetime",
+          min = xmin,
+          max = xmax,
+          dateTimeLabelFormats = list(month = "%b"),
+          tickInterval = time_units,
+          plotBands = pb_list
+        ) %>%
+        highcharter::hc_plotOptions(
+          line = list(marker = list(enabled = FALSE))
+        ) %>%
+        highcharter::hc_title(text = i18n()$t("Runsauksien muutokset")) %>%
+        highcharter::hc_tooltip(
+          crosshairs = TRUE,
+          backgroundColor = "#FCFFC5",
+          shared = TRUE,
+          xDateFormat = "%b %d"
+        ) %>%
+        highcharter::hc_exporting(enabled = TRUE) %>%
+        highcharter::hc_chart(zoomType = "xy")
+
+    }
+
+  })
+
+  output$change_numbers <- renderUI({
+
+    stats_current <-
+      get_current_stats() %>%
+      dplyr::collect()
+
+    long <- stats_current$slopeLong
+
+    short <- stats_current$slopeShort
+
+    if (!is.na(long) & long > 0) {
+
+      lt_number_color <- "green"
+      lt_number_icon <- shiny::icon("caret-up")
+      lt_number <- paste0("+", long, "%")
+
+    } else if (!is.na(long) & long < 0) {
+
+      lt_number_color <- "red"
+      lt_number_icon <- shiny::icon("caret-down")
+      lt_number <- paste0(long, "%")
+
+    } else if (is.na(long) | long == 0) {
+
+      lt_number_color <- "gray"
+      lt_number_icon <- shiny::icon(NULL)
+      lt_number <- "-"
+
+    }
+
+    if (!is.na(short) & short > 0) {
+
+      st_number_color <- "green"
+      st_number_icon <- shiny::icon("caret-up")
+      st_number <- paste0("+", short, "%")
+
+    } else if (!is.na(short) & short < 0) {
+
+      st_number_color <- "red"
+      st_number_icon <- shiny::iconicon("caret-down")
+      st_number <- paste0(short, "%")
+
+    } else if (is.na(short) | short == 0) {
+
+      st_number_color <- "gray"
+      st_number_icon <- shiny::icon(NULL)
+      st_number <- "-"
+
+    }
+
+    shinydashboardPlus::box(
+      width = 12,
+      solidHeader = FALSE,
+      title = i18n()$t("Runsauden muutokset"),
+      background = NULL,
+      status = "danger",
+      footer = shiny::tagList(
+        shiny::p(
+          i18n()$t(
+            paste(
+              "Pitkän aikavälin muutos",
+              "=",
+              "keskirunsauden muutos aikajaksolta 1979-1999 aikajaksolle 2020-."
             )
+          ),
+          shiny::br(),
+          i18n()$t(
+            paste(
+              "Lyhyen aikavälin muutos",
+              "=",
+              "keskirunsauden muutos aikajaksolta 2010-2019 aikajaksolle 2020-."
+            )
+          )
+        )
+      ),
+      shiny::fluidRowfluidRow(
+        shiny::column(
+          width = 6,
+          shinydashboardPlus::descriptionBlock(
+            number = lt_number,
+            numberColor = lt_number_color,
+            numberIcon = lt_number_icon,
+            header = "",
+            text = paste(i18n()$t("Pitkän aikavälin muutos")),
+            rightBorder = TRUE,
+            marginBottom = TRUE
+          )
+        ),
+        shiny::column(
+          width = 6,
+          shinydashboardPlus::descriptionBlock(
+            number = st_number,
+            numberColor = st_number_color,
+            numberIcon = st_number_icon,
+            header = "",
+            text = paste(i18n()$t("Lyhyen aikavälin muutos")),
+            rightBorder = TRUE,
+            marginBottom = TRUE
+          )
+        ),
+        shiny::column(
+          width = 12,
+          shinydashboardPlus::descriptionBlock(
+            header = paste(i18n()$t("Päivittäiset keskirunsaudet yhteensä")),
+            rightBorder = TRUE,
+            marginBottom = FALSE
+          )
+        ),
+        shiny::column(
+          width = 3,
+          shinydashboardPlus::descriptionBlock(
+            header = format(round(stats_current$Np1, 0), big.mark = " "),
+            text = "1979-1999",
+            rightBorder = TRUE,
+            marginBottom = FALSE
+          )
+        ),
+        shiny::column(
+          width = 3,
+          shinydashboardPlus::descriptionBlock(
+            header = format(round(stats_current$Np2, 0), big.mark = " "),
+            text = "2000-2009",
+            rightBorder = FALSE,
+            marginBottom = FALSE
+          )
+        ),
+        shiny::column(
+          width = 3,
+          shinydashboardPlus::descriptionBlock(
+            header = format(round(stats_current$Np3, 0), big.mark = " "),
+            text = "2010-2019",
+            rightBorder = FALSE,
+            marginBottom = FALSE
+          )
+        ),
+        shiny::column(
+          width = 3,
+          shinydashboardPlus::descriptionBlock(
+            header = format(round(stats_current$Np4, 0), big.mark = " "),
+            text = "2020-",
+            rightBorder = FALSE,
+            marginBottom = FALSE
+          )
+        )
+      )
+    )
+  })
+
+  output$render_median <- shiny::renderUI({
+
+    screen_size <- input$GetScreenWidth
+
+    height <- NULL
+
+    if (screen_size > 600) {
+
+      height <- "200px"
+
+    }
+
+    shinycssloaders::withSpinner(
+      highcharter::highchartOutput("migration_medians", height = height),
+      type = 8,
+      size = 0.5
+    )
+
+  })
+
+  output$migration_medians <- highcharter::renderHighchart({
+
+    sp_current <- get_current_sp()
+
+    origin <- as.Date("2000-01-01")
+
+    plot_data <-
+      get_current_stats() %>%
+      dplyr::collect() %>%
+      dplyr::select(
+        sphenp1, sphenp2, sphenp3, sphenp4, aphenp1, aphenp2, aphenp3, aphenp4
+      ) %>%
+      tidyr::gather(variable, value) %>%
+      tidyr::separate(
+        col = "variable", into = c("season", "epoch"), sep = "phen"
+      ) %>%
+      dplyr::mutate(
+        season = ifelse(
+          season == "s",
+          tolower(i18n()$t("Kevät")),
+          ifelse(season == "a", tolower(i18n()$t("Syys")), NA)
+        ),
+        epoch = factor(
+          epoch,
+          levels = c("p1", "p2", "p3", "p4"),
+          labels = rev(c("1979-1999", "2000-2009", "2010-2019", "2020-")),
+          ordered = TRUE
+        ),
+        epochnum = as.numeric(epoch) - 1,
+        date = origin + value,
+        date_print = haahka::make_date_label(date, input$language)
+      )
+
+    hcoptslang <- getOption("highcharter.lang")
+
+    hcoptslang$shortMonths <- x_yearly_labels[[input$language]]
+
+    options(highcharter.lang = hcoptslang)
+
+    highcharter::hchart(
+      plot_data,
+      type = "scatter",
+      highcharter::hcaes(x = date, y = epochnum, group = epoch),
+      name = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
+      color = ggsci::pal_d3("category10")(4)
+    ) %>%
+      highcharter::hc_yAxis(
+        title = list(text = ""),
+        min = 0,
+        max = 3,
+        categories = rev(levels(plot_data$epoch))
+      ) %>%
+      highcharter::hc_xAxis(
+        title = list(text = ""),
+        type = "datetime",
+        min = xmin,
+        max = xmax,
+        dateTimeLabelFormats = list(month = "%b"),
+        tickInterval = time_units,
+        plotBands = pb_list
+      ) %>%
+      highcharter::hc_plotOptions(
+        scatter = list(marker = list(symbol = "circle", radius = 8))
+      ) %>%
+      highcharter::hc_title(
+        text = i18n()$t("Muuton ajoittumisen mediaanipäivämäärä")
+      ) %>%
+      highcharter::hc_tooltip(
+        crosshairs = TRUE,
+        backgroundColor = "#FCFFC5",
+        shared = TRUE,
+        xDateFormat = "%b %d",
+        pointFormat = paste0(
+          "{point.season}",
+          ifelse(input$language == "fi", "", " "),
+          tolower(i18n()$t("Muuton ajoittumisen mediaanipäivämäärä")),
+          ":",
+          "<br> {point.date_print}"
+        )
+      ) %>%
+      highcharter::hc_exporting(enabled = TRUE) %>%
+      highcharter::hc_chart(zoomType = "xy")
+
+  })
+
+  output$records <- shiny::renderUI({
+
+    records_current <-
+      get_current_records() %>%
+      dplyr::collect() %>%
+      dplyr::mutate(date = as.Date(paste(year, day), "%Y %j"))
+
+    if (nrow(records_current) == 0) {
+
+      NULL
+
+    } else {
+
+      get_value <- function(season, type, value) {
+
+        season <- switch(season, Spring = "s", Autumn = "a")
+
+        type <- switch(type, Migr = "m", Local = "l")
+
+        record_value <- paste0(season, type)
+
+        idx <- paste0(record_value, "_")
+
+        value <- switch(value, date_string = "date", Sum = record_value)
+
+        res <-
+          records_current %>%
+          dplyr::filter(as.logical(.data[[idx]])) %>%
+          dplyr::pull(.data[[value]])
+
+        if (is.numeric(res)) {
+
+          res <- format(res, big.mark = " ")[[1L]]
+
+        } else {
+
+          if (season == "a") {
+
+            res <- res + 100
+
+          }
+
+          res <- paste(res, collapse = i18n()$t(" ja "))
 
         }
-    })
 
-    # migration ----------------------------------------------------------------
-    output$migration <- renderHighchart({
+        if (length(res) == 0) {
 
-        obs_current <- get_current_data()
+          res <- "-"
 
-        plot_data <- obs_current %>%
-            dplyr::select(day, muutto) %>%
-            collect() %>%
-            mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
-            as_tsibble(index = day) %>%
-            tile_observations("day", "muutto", WINDOW_SIZE)
-
-        if (!is.null(plot_data)) {
-
-            # Update highcarts language options
-            hcoptslang <- getOption("highcharter.lang")
-            hcoptslang$shortMonths <- X_YEARLY_LABELS[[input$language]]
-            options(highcharter.lang = hcoptslang)
-
-            hc <- plot_data %>%
-                hchart(type = "line",
-                       hcaes(x = day, y = value_avgs),
-                       name = i18n()$t("Muuttajamäärien keskiarvot"),
-                       color = "#1f78b4") %>%
-                hc_yAxis(title = list(text = i18n()$t("Yksilöä / havaintopäivä"))) %>%
-                hc_xAxis(title = list(text = ""),
-                         type = "datetime",
-                         min = XMIN,
-                         max = XMAX,
-                         dateTimeLabelFormats = list(month = '%b'),
-                         tickInterval = X_AXIS_TIME_UNITS,
-                         plotBands = PB_LIST) %>%
-                hc_plotOptions(line = list(marker = list(enabled = input$show_markers)),
-                               spline = list(marker = list(enabled = input$show_markers))) %>%
-                hc_title(text = i18n()$t("Muuttajamäärien keskiarvot")) %>%
-                hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
-                           xDateFormat = "%b %d") %>%
-                hc_exporting(enabled = TRUE) %>%
-                hc_chart(zoomType = "xy")
-
-            return(hc)
         }
-    })
 
-    # local --------------------------------------------------------------------
-    output$local <- renderHighchart({
+        res
 
-        obs_current <- get_current_data()
+      }
 
-        plot_data <- obs_current %>%
-            dplyr::select(day, paik) %>%
-            collect() %>%
-            mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
-            as_tsibble(index = day) %>%
-            tile_observations("day", "paik", WINDOW_SIZE)
-
-        if (!is.null(plot_data)) {
-
-            # Update highcarts language options
-            hcoptslang <- getOption("highcharter.lang")
-            hcoptslang$shortMonths <- X_YEARLY_LABELS[[input$language]]
-            options(highcharter.lang = hcoptslang)
-
-            hc <- plot_data %>%
-                hchart(type = "line",
-                       hcaes(x = day, y = value_avgs),
-                       name = i18n()$t("Paikallisten määrien keskiarvot"),
-                       color = "#1f78b4") %>%
-                hc_yAxis(title = list(text = i18n()$t("Yksilöä / havaintopäivä"))) %>%
-                hc_xAxis(title = list(text = ""),
-                         type = "datetime",
-                         min = XMIN,
-                         max = XMAX,
-                         dateTimeLabelFormats = list(month = '%b'),
-                         tickInterval = X_AXIS_TIME_UNITS,
-                         plotBands = PB_LIST) %>%
-                hc_title(text = i18n()$t("Paikallisten määrien keskiarvot")) %>%
-                hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
-                           xDateFormat = "%b %d") %>%
-                hc_exporting(enabled = TRUE) %>%
-                hc_chart(zoomType = "xy")
-
-            return(hc)
-        }
-    })
-
-    # change -------------------------------------------------------------------
-    output$change <- renderHighchart({
-
-        obs_current <- get_current_data()
-
-        if (!is.null(obs_current)) {
-
-            # Tile each variable
-            plot_data_p1 <- obs_current %>%
-                dplyr::select(day, totalp1) %>%
-                collect() %>%
-                mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
-                as_tsibble(index = day) %>%
-                tile_observations("day", "totalp1", WINDOW_SIZE) %>%
-                dplyr::rename(totalp1 = value_avgs)
-
-            plot_data_p2 <- obs_current %>%
-                dplyr::select(day, totalp2) %>%
-                collect() %>%
-                mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
-                as_tsibble(index = day) %>%
-                tile_observations("day", "totalp2", WINDOW_SIZE) %>%
-                dplyr::rename(totalp2 = value_avgs)
-
-            plot_data_p3 <- obs_current %>%
-                dplyr::select(day, totalp3) %>%
-                collect() %>%
-                mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
-                as_tsibble(index = day) %>%
-                tile_observations("day", "totalp3", WINDOW_SIZE) %>%
-                dplyr::rename(totalp3 = value_avgs)
-
-            plot_data_p4 <- obs_current %>%
-              dplyr::select(day, totalp4) %>%
-              collect() %>%
-              mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
-              as_tsibble(index = day) %>%
-              tile_observations("day", "totalp4", WINDOW_SIZE) %>%
-              dplyr::rename(totalp4 = value_avgs)
-
-            plot_data <- plot_data_p1 %>%
-                dplyr::left_join(., plot_data_p2, by = c("day" = "day")) %>%
-                dplyr::left_join(., plot_data_p3, by = c("day" = "day")) %>%
-                dplyr::left_join(., plot_data_p4, by = c("day" = "day")) %>%
-                tidyr::gather(epoch, value, -day) %>%
-                dplyr::mutate(
-                  epoch = forcats::fct_relevel(
-                    epoch, "totalp1", "totalp2", "totalp3", "totalp4"
+      shinydashboardPlus::box(
+        width = 12,
+        solidHeader = FALSE,
+        title = i18n()$t("Runsausennätykset"),
+        status = "info",
+        shiny::fluidRow(
+          shiny::column(
+            width = 12,
+            shiny::tagList(shiny::h4(i18n()$t("Kevät"), class = "record")),
+            shiny::column(
+              width = 6,
+              shiny::tagList(
+                shiny::h5(i18n()$t("Muuttavat"), class = "record"),
+                shiny::div(
+                  class = "record",
+                  shiny::column(
+                    width = 3,
+                    shiny::icon("trophy", class = "icon-record icon-gold")
+                  ),
+                  shiny::column(
+                    width = 9,
+                    shiny::p(
+                      get_value("Spring", "Migr", "Sum"),
+                      class = "record-number"
+                    )
+                  ),
+                  shiny::column(
+                    width = 3, shiny::icon("calendar", class = "icon-record")
+                  ),
+                  shiny::column(
+                    width = 9,
+                    shiny::p(get_value("Spring", "Migr", "date_string"))
                   )
                 )
-
-            # Update highcarts language options
-            hcoptslang <- getOption("highcharter.lang")
-            hcoptslang$shortMonths <- X_YEARLY_LABELS[[input$language]]
-            options(highcharter.lang = hcoptslang)
-
-            hc <- plot_data %>%
-                hchart(type = "line",
-                       hcaes(x = day, y = value, group = epoch),
-                       # order of epochs c("begin", "end", "med")
-                       name = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
-                       color = ggsci::pal_d3("category10")(4)) %>%
-                hc_yAxis(title = list(text = i18n()$t("Yksilöä / havaintopäivä"))) %>%
-                hc_xAxis(title = list(text = ""),
-                         type = "datetime",
-                         min = XMIN,
-                         max = XMAX,
-                         dateTimeLabelFormats = list(month = '%b'),
-                         tickInterval = X_AXIS_TIME_UNITS,
-                         plotBands = PB_LIST) %>%
-                hc_plotOptions(line = list(marker = list(enabled = FALSE))) %>%
-                hc_title(text = i18n()$t("Runsauksien muutokset")) %>%
-                hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
-                           shared = TRUE, xDateFormat = "%b %d") %>%
-                hc_exporting(enabled = TRUE) %>%
-                hc_chart(zoomType = "xy")
-
-            return(hc)
-        }
-    })
-
-    # change_numbers -----------------------------------------------------------
-    output$change_numbers <- renderUI({
-
-        stats_current <- get_current_stats() %>% collect()
-
-        # Sort out the the trend numbers and UI components
-        # Long term
-        if (!is.na(stats_current$slopeLong) & stats_current$slopeLong > 0) {
-            lt_number_color <- "green"
-            lt_number_icon <- icon("caret-up")
-            lt_number <- paste0("+", stats_current$slopeLong, "%")
-        } else if (!is.na(stats_current$slopeLong) & stats_current$slopeLong < 0) {
-            lt_number_color <- "red"
-            lt_number_icon <- icon("caret-down")
-            lt_number <- paste0(stats_current$slopeLong, "%")
-        } else if (is.na(stats_current$slopeLong) | stats_current$slopeLong == 0) {
-            lt_number_color <- "gray"
-            lt_number_icon <- icon(NULL)
-            lt_number <- "-"
-        }
-        # Short term
-        if (!is.na(stats_current$slopeShort) & stats_current$slopeShort > 0) {
-            st_number_color <- "green"
-            st_number_icon <- icon("caret-up")
-            st_number <- paste0("+", stats_current$slopeShort, "%")
-        } else if (!is.na(stats_current$slopeShort) & stats_current$slopeShort < 0) {
-            st_number_color <- "red"
-            st_number_icon <- icon("caret-down")
-            st_number <- paste0(stats_current$slopeShort, "%")
-        } else if (is.na(stats_current$slopeShort) | stats_current$slopeShort == 0) {
-            st_number_color <- "gray"
-            st_number_icon <-icon(NULL)
-            st_number <- "-"
-        }
-
-        payload <- box(width = 12,
-                       solidHeader = FALSE,
-                       title = i18n()$t("Runsauden muutokset"),
-                       background = NULL,
-                       status = "danger",
-                       footer = tagList(
-                           p(
-                               i18n()$t("Pitkän aikavälin muutos = keskirunsauden muutos aikajaksolta 1979-1999 aikajaksolle 2020-."),
-                               br(),
-                               i18n()$t("Lyhyen aikavälin muutos = keskirunsauden muutos aikajaksolta 2010-2019 aikajaksolle 2020-.")
-                           )
-                       ),
-                       fluidRow(
-                           column(
-                               width = 6,
-                               descriptionBlock(
-                                   number = lt_number,
-                                   numberColor = lt_number_color,
-                                   numberIcon = lt_number_icon,
-                                   header = "",
-                                   text = paste(i18n()$t("Pitkän aikavälin muutos")),
-                                   rightBorder = TRUE,
-                                   marginBottom = TRUE
-                               )
-                           ),
-                           column(
-                               width = 6,
-                               descriptionBlock(
-                                   number = st_number,
-                                   numberColor = st_number_color,
-                                   numberIcon = st_number_icon,
-                                   header = "",
-                                   text = paste(i18n()$t("Lyhyen aikavälin muutos")),
-                                   rightBorder = TRUE,
-                                   marginBottom = TRUE
-                               )
-                           ),
-                           column(width = 12,
-                                  descriptionBlock(
-                                      header = paste(i18n()$t("Päivittäiset keskirunsaudet yhteensä")),
-                                      rightBorder = TRUE,
-                                      marginBottom = FALSE
-                                  )
-                           ),
-                           column(
-                               width = 3,
-                               descriptionBlock(
-                                   header = format(round(stats_current$Np1, 0),
-                                                   big.mark = " "),
-                                   text = "1979-1999",
-                                   rightBorder = TRUE,
-                                   marginBottom = FALSE
-                               )
-                           ),
-                           column(
-                               width = 3,
-                               descriptionBlock(
-                                   header = format(round(stats_current$Np2, 0),
-                                                   big.mark = " "),
-                                   text = "2000-2009",
-                                   rightBorder = FALSE,
-                                   marginBottom = FALSE
-                               )
-                           ),
-                           column(
-                               width = 3,
-                               descriptionBlock(
-                                   header = format(round(stats_current$Np3, 0),
-                                                   big.mark = " "),
-                                   text = "2010-2019",
-                                   rightBorder = FALSE,
-                                   marginBottom = FALSE
-                               )
-                           ),
-                           column(
-                               width = 3,
-                               descriptionBlock(
-                                   header = format(round(stats_current$Np4, 0),
-                                                   big.mark = " "),
-                                   text = "2020-",
-                                   rightBorder = FALSE,
-                                   marginBottom = FALSE
-                               )
-                           )
-                       )
-        )
-        return(payload)
-    })
-
-    # render_median ------------------------------------------------------------
-    output$render_median <- renderUI({
-
-      # Adjust height based on the initial screen size
-      screen_size <- input$GetScreenWidth
-      if (screen_size > 600) {
-        height <- "200px"
-      } else {
-        height <- NULL
-      }
-
-      payload <- withSpinner(highchartOutput("migration_medians",
-                                             height = height),
-                             type = 8, size = 0.5)
-      return(payload)
-    })
-
-    # migration_medians --------------------------------------------------------
-    output$migration_medians <- renderHighchart({
-
-        sp_current <- get_current_sp()
-
-        # Define origing date
-        origin <- as.Date("2000-01-01")
-
-        # abundance_stats has already been loaded
-        plot_data <- get_current_stats() %>%
-            collect() %>%
-            # Select only median values (Julian days) for i) the three epochs
-            # and ii) spring and autumn
-            select(sphenp1, sphenp2, sphenp3, sphenp4, aphenp1, aphenp2, aphenp3, aphenp4) %>%
-            # Make data tidy (long)
-            gather(variable, value) %>%
-            # Split variables into two new columns
-            separate(col = "variable", into = c("season", "epoch"), sep = "phen") %>%
-            # Mutate new variables
-            mutate(
-                   # Replace "s" and "a" with more informative strings
-                   season = ifelse(season == "s", tolower(i18n()$t("Kevät")),
-                                   ifelse(season == "a", tolower(i18n()$t("Syys")), NA)),
-                   # Make epochs factors
-                   epoch = factor(epoch, levels = c("p1", "p2", "p3", "p4"),
-                                  labels = rev(c("1979-1999", "2000-2009", "2010-2019", "2020-")),
-                                  ordered = TRUE),
-                   # Numeric value of the factors is needed so that highcharts
-                   # can plot the factors on y-axis. Note that Javascript
-                   # indexing starts from 0.
-                   epochnum = as.numeric(epoch) - 1,
-                   # Convert Julian days into actual dates
-                   date = origin + value,
-                   # Pretty version of the date for tooltips
-                   date_print = make_date_label(date, input$language))
-
-        # Update highcarts language options
-        hcoptslang <- getOption("highcharter.lang")
-        hcoptslang$shortMonths <- X_YEARLY_LABELS[[input$language]]
-        options(highcharter.lang = hcoptslang)
-
-        hc <- plot_data %>%
-            hchart(type = "scatter",
-                   hcaes(x = date, y = epochnum, group = epoch),
-                   # order of epochs c("begin", "end", "med")
-                   name = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
-                   color = ggsci::pal_d3("category10")(4)) %>%
-            hc_yAxis(title = list(text = ""),
-                     min = 0,
-                     max = 3,
-                     categories = rev(levels(plot_data$epoch))) %>%
-            hc_xAxis(title = list(text = ""),
-                     type = "datetime",
-                     min = XMIN,
-                     max = XMAX,
-                     dateTimeLabelFormats = list(month = '%b'),
-                     tickInterval = X_AXIS_TIME_UNITS,
-                     plotBands = PB_LIST) %>%
-            hc_plotOptions(
-                scatter = list(marker = list(symbol = "circle",
-                                             radius = 8))
-            ) %>%
-            hc_title(text = i18n()$t("Muuton ajoittumisen mediaanipäivämäärä")) %>%
-            hc_tooltip(crosshairs = TRUE, backgroundColor = "#FCFFC5",
-                       shared = TRUE, xDateFormat = "%b %d",
-                       pointFormat = paste0("{point.season}",
-                                            # Not pretty, but needed for
-                                            # compound words
-                                            ifelse(input$language == "fi", "", " "),
-                                            tolower(i18n()$t("Muuton ajoittumisen mediaanipäivämäärä")),
-                                            ":", "<br> {point.date_print}")) %>%
-            hc_exporting(enabled = TRUE) %>%
-            hc_chart(zoomType = "xy")
-
-        return(hc)
-    })
-
-    # records ------------------------------------------------------------------
-    output$records <- renderUI({
-
-        records_current <- get_current_records() %>%
-            dplyr::collect() %>%
-            dplyr::mutate(date = as.Date(paste(year, day), "%Y %j"))
-
-        if (nrow(records_current) == 0) {
-            payload <- NULL
-        } else {
-
-            get_value <- function(season, type, value) {
-
-              season <- switch(season, Spring = "s", Autumn = "a")
-              type <- switch(type, Migr = "m", Local = "l")
-
-              record_value <- paste0(season, type)
-              idx <- paste0(record_value, "_")
-              value <- switch(
-                value, date_string = "date", Sum = record_value
               )
-
-                res <- records_current %>%
-                    dplyr::filter(as.logical(.data[[idx]])) %>%
-                    dplyr::pull(.data[[value]])
-
-
-                if (is.numeric(res)) {
-                    res <- format(res, big.mark = " ")[[1L]]
-                } else {
-
-                  if (season == "a") res <- res + 100
-
-                  res <- paste(res, collapse = i18n()$t(" ja "))
-                }
-
-                if (length(res) == 0) {
-                    res <- "-"
-                }
-                return(res)
-            }
-
-            payload <- box(width = 12,
-                           solidHeader = FALSE,
-                           title = i18n()$t("Runsausennätykset"),
-                           status = "info",
-                           fluidRow(
-                               column(
-                                   width = 12,
-                                   tagList(
-                                       h4(i18n()$t("Kevät"), class = "record")
-                                   ),
-                                   column(
-                                       width = 6,
-                                       tagList(
-                                           h5(i18n()$t("Muuttavat"), class = "record"),
-                                           div(class = "record",
-                                               column(width = 3,
-                                                      icon("trophy",
-                                                           class = "icon-record icon-gold")
-                                               ),
-                                               column(width = 9,
-                                                      p(get_value("Spring", "Migr", "Sum"),
-                                                        class = "record-number")
-                                               ),
-                                               column(width = 3,
-                                                      icon("calendar", class = "icon-record")
-                                               ),
-                                               column(width = 9,
-                                                      p(get_value("Spring", "Migr", "date_string"))
-                                               )
-                                           )
-                                       )
-                                   ),
-                                   column(
-                                       width = 6,
-                                       tagList(
-                                           h5(i18n()$t("Paikalliset"), class = "record"),
-                                           div(class = "record",
-                                               column(width = 3,
-                                                      icon("trophy",
-                                                           class = "icon-record icon-gold")
-                                               ),
-                                               column(width = 9,
-                                                      p(get_value("Spring", "Local", "Sum"),
-                                                        class = "record-number")
-                                               ),
-                                               column(width = 3,
-                                                      icon("calendar", class = "icon-record")
-                                               ),
-                                               column(width = 9,
-                                                      p(get_value("Spring", "Local", "date_string"))
-                                               )
-                                           )
-                                       )
-                                   )
-                               )
-                           ),
-                           fluidRow(
-                               column(
-                                   width = 12,
-                                   tagList(
-                                       h4(i18n()$t("Syksy"), class = "record")
-                                   ),
-                                   column(
-                                       width = 6,
-                                       tagList(
-                                           h5(i18n()$t("Muuttavat"), class = "record"),
-                                           div(class = "record",
-                                               column(width = 3,
-                                                      icon("trophy",
-                                                           class = "icon-record icon-gold")
-                                               ),
-                                               column(width = 9,
-                                                      p(get_value("Autumn", "Migr", "Sum"),
-                                                        class = "record-number")
-                                               ),
-                                               column(width = 3,
-                                                      icon("calendar", class = "icon-record")
-                                               ),
-                                               column(width = 9,
-                                                      p(get_value("Autumn", "Migr", "date_string")
-                                                        )
-                                               )
-                                           )
-                                       )
-                                   ),
-                                   column(
-                                       width = 6,
-                                       tagList(
-                                           h5(i18n()$t("Paikalliset"), class = "record"),
-                                           div(class = "record",
-                                               column(width = 3,
-                                                      icon("trophy",
-                                                           class = "icon-record icon-gold")
-                                               ),
-                                               column(width = 9,
-                                                      p(get_value("Autumn", "Local", "Sum"),
-                                                        class = "record-number")
-                                               ),
-                                               column(width = 3,
-                                                      icon("calendar", class = "icon-record")
-                                               ),
-                                               column(width = 9,
-                                                      p(get_value("Autumn", "Local", "date_string"))
-                                               )
-                                           )
-                                       )
-                                   )
-                               )
-                           )
-            )
-        }
-        return(payload)
-    })
-
-    # render_helpsections ------------------------------------------------------
-    output$render_helpsections <- renderUI({
-
-        data_help_file <- file.path("www", "helps",
-                                    paste0("data_help-", input$language, ".md"))
-        if (file.exists(data_help_file)) {
-          data_help_content <- tagList(
-                div(class = "help-container",
-                    includeMarkdown(data_help_file)
-              )
-          )
-        } else {
-          data_help_content <- ""
-        }
-
-        app_help_file <- file.path("www", "helps",
-                                    paste0("app_help-", input$language, ".md"))
-        if (file.exists(app_help_file)) {
-          app_help_content <- tagList(
-            div(class = "help-container",
-                includeMarkdown(app_help_file)
-            )
-          )
-        } else {
-          app_help_content <- ""
-        }
-
-        payload <- tagList(
-          fluidRow(
-            column(width = 6,
-                   userBox(
-                     title = userDescription(
-                       title = i18n()$t("Aineisto"),
-                       subtitle = i18n()$t("Hangon lintuaseman pitkäaikaisaineisto"),
-                       type = NULL,
-                       image = "database.png"
-                     ),
-                     width = 12,
-                     background = "navy",
-                     closable = FALSE,
-                     collapsible = FALSE,
-                     data_help_content
-                   )
             ),
-            column(width = 6,
-                   userBox(
-                     title = userDescription(
-                       title = i18n()$t("Verkkosovellus"),
-                       subtitle = "Muuttolintuselain Haahka",
-                       type = NULL,
-                       image = "settings.png"
-                     ),
-                     width = 12,
-                     background = "navy",
-                     closable = FALSE,
-                     collapsible = FALSE,
-                     app_help_content
-                   )
+            shiny::column(
+              width = 6,
+              shiny::tagList(
+                shiny::h5(i18n()$t("Paikalliset"), class = "record"),
+                shiny::div(
+                  class = "record",
+                  shiny::column(
+                    width = 3,
+                    shiny::icon("trophy", class = "icon-record icon-gold")
+                  ),
+                  shiny::column(
+                    width = 9,
+                    shiny::p(
+                      get_value("Spring", "Local", "Sum"),
+                      class = "record-number"
+                    )
+                  ),
+                  shiny::column(
+                    width = 3, shiny::icon("calendar", class = "icon-record")
+                  ),
+                  shiny::column(
+                    width = 9,
+                    shiny::p(get_value("Spring", "Local", "date_string"))
+                  )
+                )
+              )
+            )
+          )
+        ),
+        shiny::fluidRow(
+          shiny::column(
+            width = 12,
+            shiny::tagList(shiny::h4(i18n()$t("Syksy"), class = "record")),
+            shiny::column(
+              width = 6,
+              shiny::tagList(
+                shiny::h5(i18n()$t("Muuttavat"), class = "record"),
+                shiny::div(
+                  class = "record",
+                  shiny::column(
+                    width = 3,
+                    shiny::icon("trophy", class = "icon-record icon-gold")
+                  ),
+                  shiny::column(
+                    width = 9,
+                    shiny::p(
+                      get_value("Autumn", "Migr", "Sum"),
+                      class = "record-number"
+                    )
+                  ),
+                  shiny::column(
+                    width = 3, shiny::icon("calendar", class = "icon-record")
+                  ),
+                  shiny::column(
+                    width = 9,
+                    shiny::p(get_value("Autumn", "Migr", "date_string"))
+                  )
+                )
+              )
+            ),
+            shiny::column(
+              width = 6,
+              shiny::tagList(
+                shiny::h5(i18n()$t("Paikalliset"), class = "record"),
+                shiny::div(
+                  class = "record",
+                  shiny::column(
+                    width = 3,
+                    shiny::icon("trophy", class = "icon-record icon-gold")
+                  ),
+                  shiny::column(
+                    width = 9,
+                    shiny::p(
+                      get_value("Autumn", "Local", "Sum"),
+                      class = "record-number"
+                    )
+                  ),
+                  shiny::column(
+                    width = 3, shiny::icon("calendar", class = "icon-record")
+                  ),
+                  shiny::column(
+                    width = 9,
+                    shiny::p(get_value("Autumn", "Local", "date_string"))
+                  )
+                )
+              )
             )
           )
         )
-      return(payload)
-    })
+      )
 
-    # OBSERVERS ----------------------------------------------------------------
+    }
 
-    observe({
-      # Trigger this observer every time an input changes
-      reactiveValuesToList(input)
-      session$doBookmark()
-    })
+  })
 
-    # Update URL on each bookmarking
-    onBookmarked(function(url) {
-      updateQueryString(url)
-    })
+  output$render_helpsections <- shiny::renderUI({
 
-    # Used only for logging
-    observeEvent(input$species, {
-        logger::log_debug("Species changed to: {input$species}")
-    })
+    data_help_file <- file.path(
+      "www", "helps", paste0("data_help-", input$language, ".md")
+    )
 
-    observeEvent(input$language, {
-      updateSelectInput(session, "language", selected = input$language)
-    })
+    data_help_content <- ""
 
-    observeEvent(i18n(), {
-        updateSelectInput(session, "species", label =  i18n()$t("Valitse laji"),
-                          choices = get_species_names(input$language),
-                          selected = input$species)
-    })
+    if (file.exists(data_help_file)) {
 
-    observeEvent(input$migration_info, {
-      req(input$language)
+      data_help_content <- shiny::tagList(
+        shiny::div(
+          class = "help-container", shiny::includeMarkdown(data_help_file)
+        )
+      )
+
+    }
+
+    app_help_file <- file.path(
+      "www", "helps", paste0("app_help-", input$language, ".md")
+    )
+
+    app_help_content <- ""
+
+    if (file.exists(app_help_file)) {
+
+      app_help_content <- shiny::tagList(
+        shiny::div(
+          class = "help-container", shiny::includeMarkdown(app_help_file)
+        )
+      )
+
+    }
+
+    shiny::tagList(
+      shiny::fluidRow(
+        shiny::column(
+          width = 6,
+          shinydashboardPlus::userBox(
+            title = shinydashboardPlus::userDescription(
+              title = i18n()$t("Aineisto"),
+              subtitle = i18n()$t("Hangon lintuaseman pitkäaikaisaineisto"),
+              type = NULL,
+              image = "database.png"
+            ),
+            width = 12,
+            background = "navy",
+            closable = FALSE,
+            collapsible = FALSE,
+            data_help_content
+          )
+        ),
+        shiny::column(
+          width = 6,
+          shinydashboardPlus::userBox(
+            title = shinydashboardPlus::userDescription(
+              title = i18n()$t("Verkkosovellus"),
+              subtitle = "Muuttolintuselain Haahka",
+              type = NULL,
+              image = "settings.png"
+            ),
+            width = 12,
+            background = "navy",
+            closable = FALSE,
+            collapsible = FALSE,
+            app_help_content
+          )
+        )
+      )
+    )
+  })
+
+  shiny::observe({
+    shiny::reactiveValuesToList(input)
+    session$doBookmark()
+  })
+
+  shiny::onBookmarked(
+    function(url) {
+      shiny::updateQueryString(url)
+    }
+  )
+
+  shiny::observeEvent(
+    input$species, {
+      logger::log_debug("Species changed to: {input$species}")
+    }
+  )
+
+  shiny::observeEvent(
+    input$language, {
+      shiny::updateSelectInput(session, "language", selected = input$language)
+    }
+  )
+
+  shiny::observeEvent(
+    i18n(),
+    shiny::updateSelectInput(
+      session,
+      "species",
+      label =  i18n()$t("Valitse laji"),
+      choices = get_species_names(input$language),
+      selected = input$species
+    )
+  )
+
+  shiny::observeEvent(
+    input$migration_info,
+    {
+      shiny::req(input$language)
       create_popup(session, "migration_info-", input$language)
-    })
+    }
+  )
 
-    observeEvent(input$local_info, {
-      req(input$language)
+  shiny::create_popupobserveEvent(
+    input$local_info,
+    {
+      shiny::req(input$language)
       create_popup(session, "local_info-", input$language)
-    })
+    }
+  )
 
-    observeEvent(input$change_info, {
-      req(input$language)
+  shiny::observeEvent(
+    input$change_info,
+    {
+      shiny::req(input$language)
       create_popup(session, "change_info-", input$language)
-    })
+    }
+  )
 
-    observeEvent(input$median_info, {
-      req(input$language)
+  shiny::observeEvent(
+    input$median_info,
+    {
+      shiny::req(input$language)
       create_popup(session, "median_info-", input$language)
-    })
+    }
+  )
 
-    session$onSessionEnded(function() {
-      logger::log_info("Session {session_token} stopped")
-    })
+  session$onSessionEnded(
+    function() logger::log_info("Session {session$token} stopped")
+  )
+
 }
 
-shinyApp(ui, server, enableBookmarking = "url")
+shiny::shinyApp(ui, server, enableBookmarking = "url")
