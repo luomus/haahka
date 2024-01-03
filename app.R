@@ -1352,7 +1352,7 @@ server <- function(input, output, session) {
     }
   )
 
-  shiny::create_popupobserveEvent(
+  shiny::observeEvent(
     input$local_info,
     {
       shiny::req(input$language)
