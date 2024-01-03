@@ -1,4 +1,4 @@
-FROM ghcr.io/luomus/base-r-image@sha256:d338429f1471be27280ce833695db60248a17305b25db9dc5aa500b63b1a7c92
+FROM ghcr.io/luomus/base-r-image@sha256:aa2caca64a234e63f7c1ba06cb06b04d18603d2b0a66be62cc8587ebe0ac876d
 
 ENV STATUS_DIR="var/status"
 ENV LOG_DIR="var/logs"
@@ -17,6 +17,7 @@ COPY download_data.R /home/user/download_data.R
 COPY www/ /home/user/www
 COPY DESCRIPTION /home/user/DESCRIPTION
 COPY NAMESPACE /home/user/NAMESPACE
+COPY .Rbuildignore /home/user/.Rbuildignore
 
 RUN R -e "renv::restore()" \
  && R -e 'remotes::install_local(dependencies = FALSE, upgrade = FALSE)' \
