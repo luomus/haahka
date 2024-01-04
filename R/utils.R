@@ -118,7 +118,7 @@ is_odd <- function(x) {
 #'
 #' @importFrom assertthat see_if
 #' @importFrom glue glue
-#' @importFrom lubridate month
+#' @importFrom lubridate day month
 #' @export
 make_date_label <- function(x, lang) {
 
@@ -126,7 +126,9 @@ make_date_label <- function(x, lang) {
 
   month_name <- get_months(lang, "long")[lubridate::month(x)]
 
-  glue::glue("{month_name} {day(x)}")
+  dayx <- lubridate::day(x)
+
+  glue::glue("{month_name} {dayx}")
 
 }
 
