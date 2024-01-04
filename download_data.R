@@ -30,31 +30,30 @@ if (!DBI::dbExistsTable(con, "last_update")) {
 
 }
 
-last_update <-
-  dplyr::tbl(con, "last_update") |>
-  dplyr::filter(tbl == "events") |>
-  dplyr::pull(date) |>
-  as.Date()
+last_update <- dplyr::tbl(con, "last_update")
+last_update <- dplyr::filter(last_update, .data[["tbl"]] == "events")
+last_update <- dplyr::pull(last_update, "date")
+last_update <- as.Date(last_update)
 
 if (!isTRUE(last_update > finbif::fb_last_mod(filter = filter))) {
 
-  events <-
-    finbif::finbif_occurrence(
-      filter = filter,
-      select = c("document_id", "year", day = "ordinal_day_start"),
-      aggregate = "event", n = "all", aggregate_counts = FALSE
-    ) |>
-    dplyr::mutate(
-      period = case_when(
-        year < 2000 ~ "p1",
-        dplyr::between(year, 2000, 2009) ~ "p2",
-        dplyr::between(year, 2010, 2019) ~ "p3",
-        year > 2019 ~ "p4"
-      )
-    ) |>
-    dplyr::copy_to(
-      con, df = _, name = "events", temporary = FALSE, overwrite = TRUE
+  events <- finbif::finbif_occurrence(
+    filter = filter,
+    select = c("document_id", "year", day = "ordinal_day_start"),
+    aggregate = "event", n = "all", aggregate_counts = FALSE
+  )
+  events <- dplyr::mutate(
+    events,
+    period = dplyr::case_when(
+      .data[["year"]] < 2000 ~ "p1",
+      dplyr::between(.data[["year"]], 2000, 2009) ~ "p2",
+      dplyr::between(.data[["year"]], 2010, 2019) ~ "p3",
+      .data[["year"]] > 2019 ~ "p4"
     )
+  )
+  events <- dplyr::copy_to(
+    con, df = events, name = "events", temporary = FALSE, overwrite = TRUE
+  )
 
   last_update_tbl <- dplyr::tbl(con, "last_update")
 
@@ -86,10 +85,9 @@ dplyr::copy_to(
   "periods"
 )
 
-years <-
-  dplyr::distinct(events, year) |>
-  dplyr::collect() |>
-  dplyr::pull(year)
+years <- dplyr::distinct(events, .data[["year"]])
+years <- dplyr::collect(years)
+years <- dplyr::pull("year")
 
 dplyr::copy_to(
   con,
@@ -105,15 +103,15 @@ for (i in seq_len(nrow(taxa))) {
   spe <- taxa[[i, "spe"]]
   aub <- taxa[[i, "aub"]] - 100L
   aue <- taxa[[i, "aue"]] - 100L
+
   if (aue < 1) aue <- 366L + aue
 
   message(sprintf("INFO [%s] Checking %s...", Sys.time(), sp))
 
-  last_update <-
-    dplyr::tbl(con, "last_update") |>
-    dplyr::filter(tbl == !!sp) |>
-    dplyr::pull(date) |>
-    as.Date()
+  last_update <- dplyr::tbl(con, "last_update")
+  last_update <- dplyr::filter(last_update, .data[["tbl"]] == !!sp)
+  last_update <- dplyr::pull(last_update, "date")
+  last_update <- as.Date(last_update)
 
   last_mod <- finbif::finbif_last_mod(sp, filter = filter)
 
@@ -139,124 +137,199 @@ for (i in seq_len(nrow(taxa))) {
 
     stats_tbl_name <- paste0(sp, "_stats")
 
-    counts <-
-      finbif::finbif_occurrence(
-        sp,
-        filter = filter,
-        select = "document_id",
-        facts = c("Local", "Migr", "Observed"),
-        n = "all"
-      ) |>
-      dplyr::copy_to(
-        con, df = _, name = sp, temporary = FALSE, overwrite = TRUE
-      ) |>
-      dplyr::right_join(events, by = "document_id") |>
-      dplyr::mutate(
-        Observed = ifelse(is.na(Observed), FALSE, as.logical(Observed)),
-        Local = ifelse(
-          Observed, NA_integer_, ifelse(is.na(Local), 0L, as.integer(Local))
-        ),
-        Migr = ifelse(is.na(Migr), 0L, as.integer(Migr))
+    counts <- finbif::finbif_occurrence(
+      sp,
+      filter = filter,
+      select = "document_id",
+      facts = c("Local", "Migr", "Observed"),
+      n = "all"
+    )
+    counts <- dplyr::copy_to(
+      con, df = counts, name = sp, temporary = FALSE, overwrite = TRUE
+    )
+    counts <- dplyr::right_join(counts, events, by = "document_id")
+    counts <- dplyr::mutate(
+      counts,
+      Observed = ifelse(
+        is.na(.data[["Observed"]]), FALSE, as.logical(.data[["Observed"]])
+      ),
+      Local = ifelse(
+        .data[["Observed"]],
+        NA_integer_,
+        ifelse(is.na(.data[["Local"]]), 0L, as.integer(.data[["Local"]]))
+      ),
+      Migr = ifelse(is.na(.data[["Migr"]]), 0L, as.integer(.data[["Migr"]]))
+    )
+
+    data <- dplyr::group_by(counts, dplyr::all_of("day"))
+    data <- dplyr::summarise(
+      data,
+      paik = mean(.data[["Local"]], na.rm = TRUE),
+      muutto = mean(.data[["Migr"]], na.rm = TRUE)
+    )
+
+    data_long <- dplyr::group_by(counts, day, period)
+    data_long <- dplyr::summarise(
+      data_long,
+      paik = mean(.data[["Local"]], na.rm = TRUE),
+      muutto = mean(.data[["Migr"]], na.rm = TRUE),
+      .groups = "keep"
+    )
+    data_long <- dplyr::mutate(
+      data_long, total = .data[["paik"]] + .data[["muutto"]]
+    )
+    data_long <- dplyr::right_join(
+      data_long, tbl(con, "periods"), by = c("day", "period")
+    )
+
+    data_wide <- dplyr::ungroup(data_long, dplyr::all_of("period"))
+    data_wide <- tidyr::pivot_wider(
+      data_wide,
+      id_cols = dplyr::all_of("day"),
+      names_from = dplyr::all_of("period"),
+      names_sep = "",
+      values_from = dplyr::all_of(c("paik", "muutto", "total")),
+    )
+    data_wide <- dplyr::full_join(data_wide, data, by = "day")
+
+    dplyr::compute(data_wide, data_tbl_name, temporary = FALSE)
+
+    data_long <- dplyr::ungroup(data_long, dplyr::all_of("day"))
+    data_long <- dbplyr::window_order(data_long, .data[["day"]])
+    data_long <- dplyr::mutate(
+      data_long,
+      n = switch(
+        !!type,
+        m = .data[["muutto"]],
+        p = .data[["paik"]],
+        pm = .data[["total"]]
+      ),
+      sn = ifelse(
+        dplyr::between(.data[["day"]], !!spb, !!spe), .data[["n"]], 0L
+      ),
+      s = ifelse(
+        max(.data[["sn"]], na.rm = TRUE) == 0,
+        FALSE,
+        cumsum(ifelse(is.na(.data[["sn"]]), 0, .data[["sn"]])) /
+          sum(.data[["sn"]], na.rm = TRUE) > .5
+      ),
+      an = ifelse(
+        .data[["day"]] <= 266L,
+        dplyr::lead(.data[["n"]], 100L),
+        dplyr::lag(.data[["n"]], 266L)
+      ),
+      an = ifelse(
+        dplyr::between(.data[["day"]], !!aub, !!aue), .data[["an"]], 0L
+      ),
+      a = ifelse(
+        max(.data[["an"]], na.rm = TRUE) == 0,
+        FALSE,
+        cumsum(ifelse(is.na(.data[["an"]]), 0, .data[["an"]])) /
+          sum(.data[["an"]], na.rm = TRUE) > .5
+      ),
+    )
+    data_long <- dplyr::summarise(
+      data_long,
+      N = sum(.data[["total"]], na.rm = TRUE),
+      aphen = min(.data[["day"]][a], na.rm = TRUE) + 100L,
+      sphen = min(.data[["day"]][s], na.rm = TRUE)
+    )
+    data_long <- tidyr::pivot_wider(
+      data_long,
+      names_from = dplyr::all_of("period"),
+      names_sep = "",
+      values_from = dplyr::all_of(c("N", "aphen", "sphen"))
+    )
+    data_long <- dplyr::mutate(
+      data_long,
+      slopeLong = ifelse(
+        .data[["Np1"]] == 0,
+        NA_real_,
+        round((.data[["Np4"]] - .data[["Np1"]]) / .data[["Np1"]] * 100L)
+      ),
+      slopeShort = ifelse(
+        .data[["Np3"]] == 0,
+        NA_real_,
+        round((.data[["Np4"]] - .data[["Np3"]]) / .data[["Np3"]] * 100L)
       )
+    )
+    data_long <- dplyr::collect(data_long)
 
-    data <-
-      dplyr::group_by(counts, day) |>
-      dplyr::summarise(
-        paik = mean(Local, na.rm = TRUE), muutto = mean(Migr, na.rm = TRUE)
-      )
+    dplyr::copy_to(
+      con,
+      df = data_long,
+      name = paste0(sp, "_stats"),
+      temporary = FALSE,
+      overwrite = TRUE
+    )
 
-    data_long <-
-      dplyr::group_by(counts, day, period) |>
-      dplyr::summarise(
-        paik = mean(Local, na.rm = TRUE),
-        muutto = mean(Migr, na.rm = TRUE),
-        .groups = "keep"
-      ) |>
-      dplyr::mutate(total = paik + muutto) |>
-      dplyr::right_join(tbl(con, "periods"), by = c("day", "period"))
+    records <- dplyr::right_join(
+      counts, dplyr::tbl(con, "days"), by = c("day", "year")
+    )
+    records <- dplyr::group_by(records, dplyr::all_of("year"))
+    records <- dbplyr::window_order(records, .data[["day"]])
+    records <- dplyr::mutate(
+      records,
+      am = ifelse(
+        .data[["day"]] <= 266L,
+        dplyr::lead(.data[["Migr"]], 100L),
+        dplyr::lag(.data[["Migr"]], 266L)
+      ),
+      al = ifelse(
+        .data[["day"]] <= 266L,
+        dplyr::lead(.data[["Local"]], 100L),
+        dplyr::lag(.data[["Local"]], 266L)
+      ),
+    )
+    records <- dplyr::ungroup(records)
+    records <- dplyr::mutate(
+      records,
+      sm = ifelse(
+        dplyr::between(.data[["day"]], !!spb, !!spe), .data[["Migr"]], 0L
+      ),
+      am = ifelse(
+        dplyr::between(.data[["day"]], !!aub, !!aue), .data[["am"]], 0L
+      ),
+      sl = ifelse(
+        dplyr::between(.data[["day"]], !!spb, !!spe), .data[["Local"]], 0L
+      ),
+      al = ifelse(
+        dplyr::between(.data[["day"]], !!aub, !!aue), .data[["al"]], 0L
+      ),
+      sm_ = ifelse(.data[["sm"]] == max(.data[["sm"]], na.rm = TRUE), 1, 0),
+      am_ = ifelse(.data[["am"]] == max(.data[["am"]], na.rm = TRUE), 1, 0),
+      sl_ = ifelse(.data[["sl"]] == max(.data[["sl"]], na.rm = TRUE), 1, 0),
+      al_ = ifelse(.data[["al"]] == max(.data[["al"]], na.rm = TRUE), 1, 0),
+      sm__ = dplyr::dense_rank(
+        (.data[["year"]] + .data[["day"]] / 1000) * .data[["sm_"]]
+      ),
+      am__ = dplyr::dense_rank(
+        (.data[["year"]] + .data[["day"]] / 1000) * .data[["am_"]]
+      ),
+      sl__ = dplyr::dense_rank(
+        (.data[["year"]] + .data[["day"]] / 1000) * .data[["sl_"]]
+      ),
+      al__ = dplyr::dense_rank(
+        (.data[["year"]] + .data[["day"]] / 1000) * .data[["al_"]]
+      ),
+      sm_ = .data[["sm__"]] == max(.data[["sm__"]], na.rm = TRUE) |
+        .data[["sm__"]] == max(.data[["sm__"]], na.rm = TRUE) - 1L &
+          .data[["sm_"]] == 1,
+      am_ = .data[["am__"]] == max(.data[["am__"]], na.rm = TRUE) |
+        .data[["am__"]] == max(.data[["am__"]], na.rm = TRUE) - 1L &
+          .data[["am_"]] == 1,
+      sl_ = .data[["sl__"]] == max(.data[["sl__"]], na.rm = TRUE) |
+        .data[["sl__"]] == max(.data[["sl__"]], na.rm = TRUE) - 1L &
+          .data[["sl_"]] == 1,
+      al_ = .data[["al__"]] == max(.data[["al__"]], na.rm = TRUE) |
+        .data[["al__"]] == max(.data[["al__"]], na.rm = TRUE) - 1L &
+          .data[["al_"]] == 1
+    )
+    records <- dplyr::filter(
+      records, .data[["sm_"]] | .data[["am_"]] | .data[["sl_"]] | .data[["al_"]]
+    )
 
-    dplyr::ungroup(data_long, period) |>
-      tidyr::pivot_wider(
-        id_cols = day, names_from = period, names_sep = "",
-        values_from = c(paik, muutto, total),
-      ) |>
-      dplyr::full_join(data, by = "day") |>
-      dplyr::compute(data_tbl_name, temporary = FALSE) |>
-      invisible()
-
-    dplyr::ungroup(data_long, day) |>
-      dbplyr::window_order(day) |>
-      dplyr::mutate(
-        n = switch(!!type, m = muutto, p = paik, pm = total),
-        sn = ifelse(dplyr::between(day, !!spb, !!spe), n, 0L),
-        s = ifelse(
-          max(sn, na.rm = TRUE) == 0,
-          FALSE,
-          cumsum(ifelse(is.na(sn), 0, sn)) / sum(sn, na.rm = TRUE) > .5
-        ),
-        an = ifelse(day <= 266L, lead(n, 100L), dplyr::lag(n, 266L)),
-        an = ifelse(dplyr::between(day, !!aub, !!aue), an, 0L),
-        a = ifelse(
-          max(an, na.rm = TRUE) == 0,
-          FALSE,
-          cumsum(ifelse(is.na(an), 0, an)) / sum(an, na.rm = TRUE) > .5
-        ),
-      ) |>
-      dplyr::summarise(
-        N = sum(total, na.rm = TRUE),
-        aphen = min(day[a], na.rm = TRUE) + 100L,
-        sphen = min(day[s], na.rm = TRUE)
-      ) |>
-      tidyr::pivot_wider(
-        names_from = period, names_sep = "", values_from = c(N, aphen, sphen)
-      ) |>
-      dplyr::mutate(
-        slopeLong = ifelse(Np1 == 0, NA_real_, round((Np4 - Np1) / Np1 * 100L)),
-        slopeShort = ifelse(Np3 == 0, NA_real_, round((Np4 - Np3) / Np3 * 100L))
-      ) |>
-      dplyr::collect() |>
-      dplyr::copy_to(
-        con, df = _, name = paste0(sp, "_stats"), temporary = FALSE,
-        overwrite = TRUE
-      ) |>
-      invisible()
-
-    dplyr::right_join(counts, dplyr::tbl(con, "days"), by = c("day", "year")) |>
-      dplyr::group_by(year) |>
-      dbplyr::window_order(day) |>
-      dplyr::mutate(
-        am = ifelse(
-          day <= 266L, dplyr::lead(Migr, 100L), dplyr::lag(Migr, 266L)
-        ),
-        al = ifelse(
-          day <= 266L, dplyr::lead(Local, 100L), dplyr::lag(Local, 266L)
-        ),
-      ) |>
-      dplyr::ungroup() |>
-      dplyr::mutate(
-        sm = ifelse(dplyr::between(day, !!spb, !!spe), Migr, 0L),
-        am = ifelse(dplyr::between(day, !!aub, !!aue), am, 0L),
-        sl = ifelse(dplyr::between(day, !!spb, !!spe), Local, 0L),
-        al = ifelse(dplyr::between(day, !!aub, !!aue), al, 0L),
-        sm_ = ifelse(sm == max(sm, na.rm = TRUE), 1, 0),
-        am_ = ifelse(am == max(am, na.rm = TRUE), 1, 0),
-        sl_ = ifelse(sl == max(sl, na.rm = TRUE), 1, 0),
-        al_ = ifelse(al == max(al, na.rm = TRUE), 1, 0),
-        sm__ = dplyr::dense_rank((year + day / 1000) * sm_),
-        am__ = dplyr::dense_rank((year + day / 1000) * am_),
-        sl__ = dplyr::dense_rank((year + day / 1000) * sl_),
-        al__ = dplyr::dense_rank((year + day / 1000) * al_),
-        sm_ = sm__ == max(sm__, na.rm = TRUE) |
-          sm__ == max(sm__, na.rm = TRUE) - 1L & sm_ == 1,
-        am_ = am__ == max(am__, na.rm = TRUE) |
-          am__ == max(am__, na.rm = TRUE) - 1L & am_ == 1,
-        sl_ = sl__ == max(sl__, na.rm = TRUE) |
-          sl__ == max(sl__, na.rm = TRUE) - 1L & sl_ == 1,
-        al_ = al__ == max(al__, na.rm = TRUE) |
-          al__ == max(al__, na.rm = TRUE) - 1L & al_ == 1
-      ) |>
-      dplyr::filter(sm_ | am_ | sl_ | al_) |>
-      dplyr::compute(records_tbl_name, temporary = FALSE)
+    dplyr::compute(records, records_tbl_name, temporary = FALSE)
 
     dplyr::rows_upsert(
       dplyr::tbl(con, "last_update"),
