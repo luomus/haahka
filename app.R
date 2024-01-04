@@ -355,7 +355,7 @@ server <- function(input, output, session) {
 
       spps <-
         sp_data %>%
-        dplyr::select(.data[["Sci_name"]]) %>%
+        dplyr::select(dplyr::all_of("Sci_name")) %>%
         purrr::pluck(1)
 
       sp_names <- paste0(sp_names, " (", spps, ")")
@@ -471,7 +471,7 @@ server <- function(input, output, session) {
     selected_sp <-
       sp_data %>%
       dplyr::filter(.data[["Species_Abb"]] == default_species) %>%
-      dplyr::pull(.data[["Sci_name"]])
+      dplyr::pull("Sci_name")
 
     selected_sp <- spps[which(spps == selected_sp)]
 
@@ -638,7 +638,7 @@ server <- function(input, output, session) {
 
     plot_data <-
       obs_current %>%
-      dplyr::select(.data[["day"]], .data[["muutto"]]) %>%
+      dplyr::select(dplyr::all_of(c("day", "muutto"))) %>%
       dplyr::collect() %>%
       dplyr::mutate(
         day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
@@ -657,7 +657,7 @@ server <- function(input, output, session) {
       highcharter::hchart(
         plot_data,
         type = "line",
-        highcharter::hcaes(plot_data[["day"]], plot_data[["value_avgs"]]),
+        highcharter::hcaes(.data[["day"]], .data[["value_avgs"]]),
         name = i18n()[["t"]]("Muuttajamäärien keskiarvot"),
         color = "#1f78b4"
       ) %>%
@@ -696,7 +696,7 @@ server <- function(input, output, session) {
 
     plot_data <-
       obs_current %>%
-      dplyr::select(.data[["day"]], .data[["paik"]]) %>%
+      dplyr::select(dplyr::all_of(c("day", "paik"))) %>%
       dplyr::collect() %>%
       dplyr::mutate(
         day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
@@ -715,7 +715,7 @@ server <- function(input, output, session) {
       highcharter::hchart(
         plot_data,
         type = "line",
-        highcharter::hcaes(plot_data[["day"]], plot_data[["value_avgs"]]),
+        highcharter::hcaes(.data[["day"]], .data[["value_avgs"]]),
         name = i18n()[["t"]]("Paikallisten määrien keskiarvot"),
         color = "#1f78b4"
       ) %>%
@@ -752,54 +752,58 @@ server <- function(input, output, session) {
 
       plot_data_p1 <-
         obs_current %>%
-        dplyr::select(.data[["day"]], .data[["totalp1"]]) %>%
+        dplyr::select(dplyr::all_of(c("day", "totalp1"))) %>%
         dplyr::collect() %>%
         dplyr::mutate(
           day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
         ) %>%
         tsibble::as_tsibble(index = .data[["day"]]) %>%
         haahka::tile_observations("day", "totalp1", window_size) %>%
-        dplyr::rename(totalp1 = .data[["value_avgs"]])
+        dplyr::rename(totalp1 = dplyr::all_of("value_avgs"))
 
       plot_data_p2 <-
         obs_current %>%
-        dplyr::select(.data[["day"]], .data[["totalp2"]]) %>%
+        dplyr::select(dplyr::all_of(c("day", "totalp2"))) %>%
         dplyr::collect() %>%
         dplyr::mutate(
           day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
         ) %>%
         tsibble::as_tsibble(index = .data[["day"]]) %>%
         haahka::tile_observations("day", "totalp2", window_size) %>%
-        dplyr::rename(totalp2 = .data[["value_avgs"]])
+        dplyr::rename(totalp2 = dplyr::all_of("value_avgs"))
 
       plot_data_p3 <-
         obs_current %>%
-        dplyr::select(.data[["day"]], .data[["totalp3"]]) %>%
+        dplyr::select(dplyr::all_of(c("day", "totalp3"))) %>%
         dplyr::collect() %>%
         dplyr::mutate(
           day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
         ) %>%
         tsibble::as_tsibble(index = .data[["day"]]) %>%
         haahka::tile_observations("day", "totalp3", window_size) %>%
-        dplyr::rename(totalp3 = .data[["value_avgs"]])
+        dplyr::rename(totalp3 = dplyr::all_of("value_avgs"))
 
       plot_data_p4 <-
         obs_current %>%
-        dplyr::select(.data[["day"]], .data[["totalp4"]]) %>%
+        dplyr::select(dplyr::all_of(c("day", "totalp4"))) %>%
         dplyr::collect() %>%
         dplyr::mutate(
           day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
         ) %>%
         tsibble::as_tsibble(index = .data[["day"]]) %>%
         haahka::tile_observations("day", "totalp4", window_size) %>%
-        dplyr::rename(totalp4 = .data[["value_avgs"]])
+        dplyr::rename(totalp4 = dplyr::all_of("value_avgs"))
 
       plot_data <-
         plot_data_p1 %>%
         dplyr::left_join(plot_data_p2, by = c("day" = "day")) %>%
         dplyr::left_join(plot_data_p3, by = c("day" = "day")) %>%
         dplyr::left_join(plot_data_p4, by = c("day" = "day")) %>%
-        tidyr::gather(.data[["epoch"]], .data[["value"]], -.data[["day"]]) %>%
+        tidyr::pivot_longer(
+          dplyr::all_of(c("epoch", "value")),
+          -dplyr::all_of("day"),
+          names_to = "key"
+        ) %>%
         dplyr::mutate(
           epoch = forcats::fct_relevel(
             .data[["epoch"]], "totalp1", "totalp2", "totalp3", "totalp4"
@@ -816,7 +820,7 @@ server <- function(input, output, session) {
         plot_data,
         type = "line",
         highcharter::hcaes(
-          plot_data[["day"]], plot_data[["value"]], group = plot_data[["epoch"]]
+          .data[["day"]], .data[["value"]], group = .data[["epoch"]]
         ),
         name = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
         color = ggsci::pal_d3("category10")(4)
@@ -1028,16 +1032,22 @@ server <- function(input, output, session) {
       get_current_stats() %>%
       dplyr::collect() %>%
       dplyr::select(
-        .data[["sphenp1"]],
-        .data[["sphenp2"]],
-        .data[["sphenp3"]],
-        .data[["sphenp4"]],
-        .data[["aphenp1"]],
-        .data[["aphenp2"]],
-        .data[["aphenp3"]],
-        .data[["aphenp4"]]
+        dplyr::all_of(
+          c(
+            "sphenp1",
+            "sphenp2",
+            "sphenp3",
+            "sphenp4",
+            "aphenp1",
+            "aphenp2",
+            "aphenp3",
+            "aphenp4"
+          )
+        )
       ) %>%
-      tidyr::gather(.data[["variable"]], .data[["value"]]) %>%
+      tidyr::pivot_longer(
+        dplyr::all_of(c("variable", "value")), names_to = "key"
+      ) %>%
       tidyr::separate(
         col = "variable", into = c("season", "epoch"), sep = "phen"
       ) %>%
@@ -1070,9 +1080,9 @@ server <- function(input, output, session) {
       plot_data,
       type = "scatter",
       highcharter::hcaes(
-        plot_data[["date"]],
-        plot_data[["epochnum"]],
-        group = plot_data[["epoch"]]
+        .data[["date"]],
+        .data[["epochnum"]],
+        group = .data[["epoch"]]
       ),
       name = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
       color = ggsci::pal_d3("category10")(4)
@@ -1081,7 +1091,7 @@ server <- function(input, output, session) {
         title = list(text = ""),
         min = 0,
         max = 3,
-        categories = rev(levels(plot_data[["epoch"]]))
+        categories = rev(levels(.data[["epoch"]]))
       ) %>%
       highcharter::hc_xAxis(
         title = list(text = ""),
@@ -1146,7 +1156,7 @@ server <- function(input, output, session) {
         res <-
           records_current %>%
           dplyr::filter(as.logical(.data[[idx]])) %>%
-          dplyr::pull(.data[[value]])
+          dplyr::pull("value")
 
         if (is.numeric(res)) {
 
