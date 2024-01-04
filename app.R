@@ -1085,7 +1085,7 @@ server <- function(input, output, session) {
         title = list(text = ""),
         min = 0,
         max = 3,
-        categories = rev(levels(.data[["epoch"]]))
+        categories = rev(levels(plot_data[["epoch"]]))
       ) %>%
       highcharter::hc_xAxis(
         title = list(text = ""),
