@@ -170,7 +170,6 @@ parse_description <- function(text, lang) {
 }
 
 #' @noRd
-
 parse_env <- new.env()
 
 #' @noRd
@@ -248,13 +247,10 @@ get_content <- function(x, h, lang) {
 #' @export
 tile_observations <- function(x, day, value, size) {
 
-  # Coerce size to integer
   size <- as.integer(size)
 
-  # x must be a tsibble
   assertthat::see_if(inherits(x, "tbl_ts"))
 
-  # size must be an odd integer
   assertthat::on_failure(is_odd) <- function(call, env) {
 
     paste0(deparse(call[["x"]]), " is even. size must be odd.")
@@ -263,38 +259,32 @@ tile_observations <- function(x, day, value, size) {
 
   assertthat::assert_that(is_odd(size))
 
-  # If size is 1, no need to calculate anything
   if (size == 1) {
 
     days <- x[[day]]
+
     avgs <- x[[value]]
 
   } else {
-    # NOTE: the number of days is hard coded here and include leap day
+
     n_days <- 366
 
-    # Construct a day index, i.e. index vector defining which days are to be
-    # kept. Staring point is the middle (median) value of the window.
     day_index <- seq(stats::median(1:size), nrow(x), by = size)
 
-    # Find the remainder given the size
     remainder <- n_days %% size
 
-    # If there is a remainder, the last tile is not the same size as the others
-    # and the index vector needs to be augmented. Simple add 366 as the
-    # last value in the index vector.
     if (remainder != 0) {
 
       day_index <- c(day_index, n_days)
 
     }
 
-    # Get correct days based on the index vector
     days <- x[[day]][day_index]
 
-    # Calculate the averages
     avgs <- tapply(
-      x[[value]], rep(seq_along(days), each = size)[seq_len(nrow(x))], mean,
+      x[[value]],
+      rep(seq_along(days), each = size)[seq_len(nrow(x))],
+      mean,
       na.rm = TRUE
     )
 
