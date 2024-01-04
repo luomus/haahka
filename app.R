@@ -799,11 +799,7 @@ server <- function(input, output, session) {
         dplyr::left_join(plot_data_p2, by = c("day" = "day")) %>%
         dplyr::left_join(plot_data_p3, by = c("day" = "day")) %>%
         dplyr::left_join(plot_data_p4, by = c("day" = "day")) %>%
-        tidyr::pivot_longer(
-          dplyr::all_of(c("epoch", "value")),
-          -dplyr::all_of("day"),
-          names_to = "key"
-        ) %>%
+        tidyr::pivot_longer(-dplyr::all_of("day"), names_to = "epoch") %>%
         dplyr::mutate(
           epoch = forcats::fct_relevel(
             .data[["epoch"]], "totalp1", "totalp2", "totalp3", "totalp4"
@@ -1045,9 +1041,7 @@ server <- function(input, output, session) {
           )
         )
       ) %>%
-      tidyr::pivot_longer(
-        dplyr::all_of(c("variable", "value")), names_to = "key"
-      ) %>%
+      tidyr::pivot_longer(dplyr::everything(), names_to = "variable") %>%
       tidyr::separate(
         col = "variable", into = c("season", "epoch"), sep = "phen"
       ) %>%
@@ -1156,7 +1150,7 @@ server <- function(input, output, session) {
         res <-
           records_current %>%
           dplyr::filter(as.logical(.data[[idx]])) %>%
-          dplyr::pull("value")
+          dplyr::pull(value)
 
         if (is.numeric(res)) {
 
