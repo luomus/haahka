@@ -25,9 +25,12 @@ req <- httr2::request(
 )
 
 logger::log_layout(layout_glue_colors)
+
 logger::log_threshold(TRACE)
 
-download.file(paste0(req$url, "/data/sp_images.zip"), "www/img/sp_images.zip")
+download.file(
+  paste0(req[["url"]], "/data/sp_images.zip"), "www/img/sp_images.zip"
+)
 
 utils::unzip("www/img/sp_images.zip", exdir = "www/img/sp_images")
 
@@ -37,13 +40,13 @@ con <- pool::dbPool(RPostgres::Postgres(), dbname = Sys.getenv("DB_NAME"))
 
 sp_data <- readRDS("taxa.rds")
 
-translator <- shiny.i18n::Translator$new(
+translator <- shiny.i18n::Translator[["new"]](
   translation_json_path = "translation.json"
 )
 
-metadata <- readRDS(url(paste0(req$url, "/data/photo_metadata.rds")))
+metadata <- readRDS(url(paste0(req[["url"]], "/data/photo_metadata.rds")))
 
-descriptions <- readRDS(url(paste0(req$url, "/data/descriptions.rds")))
+descriptions <- readRDS(url(paste0(req[["url"]], "/data/descriptions.rds")))
 
 desc <- yaml::yaml.load_file("DESCRIPTION")
 version <- desc[["Version"]]
@@ -95,15 +98,16 @@ pb_list <- list(
   )
 )
 
-choices <- translator$get_languages()
+choices <- translator[["get_languages"]]()
 names(choices) <- purrr::map_chr(choices, get_languages)
 
 ui <- function(request) {
   shinydashboardPlus::dashboardPage(
     title = "Haahka - muuttolintuselain",
     shinydashboardPlus::dashboardHeader(
-      title = shiny::tags$a(href = "https://haahka.laji.fi",
-        shiny::tags$img(src = "browser_logo.png", height = "40")
+      title = shiny::tags[["a"]](
+        href = "https://haahka.laji.fi",
+        shiny::tags[["img"]](src = "browser_logo.png", height = "40")
       )
     ),
     shinydashboardPlus::dashboardSidebar(
@@ -119,11 +123,11 @@ ui <- function(request) {
       shiny::uiOutput("render_sidebarfooter")
     ),
     shinydashboard::dashboardBody(
-      shiny::tags$head(
-        shiny::tags$link(
+      shiny::tags[["head"]](
+        shiny::tags[["link"]](
           rel = "stylesheet", type = "text/css", href = "custom.css"
         ),
-        shiny::tags$script(
+        shiny::tags[["script"]](
           defer = NA,
           `data-domain` = "haahka.laji.fi",
           src = "https://plausible.io/js/script.js"
@@ -133,7 +137,7 @@ ui <- function(request) {
         shinydashboard::tabItem(
           tabName = "species",
           shiny::fluidPage(
-            shiny::tags$script(
+            shiny::tags[["script"]](
               '
                 $(document).on("shiny:connected", function(e) {
                   var jsWidth = screen.width;
@@ -241,59 +245,89 @@ server <- function(input, output, session) {
     )
   )
 
-  logger::log_info("Started new session {session$token}")
+  logger::log_info("Started new session {session[['token']]}")
 
   i18n <- shiny::reactive({
-    selected <- input$language
-    if (length(selected) > 0 && selected %in% translator$get_languages()) {
+
+    selected <- input[["language"]]
+
+    if (length(selected) > 0 && selected %in% translator[["get_languages"]]()) {
+
       logger::log_debug("Language changed to: {selected}")
-      translator$set_translation_language(selected)
+
+      translator[["set_translation_language"]](selected)
+
     }
+
     translator
+
   })
 
   get_current_sp <- shiny::reactive({
-    shiny::req(input$species)
-    dplyr::filter(sp_data, Sci_name == input$species)
+
+    shiny::req(input[["species"]])
+
+    dplyr::filter(sp_data, .data[["Sci_name"]] == input[["species"]])
+
   })
 
   get_current_data <- shiny::reactive({
+
     sp_current <- get_current_sp()
-    dplyr::tbl(con, paste0(sp_current$Species_Abb, "_data"))
+
+    dplyr::tbl(con, paste0(sp_current[["Species_Abb"]], "_data"))
+
   })
 
   get_current_meta <- shiny::reactive({
+
     sp_current <- get_current_sp()
-    metadata[[sp_current$Species_Abb]]
+
+    metadata[[sp_current[["Species_Abb"]]]]
+
   })
 
   get_current_description <- shiny::reactive({
+
     sp_current <- get_current_sp()
-    descriptions[[sp_current$Species_Abb]]
+
+    descriptions[[sp_current[["Species_Abb"]]]]
+
   })
 
   get_current_records <- shiny::reactive({
+
     sp_current <- get_current_sp()
-    dplyr::tbl(con, paste0(sp_current$Species_Abb, "_records"))
+
+    dplyr::tbl(con, paste0(sp_current[["Species_Abb"]], "_records"))
+
   })
 
   get_current_stats <- shiny::reactive({
+
     sp_current <- get_current_sp()
-    dplyr::tbl(con, paste0(sp_current$Species_Abb, "_stats"))
+
+    dplyr::tbl(con, paste0(sp_current[["Species_Abb"]], "_stats"))
+
   })
 
   create_popup <- function(session, filebody, lang_suffix) {
+
     content_file <- file.path(
       "www", "infos", paste0(filebody, lang_suffix, ".md")
     )
+
     if (file.exists(content_file)) {
+
       shinyWidgets::sendSweetAlert(
         session = session,
         title = NULL,
         text = shiny::tagList(shiny::includeMarkdown(content_file)),
         html = TRUE
       )
+
     }
+
   }
 
   get_species_names <- function(lang) {
@@ -321,7 +355,7 @@ server <- function(input, output, session) {
 
       spps <-
         sp_data %>%
-        dplyr::select(Sci_name) %>%
+        dplyr::select(.data[["Sci_name"]]) %>%
         purrr::pluck(1)
 
       sp_names <- paste0(sp_names, " (", spps, ")")
@@ -332,32 +366,34 @@ server <- function(input, output, session) {
     }
   }
 
-  output$render_sidebarmenu <- shinydashboard::renderMenu({
+  output[["render_sidebarmenu"]] <- shinydashboard::renderMenu({
 
-    shiny::req(input$language)
+    shiny::req(input[["language"]])
 
     shinydashboard::sidebarMenu(
       id = "tabs",
       shinydashboard::menuItem(
-        i18n()$t("Lajikohtaiset havainnot"),
+        i18n()[["t"]]("Lajikohtaiset havainnot"),
         tabName = "species",
         selected = TRUE,
         icon = shiny::icon("binoculars")
       ),
       shinydashboard::menuItem(
-        i18n()$t("Ohjeet"), tabName = "help", icon = shiny::icon("question")
+        i18n()[["t"]]("Ohjeet"),
+        tabName = "help",
+        icon = shiny::icon("question")
       )
     )
   })
 
-  output$render_sponsors <- shinydashboard::renderMenu({
+  output[["render_sponsors"]] <- shinydashboard::renderMenu({
 
-    shiny::req(input$language)
+    shiny::req(input[["language"]])
 
     shiny::tagList(
       shiny::div(
         class = "sponsors",
-        i18n()$t("Haahkaa tukevat"),
+        i18n()[["t"]]("Haahkaa tukevat"),
         shiny::br(),
         shiny::a(
           href = "https://kordelin.fi/en/frontpage",
@@ -386,11 +422,11 @@ server <- function(input, output, session) {
 
   })
 
-  output$render_sidebarfooter <- shinydashboard::renderMenu({
+  output[["render_sidebarfooter"]] <- shinydashboard::renderMenu({
 
-    shiny::req(input$language)
+    shiny::req(input[["language"]])
 
-    app_prefix <- i18n()$t("Sovellusversio")
+    app_prefix <- i18n()[["t"]]("Sovellusversio")
 
     shiny::tagList(
       shiny::HTML("<footer>"),
@@ -400,7 +436,7 @@ server <- function(input, output, session) {
         shiny::br(),
         paste0(app_prefix, ": ", version),
         shiny::br(),
-        i18n()$t("Palaute: "),
+        i18n()[["t"]]("Palaute: "),
         shiny::a(href = paste0("mailto:", feedback), feedback),
         shiny::br(),
         shiny::br(),
@@ -412,21 +448,21 @@ server <- function(input, output, session) {
         shiny::br(),
         shiny::br(),
         shiny::a(href = "https://opensource.org/licenses/MIT", "MIT"),
-        paste0(" ", tolower(i18n()$t("Lisenssi")))
+        paste0(" ", tolower(i18n()[["t"]]("Lisenssi")))
       ),
       shiny::HTML("</footer>")
     )
   })
 
-  output$render_species <- shiny::renderUI({
+  output[["render_species"]] <- shiny::renderUI({
 
-    if (is.null(input$language)) {
+    if (is.null(input[["language"]])) {
 
       name_field <- "fi"
 
     } else {
 
-      name_field <- input$language
+      name_field <- input[["language"]]
 
     }
 
@@ -434,8 +470,8 @@ server <- function(input, output, session) {
 
     selected_sp <-
       sp_data %>%
-      dplyr::filter(Species_Abb == default_species) %>%
-      dplyr::pull(Sci_name)
+      dplyr::filter(.data[["Species_Abb"]] == default_species) %>%
+      dplyr::pull(.data[["Sci_name"]])
 
     selected_sp <- spps[which(spps == selected_sp)]
 
@@ -443,7 +479,7 @@ server <- function(input, output, session) {
       id = "large",
       shiny::selectInput(
         "species",
-        label = i18n()$t(
+        label = i18n()[["t"]](
           "Valitse laji listasta tai tyhjennä kenttä ja kirjoita lajinimi"
         ),
         choices = spps,
@@ -453,50 +489,50 @@ server <- function(input, output, session) {
 
   })
 
-  output$render_citation <- renderUI({
+  output[["render_citation"]] <- renderUI({
 
-    shiny::req(input$language)
+    shiny::req(input[["language"]])
 
     current_sp <- get_current_sp()
 
     now <- format(Sys.time(), format = "%Y-%m-%d")
 
-    title <- i18n()$t("Viittausohje")
+    title <- i18n()[["t"]]("Viittausohje")
 
     text_fi <- glue::glue(
-      "{current_sp$FIN_name}. ",
+      "{current_sp[['FIN_name']]}. ",
       "Helsingin Seudun Lintutieteellinen Yhdistys Tringa ry. ",
       "Hangon lintuaseman aineisto: päiväsummat.",
       "[{data_url}] [Viitattu {now}]"
     )
 
     text_se <- glue::glue(
-      "{current_sp$SWE_name}. ",
+      "{current_sp[['SWE_name']]}. ",
       "Helsingforstraktens Ornitologiska Förening Tringa rf. ",
       "Dataset från Hangö fågelstation: dagliga totalantal.",
       "[{data_url}] [Citerad {now}]"
     )
 
     text_en <- glue::glue(
-      "{current_sp$ENG_name}. ",
+      "{current_sp[['ENG_name']]}. ",
       "Ornithological society of Helsinki Tringa ry. ",
       "Data of the Hanko Bird Observatory: Day counts.",
       "[{data_url}] [Cited {now}]"
     )
 
-    if (input$language == "fi") {
+    if (input[["language"]] == "fi") {
 
       payload <- shiny::tagList(
         shiny::h4(title), shiny::p(text_fi, shiny::br(), text_en)
       )
 
-    } else if (input$language == "se") {
+    } else if (input[["language"]] == "se") {
 
       payload <- shiny::tagList(
         shiny::h4(title), shiny::p(text_se, shiny::br(), text_en)
       )
 
-    } else if (input$language == "en") {
+    } else if (input[["language"]] == "en") {
 
       payload <- shiny::tagList(shiny::h4(title), shiny::p(text_en))
 
@@ -506,7 +542,7 @@ server <- function(input, output, session) {
 
   })
 
-  output$render_image <- shiny::renderUI({
+  output[["render_image"]] <- shiny::renderUI({
 
     current_sp <- get_current_sp()
 
@@ -514,7 +550,7 @@ server <- function(input, output, session) {
 
     if (!is.null(current_sp)) {
 
-      sp_abbr <- current_sp$Species_Abb
+      sp_abbr <- current_sp[["Species_Abb"]]
 
       img_file <- list.files(
         file.path("www", "img", "sp_images"),
@@ -524,7 +560,7 @@ server <- function(input, output, session) {
 
       if (length(img_file) > 0 && file.exists(img_file)) {
 
-        caption <- current_meta$caption
+        caption <- current_meta[["caption"]]
 
         file_basename <- basename(img_file)
 
@@ -541,7 +577,7 @@ server <- function(input, output, session) {
       } else {
 
         payload <- shiny::p(
-          i18n()$t("Kuvausteksti tulossa myöhemmin"), class = "description"
+          i18n()[["t"]]("Kuvausteksti tulossa myöhemmin"), class = "description"
         )
 
       }
@@ -552,31 +588,31 @@ server <- function(input, output, session) {
 
   })
 
-  output$render_description <- shiny::renderUI({
+  output[["render_description"]] <- shiny::renderUI({
 
     current_sp <- get_current_sp()
 
     current_desc <- get_current_description()
 
-    description <- haahka::parse_description(current_desc, input$language)
+    description <- haahka::parse_description(current_desc, input[["language"]])
 
     if (!is.null(current_sp)) {
 
-      sp_abbr <- current_sp$Species_Abb
+      sp_abbr <- current_sp[["Species_Abb"]]
 
-      sci_name <- current_sp$Sci_name
+      sci_name <- current_sp[["Sci_name"]]
 
-      if (input$language == "en") {
+      if (input[["language"]] == "en") {
 
-        common_name <- current_sp$ENG_name
+        common_name <- current_sp[["ENG_name"]]
 
-      } else if (input$language == "fi") {
+      } else if (input[["language"]] == "fi") {
 
-        common_name <- current_sp$FIN_name
+        common_name <- current_sp[["FIN_name"]]
 
-      } else if (input$language == "se") {
+      } else if (input[["language"]] == "se") {
 
-        common_name <- current_sp$SWE_name
+        common_name <- current_sp[["SWE_name"]]
 
       }
 
@@ -596,35 +632,37 @@ server <- function(input, output, session) {
 
   })
 
-  output$migration <- highcharter::renderHighchart({
+  output[["migration"]] <- highcharter::renderHighchart({
 
     obs_current <- get_current_data()
 
     plot_data <-
       obs_current %>%
-      dplyr::select(day, muutto) %>%
+      dplyr::select(.data[["day"]], .data[["muutto"]]) %>%
       dplyr::collect() %>%
-      dplyr::mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
-      tsibble::as_tsibble(index = day) %>%
+      dplyr::mutate(
+        day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
+      ) %>%
+      tsibble::as_tsibble(index = .data[["day"]]) %>%
       haahka::tile_observations("day", "muutto", window_size)
 
     if (!is.null(plot_data)) {
 
       hcoptslang <- getOption("highcharter.lang")
 
-      hcoptslang$shortMonths <- x_yearly_labels[[input$language]]
+      hcoptslang[["shortMonths"]] <- x_yearly_labels[[input[["language"]]]]
 
       options(highcharter.lang = hcoptslang)
 
       highcharter::hchart(
         plot_data,
         type = "line",
-        highcharter::hcaes(x = day, y = value_avgs),
-        name = i18n()$t("Muuttajamäärien keskiarvot"),
+        highcharter::hcaes(plot_data[["day"]], plot_data[["value_avgs"]]),
+        name = i18n()[["t"]]("Muuttajamäärien keskiarvot"),
         color = "#1f78b4"
       ) %>%
         highcharter::hc_yAxis(
-          title = list(text = i18n()$t("Yksilöä / havaintopäivä"))
+          title = list(text = i18n()[["t"]]("Yksilöä / havaintopäivä"))
         ) %>%
         highcharter::hc_xAxis(
           title = list(text = ""),
@@ -636,10 +674,12 @@ server <- function(input, output, session) {
           plotBands = pb_list
         ) %>%
         highcharter::hc_plotOptions(
-          line = list(marker = list(enabled = input$show_markers)),
-          spline = list(marker = list(enabled = input$show_markers))
+          line = list(marker = list(enabled = input[["show_markers"]])),
+          spline = list(marker = list(enabled = input[["show_markers"]]))
         ) %>%
-        highcharter::hc_title(text = i18n()$t("Muuttajamäärien keskiarvot")) %>%
+        highcharter::hc_title(
+          text = i18n()[["t"]]("Muuttajamäärien keskiarvot")
+        ) %>%
         highcharter::hc_tooltip(
           crosshairs = TRUE, backgroundColor = "#FCFFC5", xDateFormat = "%b %d"
         ) %>%
@@ -650,35 +690,37 @@ server <- function(input, output, session) {
 
   })
 
-  output$local <- highcharter::renderHighchart({
+  output[["local"]] <- highcharter::renderHighchart({
 
     obs_current <- get_current_data()
 
     plot_data <-
       obs_current %>%
-      dplyr::select(day, paik) %>%
+      dplyr::select(.data[["day"]], .data[["paik"]]) %>%
       dplyr::collect() %>%
-      dplyr::mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
-      tsibble::as_tsibble(index = day) %>%
+      dplyr::mutate(
+        day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
+      ) %>%
+      tsibble::as_tsibble(index = .data[["day"]]) %>%
       haahka::tile_observations("day", "paik", window_size)
 
     if (!is.null(plot_data)) {
 
       hcoptslang <- getOption("highcharter.lang")
 
-      hcoptslang$shortMonths <- x_yearly_labels[[input$language]]
+      hcoptslang[["shortMonths"]] <- x_yearly_labels[[input[["language"]]]]
 
       options(highcharter.lang = hcoptslang)
 
       highcharter::hchart(
         plot_data,
         type = "line",
-        highcharter::hcaes(x = day, y = value_avgs),
-        name = i18n()$t("Paikallisten määrien keskiarvot"),
+        highcharter::hcaes(plot_data[["day"]], plot_data[["value_avgs"]]),
+        name = i18n()[["t"]]("Paikallisten määrien keskiarvot"),
         color = "#1f78b4"
       ) %>%
         highcharter::hc_yAxis(
-          title = list(text = i18n()$t("Yksilöä / havaintopäivä"))
+          title = list(text = i18n()[["t"]]("Yksilöä / havaintopäivä"))
         ) %>%
         highcharter::hc_xAxis(
           title = list(text = ""),
@@ -690,7 +732,7 @@ server <- function(input, output, session) {
           plotBands = pb_list
         ) %>%
         highcharter::hc_title(
-          text = i18n()$t("Paikallisten määrien keskiarvot")
+          text = i18n()[["t"]]("Paikallisten määrien keskiarvot")
         ) %>%
         highcharter::hc_tooltip(
           crosshairs = TRUE, backgroundColor = "#FCFFC5", xDateFormat = "%b %d"
@@ -702,7 +744,7 @@ server <- function(input, output, session) {
 
   })
 
-  output$change <- highcharter::renderHighchart({
+  output[["change"]] <- highcharter::renderHighchart({
 
     obs_current <- get_current_data()
 
@@ -710,67 +752,77 @@ server <- function(input, output, session) {
 
       plot_data_p1 <-
         obs_current %>%
-        dplyr::select(day, totalp1) %>%
+        dplyr::select(.data[["day"]], .data[["totalp1"]]) %>%
         dplyr::collect() %>%
-        dplyr::mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
-        tsibble::as_tsibble(index = day) %>%
+        dplyr::mutate(
+          day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
+        ) %>%
+        tsibble::as_tsibble(index = .data[["day"]]) %>%
         haahka::tile_observations("day", "totalp1", window_size) %>%
-        dplyr::rename(totalp1 = value_avgs)
+        dplyr::rename(totalp1 = .data[["value_avgs"]])
 
       plot_data_p2 <-
         obs_current %>%
-        dplyr::select(day, totalp2) %>%
+        dplyr::select(.data[["day"]], .data[["totalp2"]]) %>%
         dplyr::collect() %>%
-        dplyr::mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
-        tsibble::as_tsibble(index = day) %>%
+        dplyr::mutate(
+          day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
+        ) %>%
+        tsibble::as_tsibble(index = .data[["day"]]) %>%
         haahka::tile_observations("day", "totalp2", window_size) %>%
-        dplyr::rename(totalp2 = value_avgs)
+        dplyr::rename(totalp2 = .data[["value_avgs"]])
 
       plot_data_p3 <-
         obs_current %>%
-        dplyr::select(day, totalp3) %>%
+        dplyr::select(.data[["day"]], .data[["totalp3"]]) %>%
         dplyr::collect() %>%
-        dplyr::mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
-        tsibble::as_tsibble(index = day) %>%
+        dplyr::mutate(
+          day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
+        ) %>%
+        tsibble::as_tsibble(index = .data[["day"]]) %>%
         haahka::tile_observations("day", "totalp3", window_size) %>%
-        dplyr::rename(totalp3 = value_avgs)
+        dplyr::rename(totalp3 = .data[["value_avgs"]])
 
       plot_data_p4 <-
         obs_current %>%
-        dplyr::select(day, totalp4) %>%
+        dplyr::select(.data[["day"]], .data[["totalp4"]]) %>%
         dplyr::collect() %>%
-        dplyr::mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
-        tsibble::as_tsibble(index = day) %>%
+        dplyr::mutate(
+          day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
+        ) %>%
+        tsibble::as_tsibble(index = .data[["day"]]) %>%
         haahka::tile_observations("day", "totalp4", window_size) %>%
-        dplyr::rename(totalp4 = value_avgs)
+        dplyr::rename(totalp4 = .data[["value_avgs"]])
 
       plot_data <-
         plot_data_p1 %>%
         dplyr::left_join(plot_data_p2, by = c("day" = "day")) %>%
         dplyr::left_join(plot_data_p3, by = c("day" = "day")) %>%
         dplyr::left_join(plot_data_p4, by = c("day" = "day")) %>%
-        tidyr::gather(epoch, value, -day) %>%
+        tidyr::gather(.data[["epoch"]], .data[["value"]], -.data[["day"]]) %>%
         dplyr::mutate(
           epoch = forcats::fct_relevel(
-            epoch, "totalp1", "totalp2", "totalp3", "totalp4"
+            .data[["epoch"]], "totalp1", "totalp2", "totalp3", "totalp4"
           )
         )
 
       hcoptslang <- getOption("highcharter.lang")
 
-      hcoptslang$shortMonths <- x_yearly_labels[[input$language]]
+      hcoptslang[["shortMonths"]] <- x_yearly_labels[[input[["language"]]]]
 
       options(highcharter.lang = hcoptslang)
 
       highcharter::hchart(
         plot_data,
         type = "line",
-        highcharter::hcaes(x = day, y = value, group = epoch),
+        highcharter::hcaes(
+          plot_data[["day"]], plot_data[["value"]], group = plot_data[["epoch"]]
+        ),
         name = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
         color = ggsci::pal_d3("category10")(4)
       ) %>%
         highcharter::hc_yAxis(
-          title = list(text = i18n()$t("Yksilöä / havaintopäivä"))
+          title = list(text = i18n()[["t"]]("Yksilöä / havaintopäivä"))
         ) %>%
         highcharter::hc_xAxis(
           title = list(text = ""),
@@ -784,7 +836,7 @@ server <- function(input, output, session) {
         highcharter::hc_plotOptions(
           line = list(marker = list(enabled = FALSE))
         ) %>%
-        highcharter::hc_title(text = i18n()$t("Runsauksien muutokset")) %>%
+        highcharter::hc_title(text = i18n()[["t"]]("Runsauksien muutokset")) %>%
         highcharter::hc_tooltip(
           crosshairs = TRUE,
           backgroundColor = "#FCFFC5",
@@ -798,15 +850,15 @@ server <- function(input, output, session) {
 
   })
 
-  output$change_numbers <- renderUI({
+  output[["change_numbers"]] <- renderUI({
 
     stats_current <-
       get_current_stats() %>%
       dplyr::collect()
 
-    long <- stats_current$slopeLong
+    long <- stats_current[["slopeLong"]]
 
-    short <- stats_current$slopeShort
+    short <- stats_current[["slopeShort"]]
 
     if (!is.na(long) & long > 0) {
 
@@ -851,12 +903,12 @@ server <- function(input, output, session) {
     shinydashboardPlus::box(
       width = 12,
       solidHeader = FALSE,
-      title = i18n()$t("Runsauden muutokset"),
+      title = i18n()[["t"]]("Runsauden muutokset"),
       background = NULL,
       status = "danger",
       footer = shiny::tagList(
         shiny::p(
-          i18n()$t(
+          i18n()[["t"]](
             paste(
               "Pitkän aikavälin muutos",
               "=",
@@ -864,7 +916,7 @@ server <- function(input, output, session) {
             )
           ),
           shiny::br(),
-          i18n()$t(
+          i18n()[["t"]](
             paste(
               "Lyhyen aikavälin muutos",
               "=",
@@ -881,7 +933,7 @@ server <- function(input, output, session) {
             numberColor = lt_number_color,
             numberIcon = lt_number_icon,
             header = "",
-            text = paste(i18n()$t("Pitkän aikavälin muutos")),
+            text = i18n()[["t"]]("Pitkän aikavälin muutos"),
             rightBorder = TRUE,
             marginBottom = TRUE
           )
@@ -893,7 +945,7 @@ server <- function(input, output, session) {
             numberColor = st_number_color,
             numberIcon = st_number_icon,
             header = "",
-            text = paste(i18n()$t("Lyhyen aikavälin muutos")),
+            text = i18n()[["t"]]("Lyhyen aikavälin muutos"),
             rightBorder = TRUE,
             marginBottom = TRUE
           )
@@ -901,7 +953,7 @@ server <- function(input, output, session) {
         shiny::column(
           width = 12,
           shinydashboardPlus::descriptionBlock(
-            header = paste(i18n()$t("Päivittäiset keskirunsaudet yhteensä")),
+            header = i18n()[["t"]]("Päivittäiset keskirunsaudet yhteensä"),
             rightBorder = TRUE,
             marginBottom = FALSE
           )
@@ -909,7 +961,7 @@ server <- function(input, output, session) {
         shiny::column(
           width = 3,
           shinydashboardPlus::descriptionBlock(
-            header = format(round(stats_current$Np1, 0), big.mark = " "),
+            header = format(round(stats_current[["Np1"]], 0), big.mark = " "),
             text = "1979-1999",
             rightBorder = TRUE,
             marginBottom = FALSE
@@ -918,7 +970,7 @@ server <- function(input, output, session) {
         shiny::column(
           width = 3,
           shinydashboardPlus::descriptionBlock(
-            header = format(round(stats_current$Np2, 0), big.mark = " "),
+            header = format(round(stats_current[["Np2"]], 0), big.mark = " "),
             text = "2000-2009",
             rightBorder = FALSE,
             marginBottom = FALSE
@@ -927,7 +979,7 @@ server <- function(input, output, session) {
         shiny::column(
           width = 3,
           shinydashboardPlus::descriptionBlock(
-            header = format(round(stats_current$Np3, 0), big.mark = " "),
+            header = format(round(stats_current[["Np3"]], 0), big.mark = " "),
             text = "2010-2019",
             rightBorder = FALSE,
             marginBottom = FALSE
@@ -936,7 +988,7 @@ server <- function(input, output, session) {
         shiny::column(
           width = 3,
           shinydashboardPlus::descriptionBlock(
-            header = format(round(stats_current$Np4, 0), big.mark = " "),
+            header = format(round(stats_current[["Np4"]], 0), big.mark = " "),
             text = "2020-",
             rightBorder = FALSE,
             marginBottom = FALSE
@@ -946,9 +998,9 @@ server <- function(input, output, session) {
     )
   })
 
-  output$render_median <- shiny::renderUI({
+  output[["render_median"]] <- shiny::renderUI({
 
-    screen_size <- input$GetScreenWidth
+    screen_size <- input[["GetScreenWidth"]]
 
     height <- NULL
 
@@ -966,7 +1018,7 @@ server <- function(input, output, session) {
 
   })
 
-  output$migration_medians <- highcharter::renderHighchart({
+  output[["migration_medians"]] <- highcharter::renderHighchart({
 
     sp_current <- get_current_sp()
 
@@ -976,39 +1028,52 @@ server <- function(input, output, session) {
       get_current_stats() %>%
       dplyr::collect() %>%
       dplyr::select(
-        sphenp1, sphenp2, sphenp3, sphenp4, aphenp1, aphenp2, aphenp3, aphenp4
+        .data[["sphenp1"]],
+        .data[["sphenp2"]],
+        .data[["sphenp3"]],
+        .data[["sphenp4"]],
+        .data[["aphenp1"]],
+        .data[["aphenp2"]],
+        .data[["aphenp3"]],
+        .data[["aphenp4"]]
       ) %>%
-      tidyr::gather(variable, value) %>%
+      tidyr::gather(.data[["variable"]], .data[["value"]]) %>%
       tidyr::separate(
         col = "variable", into = c("season", "epoch"), sep = "phen"
       ) %>%
       dplyr::mutate(
         season = ifelse(
-          season == "s",
-          tolower(i18n()$t("Kevät")),
-          ifelse(season == "a", tolower(i18n()$t("Syys")), NA)
+          .data[["season"]] == "s",
+          tolower(i18n()[["t"]]("Kevät")),
+          ifelse(.data[["season"]] == "a", tolower(i18n()[["t"]]("Syys")), NA)
         ),
         epoch = factor(
-          epoch,
+          .data[["epoch"]],
           levels = c("p1", "p2", "p3", "p4"),
           labels = rev(c("1979-1999", "2000-2009", "2010-2019", "2020-")),
           ordered = TRUE
         ),
-        epochnum = as.numeric(epoch) - 1,
-        date = origin + value,
-        date_print = haahka::make_date_label(date, input$language)
+        epochnum = as.numeric(.data[["epoch"]]) - 1,
+        date = origin + .data[["value"]],
+        date_print = haahka::make_date_label(
+          .data[["date"]], input[["language"]]
+        )
       )
 
     hcoptslang <- getOption("highcharter.lang")
 
-    hcoptslang$shortMonths <- x_yearly_labels[[input$language]]
+    hcoptslang[["shortMonths"]] <- x_yearly_labels[[input[["language"]]]]
 
     options(highcharter.lang = hcoptslang)
 
     highcharter::hchart(
       plot_data,
       type = "scatter",
-      highcharter::hcaes(x = date, y = epochnum, group = epoch),
+      highcharter::hcaes(
+        plot_data[["date"]],
+        plot_data[["epochnum"]],
+        group = plot_data[["epoch"]]
+      ),
       name = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
       color = ggsci::pal_d3("category10")(4)
     ) %>%
@@ -1016,7 +1081,7 @@ server <- function(input, output, session) {
         title = list(text = ""),
         min = 0,
         max = 3,
-        categories = rev(levels(plot_data$epoch))
+        categories = rev(levels(plot_data[["epoch"]]))
       ) %>%
       highcharter::hc_xAxis(
         title = list(text = ""),
@@ -1031,7 +1096,7 @@ server <- function(input, output, session) {
         scatter = list(marker = list(symbol = "circle", radius = 8))
       ) %>%
       highcharter::hc_title(
-        text = i18n()$t("Muuton ajoittumisen mediaanipäivämäärä")
+        text = i18n()[["t"]]("Muuton ajoittumisen mediaanipäivämäärä")
       ) %>%
       highcharter::hc_tooltip(
         crosshairs = TRUE,
@@ -1040,8 +1105,8 @@ server <- function(input, output, session) {
         xDateFormat = "%b %d",
         pointFormat = paste0(
           "{point.season}",
-          ifelse(input$language == "fi", "", " "),
-          tolower(i18n()$t("Muuton ajoittumisen mediaanipäivämäärä")),
+          ifelse(input[["language"]] == "fi", "", " "),
+          tolower(i18n()[["t"]]("Muuton ajoittumisen mediaanipäivämäärä")),
           ":",
           "<br> {point.date_print}"
         )
@@ -1051,12 +1116,14 @@ server <- function(input, output, session) {
 
   })
 
-  output$records <- shiny::renderUI({
+  output[["records"]] <- shiny::renderUI({
 
     records_current <-
       get_current_records() %>%
       dplyr::collect() %>%
-      dplyr::mutate(date = as.Date(paste(year, day), "%Y %j"))
+      dplyr::mutate(
+        date = as.Date(paste(.data[["year"]], .data[["day"]]), "%Y %j")
+      )
 
     if (nrow(records_current) == 0) {
 
@@ -1093,7 +1160,7 @@ server <- function(input, output, session) {
 
           }
 
-          res <- paste(res, collapse = i18n()$t(" ja "))
+          res <- paste(res, collapse = i18n()[["t"]](" ja "))
 
         }
 
@@ -1110,16 +1177,16 @@ server <- function(input, output, session) {
       shinydashboardPlus::box(
         width = 12,
         solidHeader = FALSE,
-        title = i18n()$t("Runsausennätykset"),
+        title = i18n()[["t"]]("Runsausennätykset"),
         status = "info",
         shiny::fluidRow(
           shiny::column(
             width = 12,
-            shiny::tagList(shiny::h4(i18n()$t("Kevät"), class = "record")),
+            shiny::tagList(shiny::h4(i18n()[["t"]]("Kevät"), class = "record")),
             shiny::column(
               width = 6,
               shiny::tagList(
-                shiny::h5(i18n()$t("Muuttavat"), class = "record"),
+                shiny::h5(i18n()[["t"]]("Muuttavat"), class = "record"),
                 shiny::div(
                   class = "record",
                   shiny::column(
@@ -1146,7 +1213,7 @@ server <- function(input, output, session) {
             shiny::column(
               width = 6,
               shiny::tagList(
-                shiny::h5(i18n()$t("Paikalliset"), class = "record"),
+                shiny::h5(i18n()[["t"]]("Paikalliset"), class = "record"),
                 shiny::div(
                   class = "record",
                   shiny::column(
@@ -1175,11 +1242,11 @@ server <- function(input, output, session) {
         shiny::fluidRow(
           shiny::column(
             width = 12,
-            shiny::tagList(shiny::h4(i18n()$t("Syksy"), class = "record")),
+            shiny::tagList(shiny::h4(i18n()[["t"]]("Syksy"), class = "record")),
             shiny::column(
               width = 6,
               shiny::tagList(
-                shiny::h5(i18n()$t("Muuttavat"), class = "record"),
+                shiny::h5(i18n()[["t"]]("Muuttavat"), class = "record"),
                 shiny::div(
                   class = "record",
                   shiny::column(
@@ -1206,7 +1273,7 @@ server <- function(input, output, session) {
             shiny::column(
               width = 6,
               shiny::tagList(
-                shiny::h5(i18n()$t("Paikalliset"), class = "record"),
+                shiny::h5(i18n()[["t"]]("Paikalliset"), class = "record"),
                 shiny::div(
                   class = "record",
                   shiny::column(
@@ -1238,10 +1305,10 @@ server <- function(input, output, session) {
 
   })
 
-  output$render_helpsections <- shiny::renderUI({
+  output[["render_helpsections"]] <- shiny::renderUI({
 
     data_help_file <- file.path(
-      "www", "helps", paste0("data_help-", input$language, ".md")
+      "www", "helps", paste0("data_help-", input[["language"]], ".md")
     )
 
     data_help_content <- ""
@@ -1257,7 +1324,7 @@ server <- function(input, output, session) {
     }
 
     app_help_file <- file.path(
-      "www", "helps", paste0("app_help-", input$language, ".md")
+      "www", "helps", paste0("app_help-", input[["language"]], ".md")
     )
 
     app_help_content <- ""
@@ -1278,8 +1345,10 @@ server <- function(input, output, session) {
           width = 6,
           shinydashboardPlus::userBox(
             title = shinydashboardPlus::userDescription(
-              title = i18n()$t("Aineisto"),
-              subtitle = i18n()$t("Hangon lintuaseman pitkäaikaisaineisto"),
+              title = i18n()[["t"]]("Aineisto"),
+              subtitle = i18n()[["t"]](
+                "Hangon lintuaseman pitkäaikaisaineisto"
+              ),
               type = NULL,
               image = "database.png"
             ),
@@ -1294,7 +1363,7 @@ server <- function(input, output, session) {
           width = 6,
           shinydashboardPlus::userBox(
             title = shinydashboardPlus::userDescription(
-              title = i18n()$t("Verkkosovellus"),
+              title = i18n()[["t"]]("Verkkosovellus"),
               subtitle = "Muuttolintuselain Haahka",
               type = NULL,
               image = "settings.png"
@@ -1311,25 +1380,26 @@ server <- function(input, output, session) {
   })
 
   shiny::observe({
+
     shiny::reactiveValuesToList(input)
-    session$doBookmark()
+
+    session[["doBookmark"]]()
+
   })
 
-  shiny::onBookmarked(
-    function(url) {
-      shiny::updateQueryString(url)
+  shiny::onBookmarked(function(url) shiny::updateQueryString(url))
+
+  shiny::observeEvent(
+    input[["species"]], {
+      logger::log_debug("Species changed to: {input[['species']]}")
     }
   )
 
   shiny::observeEvent(
-    input$species, {
-      logger::log_debug("Species changed to: {input$species}")
-    }
-  )
-
-  shiny::observeEvent(
-    input$language, {
-      shiny::updateSelectInput(session, "language", selected = input$language)
+    input[["language"]], {
+      shiny::updateSelectInput(
+        session, "language", selected = input[["language"]]
+      )
     }
   )
 
@@ -1338,46 +1408,46 @@ server <- function(input, output, session) {
     shiny::updateSelectInput(
       session,
       "species",
-      label =  i18n()$t("Valitse laji"),
-      choices = get_species_names(input$language),
-      selected = input$species
+      label =  i18n()[["t"]]("Valitse laji"),
+      choices = get_species_names(input[["language"]]),
+      selected = input[["species"]]
     )
   )
 
   shiny::observeEvent(
-    input$migration_info,
+    input[["migration_info"]],
     {
-      shiny::req(input$language)
-      create_popup(session, "migration_info-", input$language)
+      shiny::req(input[["language"]])
+      create_popup(session, "migration_info-", input[["language"]])
     }
   )
 
   shiny::observeEvent(
-    input$local_info,
+    input[["local_info"]],
     {
-      shiny::req(input$language)
-      create_popup(session, "local_info-", input$language)
+      shiny::req(input[["language"]])
+      create_popup(session, "local_info-", input[["language"]])
     }
   )
 
   shiny::observeEvent(
-    input$change_info,
+    input[["change_info"]],
     {
-      shiny::req(input$language)
-      create_popup(session, "change_info-", input$language)
+      shiny::req(input[["language"]])
+      create_popup(session, "change_info-", input[["language"]])
     }
   )
 
   shiny::observeEvent(
-    input$median_info,
+    input[["median_info"]],
     {
-      shiny::req(input$language)
-      create_popup(session, "median_info-", input$language)
+      shiny::req(input[["language"]])
+      create_popup(session, "median_info-", input[["language"]])
     }
   )
 
-  session$onSessionEnded(
-    function() logger::log_info("Session {session$token} stopped")
+  session[["onSessionEnded"]](
+    function() logger::log_info("Session {session[['token']]} stopped")
   )
 
 }
