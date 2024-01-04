@@ -257,7 +257,7 @@ tile_observations <- function(x, day, value, size) {
   # size must be an odd integer
   assertthat::on_failure(is_odd) <- function(call, env) {
 
-    paste0(deparse(call$x), " is even. size must be odd.")
+    paste0(deparse(call[["x"]]), " is even. size must be odd.")
 
   }
 
