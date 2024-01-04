@@ -660,7 +660,7 @@ server <- function(input, output, session) {
       dplyr::collect() %>%
       dplyr::mutate(day = as.Date(paste(2000, day), format = "%Y %j")) %>%
       tsibble::as_tsibble(index = day) %>%
-      haakha::tile_observations("day", "paik", window_size)
+      haahka::tile_observations("day", "paik", window_size)
 
     if (!is.null(plot_data)) {
 
@@ -873,7 +873,7 @@ server <- function(input, output, session) {
           )
         )
       ),
-      shiny::fluidRowfluidRow(
+      shiny::fluidRow(
         shiny::column(
           width = 6,
           shinydashboardPlus::descriptionBlock(
