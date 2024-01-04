@@ -1,6 +1,6 @@
 suppressPackageStartupMessages({
 
-  library(call, warn.conflicts = FALSE, quietly = TRUE)
+  library(callr, warn.conflicts = FALSE, quietly = TRUE)
 
 })
 
