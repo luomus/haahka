@@ -558,7 +558,7 @@ server <- function(input, output, session) {
     plot_data <- dplyr::mutate(
       plot_data, day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
     )
-    plot_data <- dplyr::arrange(plot_data, .data[["date"]])
+    plot_data <- dplyr::arrange(plot_data, .data[["day"]])
     plot_data <- haahka::tile_observations(plot_data, "muutto")
 
     if (!is.null(plot_data)) {
@@ -620,7 +620,7 @@ server <- function(input, output, session) {
     plot_data <- dplyr::mutate(
       plot_data, day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
     )
-    plot_data <- dplyr::arrange(plot_data, .data[["date"]])
+    plot_data <- dplyr::arrange(plot_data, .data[["day"]])
     plot_data <- haahka::tile_observations(plot_data, "paik")
 
     if (!is.null(plot_data)) {
