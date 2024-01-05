@@ -12,7 +12,6 @@ library(shinydashboard, warn.conflicts = FALSE, quietly = TRUE)
 library(shinydashboardPlus, warn.conflicts = FALSE, quietly = TRUE)
 library(shinyWidgets, warn.conflicts = FALSE, quietly = TRUE)
 library(tidyr, warn.conflicts = FALSE, quietly = TRUE)
-library(tsibble, warn.conflicts = FALSE, quietly = TRUE)
 library(utils, warn.conflicts = FALSE, quietly = TRUE)
 
 req <- httr2::request(
@@ -561,7 +560,6 @@ server <- function(input, output, session) {
     plot_data <- dplyr::mutate(
       plot_data, day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
     )
-    plot_data <- tsibble::as_tsibble(plot_data, index = .data[["day"]])
     plot_data <- haahka::tile_observations(
       plot_data, "day", "muutto", window_size
     )
@@ -625,7 +623,6 @@ server <- function(input, output, session) {
     plot_data <- dplyr::mutate(
       plot_data, day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
     )
-    plot_data <- tsibble::as_tsibble(plot_data, index = .data[["day"]])
     plot_data <- haahka::tile_observations(
       plot_data, "day", "paik", window_size
     )
@@ -689,7 +686,6 @@ server <- function(input, output, session) {
         plot_data_p1,
         day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
       )
-      plot_data_p1 <- tsibble::as_tsibble(plot_data_p1, index = .data[["day"]])
       plot_data_p1 <- haahka::tile_observations(
         plot_data_p1, "day", "totalp1", window_size
       )
@@ -705,7 +701,6 @@ server <- function(input, output, session) {
         plot_data_p2,
         day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
       )
-      plot_data_p2 <- tsibble::as_tsibble(plot_data_p2, index = .data[["day"]])
       plot_data_p2 <- haahka::tile_observations(
         plot_data_p2, "day", "totalp2", window_size
       )
@@ -721,7 +716,6 @@ server <- function(input, output, session) {
         plot_data_p3,
         day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
       )
-      plot_data_p3 <- tsibble::as_tsibble(plot_data_p3, index = .data[["day"]])
       plot_data_p3 <- haahka::tile_observations(
         plot_data_p3, "day", "totalp3", window_size
       )
@@ -736,7 +730,6 @@ server <- function(input, output, session) {
       plot_data_p4 <- dplyr::mutate(plot_data_p4,
         day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
       )
-      plot_data_p4 <- tsibble::as_tsibble(plot_data_p4, index = .data[["day"]])
       plot_data_p4 <- haahka::tile_observations(
         plot_data_p4, "day", "totalp4", window_size
       )
