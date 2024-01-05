@@ -348,22 +348,18 @@ server <- function(input, output, session) {
 
       }
 
-      sp_names <-
-        sp_data %>%
-        dplyr::select(!!name_field) %>%
-        purrr::pluck(1)
+      spps <- dplyr::select(sp_data, dplyr::all_of("Sci_name"))
+      spps <- purrr::pluck(spps, 1)
 
-      spps <-
-        sp_data %>%
-        dplyr::select(dplyr::all_of("Sci_name")) %>%
-        purrr::pluck(1)
+      sp_names <- dplyr::select(sp_data, !!name_field)
+      sp_names <- purrr::pluck(sp_names, 1)
 
-      sp_names <- paste0(sp_names, " (", spps, ")")
-      names(spps) <- sp_names
+      names(spps) <- paste0(sp_names, " (", spps, ")")
 
       spps
 
     }
+
   }
 
   output[["render_sidebarmenu"]] <- shinydashboard::renderMenu({
@@ -468,11 +464,10 @@ server <- function(input, output, session) {
 
     spps <- get_species_names(name_field)
 
-    selected_sp <-
-      sp_data %>%
-      dplyr::filter(.data[["Species_Abb"]] == default_species) %>%
-      dplyr::pull("Sci_name")
-
+    selected_sp <- dplyr::filter(
+      sp_data, .data[["Species_Abb"]] == default_species
+    )
+    selected_sp <- dplyr::pull(selected_sp, "Sci_name")
     selected_sp <- spps[which(spps == selected_sp)]
 
     shiny::div(
@@ -636,15 +631,15 @@ server <- function(input, output, session) {
 
     obs_current <- get_current_data()
 
-    plot_data <-
-      obs_current %>%
-      dplyr::select(dplyr::all_of(c("day", "muutto"))) %>%
-      dplyr::collect() %>%
-      dplyr::mutate(
-        day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
-      ) %>%
-      tsibble::as_tsibble(index = .data[["day"]]) %>%
-      haahka::tile_observations("day", "muutto", window_size)
+    plot_data <- dplyr::select(obs_current, dplyr::all_of(c("day", "muutto")))
+    plot_data <- dplyr::collect(plot_data)
+    plot_data <- dplyr::mutate(
+      plot_data, day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
+    )
+    plot_data <- tsibble::as_tsibble(plot_data, index = .data[["day"]])
+    plot_data <- haahka::tile_observations(
+      plot_data, "day", "muutto", window_size
+    )
 
     if (!is.null(plot_data)) {
 
@@ -654,37 +649,43 @@ server <- function(input, output, session) {
 
       options(highcharter.lang = hcoptslang)
 
-      highcharter::hchart(
+      hc <- highcharter::hchart(
         plot_data,
         type = "line",
         highcharter::hcaes(.data[["day"]], .data[["value_avgs"]]),
         name = i18n()[["t"]]("Muuttajamäärien keskiarvot"),
         color = "#1f78b4"
-      ) %>%
-        highcharter::hc_yAxis(
-          title = list(text = i18n()[["t"]]("Yksilöä / havaintopäivä"))
-        ) %>%
-        highcharter::hc_xAxis(
-          title = list(text = ""),
-          type = "datetime",
-          min = xmin,
-          max = xmax,
-          dateTimeLabelFormats = list(month = "%b"),
-          tickInterval = time_units,
-          plotBands = pb_list
-        ) %>%
-        highcharter::hc_plotOptions(
-          line = list(marker = list(enabled = input[["show_markers"]])),
-          spline = list(marker = list(enabled = input[["show_markers"]]))
-        ) %>%
-        highcharter::hc_title(
-          text = i18n()[["t"]]("Muuttajamäärien keskiarvot")
-        ) %>%
-        highcharter::hc_tooltip(
-          crosshairs = TRUE, backgroundColor = "#FCFFC5", xDateFormat = "%b %d"
-        ) %>%
-        highcharter::hc_exporting(enabled = TRUE) %>%
-        highcharter::hc_chart(zoomType = "xy")
+      )
+      hc <- highcharter::hc_yAxis(
+        hc, title = list(text = i18n()[["t"]]("Yksilöä / havaintopäivä"))
+      )
+      hc <- highcharter::hc_xAxis(
+        hc,
+        title = list(text = ""),
+        type = "datetime",
+        min = xmin,
+        max = xmax,
+        dateTimeLabelFormats = list(month = "%b"),
+        tickInterval = time_units,
+        plotBands = pb_list
+      )
+      hc <- highcharter::hc_plotOptions(
+        hc,
+        line = list(marker = list(enabled = input[["show_markers"]])),
+        spline = list(marker = list(enabled = input[["show_markers"]]))
+      )
+      hc <- highcharter::hc_title(
+        hc, text = i18n()[["t"]]("Muuttajamäärien keskiarvot")
+      )
+      hc <- highcharter::hc_tooltip(
+        hc,
+        crosshairs = TRUE,
+        backgroundColor = "#FCFFC5",
+        xDateFormat = "%b %d"
+      )
+      hc <- highcharter::hc_exporting(hc, enabled = TRUE)
+
+      highcharter::hc_chart(hc, zoomType = "xy")
 
     }
 
@@ -694,15 +695,15 @@ server <- function(input, output, session) {
 
     obs_current <- get_current_data()
 
-    plot_data <-
-      obs_current %>%
-      dplyr::select(dplyr::all_of(c("day", "paik"))) %>%
-      dplyr::collect() %>%
-      dplyr::mutate(
-        day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
-      ) %>%
-      tsibble::as_tsibble(index = .data[["day"]]) %>%
-      haahka::tile_observations("day", "paik", window_size)
+    plot_data <- dplyr::select(obs_current, dplyr::all_of(c("day", "paik")))
+    plot_data <- dplyr::collect(plot_data)
+    plot_data <- dplyr::mutate(
+      plot_data, day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
+    )
+    plot_data <-  tsibble::as_tsibble(plot_data, index = .data[["day"]])
+    plot_data <-  haahka::tile_observations(
+      plot_data, "day", "paik", window_size
+    )
 
     if (!is.null(plot_data)) {
 
@@ -712,33 +713,38 @@ server <- function(input, output, session) {
 
       options(highcharter.lang = hcoptslang)
 
-      highcharter::hchart(
+      hc <- highcharter::hchart(
         plot_data,
         type = "line",
         highcharter::hcaes(.data[["day"]], .data[["value_avgs"]]),
         name = i18n()[["t"]]("Paikallisten määrien keskiarvot"),
         color = "#1f78b4"
-      ) %>%
-        highcharter::hc_yAxis(
-          title = list(text = i18n()[["t"]]("Yksilöä / havaintopäivä"))
-        ) %>%
-        highcharter::hc_xAxis(
-          title = list(text = ""),
-          type = "datetime",
-          min = xmin,
-          max = xmax,
-          dateTimeLabelFormats = list(month = "%b"),
-          tickInterval = time_units,
-          plotBands = pb_list
-        ) %>%
-        highcharter::hc_title(
-          text = i18n()[["t"]]("Paikallisten määrien keskiarvot")
-        ) %>%
-        highcharter::hc_tooltip(
-          crosshairs = TRUE, backgroundColor = "#FCFFC5", xDateFormat = "%b %d"
-        ) %>%
-        highcharter::hc_exporting(enabled = TRUE) %>%
-        highcharter::hc_chart(zoomType = "xy")
+      )
+      hc <- highcharter::hc_yAxis(
+        hc, title = list(text = i18n()[["t"]]("Yksilöä / havaintopäivä"))
+      )
+      hc <- highcharter::hc_xAxis(
+        hc,
+        title = list(text = ""),
+        type = "datetime",
+        min = xmin,
+        max = xmax,
+        dateTimeLabelFormats = list(month = "%b"),
+        tickInterval = time_units,
+        plotBands = pb_list
+      )
+      hc <- highcharter::hc_title(
+        hc, text = i18n()[["t"]]("Paikallisten määrien keskiarvot")
+      )
+      hc <- highcharter::hc_tooltip(
+        hc,
+        crosshairs = TRUE,
+        backgroundColor = "#FCFFC5",
+        xDateFormat = "%b %d"
+      )
+      hc <- highcharter::hc_exporting(hc, enabled = TRUE)
+
+      highcharter::hc_chart(hc, zoomType = "xy")
 
     }
 
@@ -750,61 +756,87 @@ server <- function(input, output, session) {
 
     if (!is.null(obs_current)) {
 
-      plot_data_p1 <-
-        obs_current %>%
-        dplyr::select(dplyr::all_of(c("day", "totalp1"))) %>%
-        dplyr::collect() %>%
-        dplyr::mutate(
-          day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
-        ) %>%
-        tsibble::as_tsibble(index = .data[["day"]]) %>%
-        haahka::tile_observations("day", "totalp1", window_size) %>%
-        dplyr::rename(totalp1 = dplyr::all_of("value_avgs"))
+      plot_data_p1 <- dplyr::select(
+        obs_current, dplyr::all_of(c("day", "totalp1"))
+      )
+      plot_data_p1 <- dplyr::collect(plot_data_p1)
+      plot_data_p1 <- dplyr::mutate(
+        plot_data_p1,
+        day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
+      )
+      plot_data_p1 <- tsibble::as_tsibble(plot_data_p1, index = .data[["day"]])
+      plot_data_p1 <- haahka::tile_observations(
+        plot_data_p1, "day", "totalp1", window_size
+      )
+      plot_data_p1 <- dplyr::rename(
+        plot_data_p1, totalp1 = dplyr::all_of("value_avgs")
+      )
 
-      plot_data_p2 <-
-        obs_current %>%
-        dplyr::select(dplyr::all_of(c("day", "totalp2"))) %>%
-        dplyr::collect() %>%
-        dplyr::mutate(
-          day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
-        ) %>%
-        tsibble::as_tsibble(index = .data[["day"]]) %>%
-        haahka::tile_observations("day", "totalp2", window_size) %>%
-        dplyr::rename(totalp2 = dplyr::all_of("value_avgs"))
+      plot_data_p2 <- dplyr::select(
+        obs_current, dplyr::all_of(c("day", "totalp2"))
+      )
+      plot_data_p2 <- dplyr::collect(plot_data_p2)
+      plot_data_p2 <- dplyr::mutate(
+        plot_data_p2,
+        day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
+      )
+      plot_data_p2 <- tsibble::as_tsibble(plot_data_p2, index = .data[["day"]])
+      plot_data_p2 <- haahka::tile_observations(
+        plot_data_p2, "day", "totalp2", window_size
+      )
+      plot_data_p2 <- dplyr::rename(
+        plot_data_p2, totalp2 = dplyr::all_of("value_avgs")
+      )
 
-      plot_data_p3 <-
-        obs_current %>%
-        dplyr::select(dplyr::all_of(c("day", "totalp3"))) %>%
-        dplyr::collect() %>%
-        dplyr::mutate(
-          day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
-        ) %>%
-        tsibble::as_tsibble(index = .data[["day"]]) %>%
-        haahka::tile_observations("day", "totalp3", window_size) %>%
-        dplyr::rename(totalp3 = dplyr::all_of("value_avgs"))
+      plot_data_p3 <- dplyr::select(
+        obs_current, dplyr::all_of(c("day", "totalp3"))
+      )
+      plot_data_p3 <- dplyr::collect(plot_data_p3)
+      plot_data_p3 <- dplyr::mutate(
+        plot_data_p3,
+        day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
+      )
+      plot_data_p3 <- tsibble::as_tsibble(plot_data_p3, index = .data[["day"]])
+      plot_data_p3 <- haahka::tile_observations(
+        plot_data_p3, "day", "totalp3", window_size
+      )
+      plot_data_p3 <- dplyr::rename(
+        plot_data_p3, totalp3 = dplyr::all_of("value_avgs")
+      )
 
-      plot_data_p4 <-
-        obs_current %>%
-        dplyr::select(dplyr::all_of(c("day", "totalp4"))) %>%
-        dplyr::collect() %>%
-        dplyr::mutate(
-          day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
-        ) %>%
-        tsibble::as_tsibble(index = .data[["day"]]) %>%
-        haahka::tile_observations("day", "totalp4", window_size) %>%
-        dplyr::rename(totalp4 = dplyr::all_of("value_avgs"))
+      plot_data_p4 <- dplyr::select(
+        obs_current, dplyr::all_of(c("day", "totalp4"))
+      )
+      plot_data_p4 <- dplyr::collect(plot_data_p4)
+      plot_data_p4 <- dplyr::mutate(plot_data_p4,
+        day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
+      )
+      plot_data_p4 <- tsibble::as_tsibble(plot_data_p4, index = .data[["day"]])
+      plot_data_p4 <- haahka::tile_observations(
+        plot_data_p4, "day", "totalp4", window_size
+      )
+      plot_data_p4 <- dplyr::rename(
+        plot_data_p4, totalp4 = dplyr::all_of("value_avgs")
+      )
 
-      plot_data <-
-        plot_data_p1 %>%
-        dplyr::left_join(plot_data_p2, by = c("day" = "day")) %>%
-        dplyr::left_join(plot_data_p3, by = c("day" = "day")) %>%
-        dplyr::left_join(plot_data_p4, by = c("day" = "day")) %>%
-        tidyr::pivot_longer(-dplyr::all_of("day"), names_to = "epoch") %>%
-        dplyr::mutate(
-          epoch = forcats::fct_relevel(
-            .data[["epoch"]], "totalp1", "totalp2", "totalp3", "totalp4"
-          )
+      plot_data <- dplyr::left_join(
+        plot_data_p1, plot_data_p2, by = c("day" = "day")
+      )
+      plot_data <- dplyr::left_join(
+        plot_data, plot_data_p3, by = c("day" = "day")
+      )
+      plot_data <- dplyr::left_join(
+        plot_data, plot_data_p4, by = c("day" = "day")
+      )
+      plot_data <- tidyr::pivot_longer(
+        plot_data, -dplyr::all_of("day"), names_to = "epoch"
+      )
+      plot_data <- dplyr::mutate(
+        plot_data,
+        epoch = forcats::fct_relevel(
+          .data[["epoch"]], "totalp1", "totalp2", "totalp3", "totalp4"
         )
+      )
 
       hcoptslang <- getOption("highcharter.lang")
 
@@ -812,7 +844,8 @@ server <- function(input, output, session) {
 
       options(highcharter.lang = hcoptslang)
 
-      highcharter::hchart(
+      hc <- highcharter::hchart(
+        hc,
         plot_data,
         type = "line",
         highcharter::hcaes(
@@ -820,31 +853,36 @@ server <- function(input, output, session) {
         ),
         name = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
         color = ggsci::pal_d3("category10")(4)
-      ) %>%
-        highcharter::hc_yAxis(
-          title = list(text = i18n()[["t"]]("Yksilöä / havaintopäivä"))
-        ) %>%
-        highcharter::hc_xAxis(
-          title = list(text = ""),
-          type = "datetime",
-          min = xmin,
-          max = xmax,
-          dateTimeLabelFormats = list(month = "%b"),
-          tickInterval = time_units,
-          plotBands = pb_list
-        ) %>%
-        highcharter::hc_plotOptions(
-          line = list(marker = list(enabled = FALSE))
-        ) %>%
-        highcharter::hc_title(text = i18n()[["t"]]("Runsauksien muutokset")) %>%
-        highcharter::hc_tooltip(
-          crosshairs = TRUE,
-          backgroundColor = "#FCFFC5",
-          shared = TRUE,
-          xDateFormat = "%b %d"
-        ) %>%
-        highcharter::hc_exporting(enabled = TRUE) %>%
-        highcharter::hc_chart(zoomType = "xy")
+      )
+      hc <- highcharter::hc_yAxis(
+        hc, title = list(text = i18n()[["t"]]("Yksilöä / havaintopäivä"))
+      )
+      hc <- highcharter::hc_xAxis(
+        hc,
+        title = list(text = ""),
+        type = "datetime",
+        min = xmin,
+        max = xmax,
+        dateTimeLabelFormats = list(month = "%b"),
+        tickInterval = time_units,
+        plotBands = pb_list
+      )
+      hc <- highcharter::hc_plotOptions(
+        hc, line = list(marker = list(enabled = FALSE))
+      )
+      hc <- highcharter::hc_title(
+        hc, text = i18n()[["t"]]("Runsauksien muutokset")
+      )
+      hc <- highcharter::hc_tooltip(
+        hc,
+        crosshairs = TRUE,
+        backgroundColor = "#FCFFC5",
+        shared = TRUE,
+        xDateFormat = "%b %d"
+      )
+      hc <- highcharter::hc_exporting(hc, enabled = TRUE)
+
+      highcharter::hc_chart(hc, zoomType = "xy")
 
     }
 
@@ -852,9 +890,8 @@ server <- function(input, output, session) {
 
   output[["change_numbers"]] <- renderUI({
 
-    stats_current <-
-      get_current_stats() %>%
-      dplyr::collect()
+    stats_current <- get_current_stats()
+    stats_current <- dplyr::collect(stats_current)
 
     long <- stats_current[["slopeLong"]]
 
@@ -1024,45 +1061,48 @@ server <- function(input, output, session) {
 
     origin <- as.Date("2000-01-01")
 
-    plot_data <-
-      get_current_stats() %>%
-      dplyr::collect() %>%
-      dplyr::select(
-        dplyr::all_of(
-          c(
-            "sphenp1",
-            "sphenp2",
-            "sphenp3",
-            "sphenp4",
-            "aphenp1",
-            "aphenp2",
-            "aphenp3",
-            "aphenp4"
-          )
-        )
-      ) %>%
-      tidyr::pivot_longer(dplyr::everything(), names_to = "variable") %>%
-      tidyr::separate(
-        col = "variable", into = c("season", "epoch"), sep = "phen"
-      ) %>%
-      dplyr::mutate(
-        season = ifelse(
-          .data[["season"]] == "s",
-          tolower(i18n()[["t"]]("Kevät")),
-          ifelse(.data[["season"]] == "a", tolower(i18n()[["t"]]("Syys")), NA)
-        ),
-        epoch = factor(
-          .data[["epoch"]],
-          levels = c("p1", "p2", "p3", "p4"),
-          labels = rev(c("1979-1999", "2000-2009", "2010-2019", "2020-")),
-          ordered = TRUE
-        ),
-        epochnum = as.numeric(.data[["epoch"]]) - 1,
-        date = origin + .data[["value"]],
-        date_print = haahka::make_date_label(
-          .data[["date"]], input[["language"]]
+    plot_data <- get_current_stats()
+    plot_data <- dplyr::collect(plot_data)
+    plot_data <- dplyr::select(
+      plot_data,
+      dplyr::all_of(
+        c(
+          "sphenp1",
+          "sphenp2",
+          "sphenp3",
+          "sphenp4",
+          "aphenp1",
+          "aphenp2",
+          "aphenp3",
+          "aphenp4"
         )
       )
+    )
+    plot_data <- tidyr::pivot_longer(
+      plot_data, dplyr::everything(), names_to = "variable"
+    )
+    plot_data <- tidyr::separate(
+      plot_data, col = "variable", into = c("season", "epoch"), sep = "phen"
+    )
+    plot_data <- dplyr::mutate(
+      plot_data,
+      season = ifelse(
+        .data[["season"]] == "s",
+        tolower(i18n()[["t"]]("Kevät")),
+        ifelse(.data[["season"]] == "a", tolower(i18n()[["t"]]("Syys")), NA)
+      ),
+      epoch = factor(
+        .data[["epoch"]],
+        levels = c("p1", "p2", "p3", "p4"),
+        labels = rev(c("1979-1999", "2000-2009", "2010-2019", "2020-")),
+        ordered = TRUE
+      ),
+      epochnum = as.numeric(.data[["epoch"]]) - 1,
+      date = origin + .data[["value"]],
+      date_print = haahka::make_date_label(
+        .data[["date"]], input[["language"]]
+      )
+    )
 
     hcoptslang <- getOption("highcharter.lang")
 
@@ -1070,7 +1110,7 @@ server <- function(input, output, session) {
 
     options(highcharter.lang = hcoptslang)
 
-    highcharter::hchart(
+    hc <- highcharter::hchart(
       plot_data,
       type = "scatter",
       highcharter::hcaes(
@@ -1080,54 +1120,58 @@ server <- function(input, output, session) {
       ),
       name = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
       color = ggsci::pal_d3("category10")(4)
-    ) %>%
-      highcharter::hc_yAxis(
-        title = list(text = ""),
-        min = 0,
-        max = 3,
-        categories = rev(levels(plot_data[["epoch"]]))
-      ) %>%
-      highcharter::hc_xAxis(
-        title = list(text = ""),
-        type = "datetime",
-        min = xmin,
-        max = xmax,
-        dateTimeLabelFormats = list(month = "%b"),
-        tickInterval = time_units,
-        plotBands = pb_list
-      ) %>%
-      highcharter::hc_plotOptions(
-        scatter = list(marker = list(symbol = "circle", radius = 8))
-      ) %>%
-      highcharter::hc_title(
-        text = i18n()[["t"]]("Muuton ajoittumisen mediaanipäivämäärä")
-      ) %>%
-      highcharter::hc_tooltip(
-        crosshairs = TRUE,
-        backgroundColor = "#FCFFC5",
-        shared = TRUE,
-        xDateFormat = "%b %d",
-        pointFormat = paste0(
-          "{point.season}",
-          ifelse(input[["language"]] == "fi", "", " "),
-          tolower(i18n()[["t"]]("Muuton ajoittumisen mediaanipäivämäärä")),
-          ":",
-          "<br> {point.date_print}"
-        )
-      ) %>%
-      highcharter::hc_exporting(enabled = TRUE) %>%
-      highcharter::hc_chart(zoomType = "xy")
+    )
+    hc <- highcharter::hc_yAxis(
+      hc,
+      title = list(text = ""),
+      min = 0,
+      max = 3,
+      categories = rev(levels(plot_data[["epoch"]]))
+    )
+    hc <- highcharter::hc_xAxis(
+      hc,
+      title = list(text = ""),
+      type = "datetime",
+      min = xmin,
+      max = xmax,
+      dateTimeLabelFormats = list(month = "%b"),
+      tickInterval = time_units,
+      plotBands = pb_list
+    )
+    hc <- highcharter::hc_plotOptions(
+      hc, scatter = list(marker = list(symbol = "circle", radius = 8))
+    )
+    hc <- highcharter::hc_title(
+      hc, text = i18n()[["t"]]("Muuton ajoittumisen mediaanipäivämäärä")
+    )
+    hc <- highcharter::hc_tooltip(
+      hc,
+      crosshairs = TRUE,
+      backgroundColor = "#FCFFC5",
+      shared = TRUE,
+      xDateFormat = "%b %d",
+      pointFormat = paste0(
+        "{point.season}",
+        ifelse(input[["language"]] == "fi", "", " "),
+        tolower(i18n()[["t"]]("Muuton ajoittumisen mediaanipäivämäärä")),
+        ":",
+        "<br> {point.date_print}"
+      )
+    )
+    hc <- highcharter::hc_exporting(hc, enabled = TRUE)
+
+    highcharter::hc_chart(zoomType = "xy")
 
   })
 
   output[["records"]] <- shiny::renderUI({
 
-    records_current <-
-      get_current_records() %>%
-      dplyr::collect() %>%
-      dplyr::mutate(
-        date = as.Date(paste(.data[["year"]], .data[["day"]]), "%Y %j")
-      )
+    records_current <- get_current_records()
+    records_current <- dplyr::collect(records_current)
+    records_current <- dplyr::mutate(
+      records_current,
+      date = as.Date(paste(.data[["year"]], .data[["day"]]), "%Y %j")
+    )
 
     if (nrow(records_current) == 0) {
 
@@ -1147,10 +1191,8 @@ server <- function(input, output, session) {
 
         value <- switch(value, date_string = "date", Sum = record_value)
 
-        res <-
-          records_current %>%
-          dplyr::filter(as.logical(.data[[idx]])) %>%
-          dplyr::pull(value)
+        res <- dplyr::filter(records_current, as.logical(.data[[idx]]))
+        res <- dplyr::pull(res, value)
 
         if (is.numeric(res)) {
 
