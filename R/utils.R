@@ -367,3 +367,57 @@ create_popup <- function(session, filebody, lang) {
   }
 
 }
+
+#' Get record value
+#'
+#' Get record value for a species.
+#'
+#' @param season Character. "Spring" or "Autumn".
+#' @param type Character. Migration "Migr" or "Local".
+#' @param value Character. "date_string" or "Sum".
+#' @param records Records table.
+#' @param i18n Translation function.
+#'
+#' @importFrom dplyr .data filter pull
+#'
+#' @export
+get_value <- function(season, type, value, records, i18n) {
+
+  season <- switch(season, Spring = "s", Autumn = "a")
+
+  type <- switch(type, Migr = "m", Local = "l")
+
+  record_value <- paste0(season, type)
+
+  idx <- paste0(record_value, "_")
+
+  value <- switch(value, date_string = "date", Sum = record_value)
+
+  res <- dplyr::filter(records, as.logical(.data[[idx]]))
+  res <- dplyr::pull(res, value)
+
+  if (is.numeric(res)) {
+
+    res <- format(res, big.mark = " ")[[1L]]
+
+  } else {
+
+    if (season == "a") {
+
+      res <- res + 100
+
+    }
+
+    res <- paste(res, collapse = i18n()[["t"]](" ja "))
+
+  }
+
+  if (length(res) == 0) {
+
+    res <- "-"
+
+  }
+
+  res
+
+}

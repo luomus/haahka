@@ -1128,47 +1128,6 @@ server <- function(input, output, session) {
 
     } else {
 
-      get_value <- function(season, type, value) {
-
-        season <- switch(season, Spring = "s", Autumn = "a")
-
-        type <- switch(type, Migr = "m", Local = "l")
-
-        record_value <- paste0(season, type)
-
-        idx <- paste0(record_value, "_")
-
-        value <- switch(value, date_string = "date", Sum = record_value)
-
-        res <- dplyr::filter(records_current, as.logical(.data[[idx]]))
-        res <- dplyr::pull(res, value)
-
-        if (is.numeric(res)) {
-
-          res <- format(res, big.mark = " ")[[1L]]
-
-        } else {
-
-          if (season == "a") {
-
-            res <- res + 100
-
-          }
-
-          res <- paste(res, collapse = i18n()[["t"]](" ja "))
-
-        }
-
-        if (length(res) == 0) {
-
-          res <- "-"
-
-        }
-
-        res
-
-      }
-
       shinydashboardPlus::box(
         width = 12,
         solidHeader = FALSE,
@@ -1191,7 +1150,7 @@ server <- function(input, output, session) {
                   shiny::column(
                     width = 9,
                     shiny::p(
-                      get_value("Spring", "Migr", "Sum"),
+                      get_value("Spring", "Migr", "Sum", records_current, i18n),
                       class = "record-number"
                     )
                   ),
@@ -1200,7 +1159,11 @@ server <- function(input, output, session) {
                   ),
                   shiny::column(
                     width = 9,
-                    shiny::p(get_value("Spring", "Migr", "date_string"))
+                    shiny::p(
+                      get_value(
+                        "Spring", "Migr", "date_string", records_current, i18n
+                      )
+                    )
                   )
                 )
               )
@@ -1218,7 +1181,9 @@ server <- function(input, output, session) {
                   shiny::column(
                     width = 9,
                     shiny::p(
-                      get_value("Spring", "Local", "Sum"),
+                      get_value(
+                        "Spring", "Local", "Sum", records_current, i18n
+                      ),
                       class = "record-number"
                     )
                   ),
@@ -1227,7 +1192,11 @@ server <- function(input, output, session) {
                   ),
                   shiny::column(
                     width = 9,
-                    shiny::p(get_value("Spring", "Local", "date_string"))
+                    shiny::p(
+                      get_value(
+                        "Spring", "Local", "date_string", records_current, i18n
+                      )
+                    )
                   )
                 )
               )
@@ -1260,7 +1229,11 @@ server <- function(input, output, session) {
                   ),
                   shiny::column(
                     width = 9,
-                    shiny::p(get_value("Autumn", "Migr", "date_string"))
+                    shiny::p(
+                      get_value(
+                        "Autumn", "Migr", "date_string", records_current, i18n
+                      )
+                    )
                   )
                 )
               )
@@ -1278,7 +1251,9 @@ server <- function(input, output, session) {
                   shiny::column(
                     width = 9,
                     shiny::p(
-                      get_value("Autumn", "Local", "Sum"),
+                      get_value(
+                        "Autumn", "Local", "Sum", records_current, i18n
+                      ),
                       class = "record-number"
                     )
                   ),
@@ -1287,7 +1262,11 @@ server <- function(input, output, session) {
                   ),
                   shiny::column(
                     width = 9,
-                    shiny::p(get_value("Autumn", "Local", "date_string"))
+                    shiny::p(
+                      get_value(
+                        "Autumn", "Local", "date_string", records_current, i18n
+                      )
+                    )
                   )
                 )
               )
