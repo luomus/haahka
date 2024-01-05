@@ -1,5 +1,4 @@
 library(dplyr, warn.conflicts = FALSE, quietly = TRUE)
-library(ggsci, warn.conflicts = FALSE, quietly = TRUE)
 library(glue, warn.conflicts = FALSE, quietly = TRUE)
 library(highcharter, warn.conflicts = FALSE, quietly = TRUE)
 library(httr2, warn.conflicts = FALSE, quietly = TRUE)
@@ -773,7 +772,7 @@ server <- function(input, output, session) {
           .data[["day"]], .data[["value"]], group = .data[["epoch"]]
         ),
         name = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
-        color = ggsci::pal_d3("category10")(4)
+        color = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF", "#D62728FF")
       )
       hc <- highcharter::hc_yAxis(
         hc, title = list(text = i18n()[["t"]]("Yksilöä / havaintopäivä"))
@@ -1048,7 +1047,7 @@ server <- function(input, output, session) {
         group = .data[["epoch"]]
       ),
       name = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
-      color = ggsci::pal_d3("category10")(4)
+      color =c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF", "#D62728FF")
     )
     hc <- highcharter::hc_yAxis(
       hc,
