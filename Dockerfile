@@ -19,6 +19,6 @@ COPY DESCRIPTION /home/user/DESCRIPTION
 COPY NAMESPACE /home/user/NAMESPACE
 COPY .Rbuildignore /home/user/.Rbuildignore
 
-RUN R -e "renv::restore()" \
- && R -e 'remotes::install_local(dependencies = FALSE, upgrade = FALSE)' \
+RUN Rscript --vanilla -e "renv::restore()"
+RUN R CMD INSTALL . \
  && permissions.sh

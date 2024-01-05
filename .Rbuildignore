@@ -20,6 +20,12 @@
 ^template\.yml$
 ^translation\.json$
 ^update\.R$
-^var
-^www
+^var$
+^www$
 ^\.Rproj\.user$
+^archives$
+^coverage$
+^data$
+^logs$
+^stage$
+^tmp$
