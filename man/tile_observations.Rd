@@ -18,7 +18,7 @@ values.}
 Must be an odd value.}
 }
 \value{
-A tibble with dates and corresponding (rounded) averages.
+A data.frame with dates and corresponding (rounded) averages.
 }
 \description{
 An average is calculated over a specified window and assigned to the day in

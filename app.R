@@ -625,8 +625,8 @@ server <- function(input, output, session) {
     plot_data <- dplyr::mutate(
       plot_data, day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
     )
-    plot_data <-  tsibble::as_tsibble(plot_data, index = .data[["day"]])
-    plot_data <-  haahka::tile_observations(
+    plot_data <- tsibble::as_tsibble(plot_data, index = .data[["day"]])
+    plot_data <- haahka::tile_observations(
       plot_data, "day", "paik", window_size
     )
 

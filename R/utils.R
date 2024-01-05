@@ -240,10 +240,9 @@ get_content <- function(x, h, lang) {
 #' @param size Numeric size of the window over which average is calculated.
 #'   Must be an odd value.
 #'
-#' @return A tibble with dates and corresponding (rounded) averages.
+#' @return A data.frame with dates and corresponding (rounded) averages.
 #' @importFrom assertthat assert_that on_failure see_if
 #' @importFrom stats median
-#' @importFrom tibble tibble
 #' @export
 tile_observations <- function(x, day, value, size) {
 
@@ -292,7 +291,7 @@ tile_observations <- function(x, day, value, size) {
 
   }
 
-  tibble::tibble(day = days, value_avgs = avgs)
+  data.frame(day = days, value_avgs = avgs)
 
 }
 
