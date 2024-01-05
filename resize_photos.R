@@ -2,7 +2,6 @@ library(assertthat, warn.conflicts = FALSE, quietly = TRUE)
 library(here, warn.conflicts = FALSE, quietly = TRUE)
 library(magick, warn.conflicts = FALSE, quietly = TRUE)
 library(progress, warn.conflicts = FALSE, quietly = TRUE)
-library(purrr, warn.conflicts = FALSE, quietly = TRUE)
 library(utils, warn.conflicts = FALSE, quietly = TRUE)
 
 resize_photo <- function(x, path = ".", width = 900, pb) {
@@ -42,7 +41,11 @@ resize_all <- function(src_path, dst_path) {
     total = length(photo_files), clear = FALSE, width = 60
   )
 
-  purrr::walk(photo_files, resize_photo, path = dst_path, pb = pb)
+  for (f in photo_files) {
+
+    resize_photo(f, path = dst_path, pb = pb)
+
+  }
 
   invisible(NULL)
 

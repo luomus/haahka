@@ -20,7 +20,6 @@ Imports:
     glue,
     highcharter,
     lubridate,
-    purrr,
     shiny,
     shinyWidgets,
     tibble,

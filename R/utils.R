@@ -304,7 +304,6 @@ tile_observations <- function(x, day, value, size) {
 #' @param sp_data Species names.
 #'
 #' @importFrom dplyr select
-#' @importFrom purrr pluck
 #'
 #' @export
 get_species_names <- function(lang, sp_data) {
@@ -325,11 +324,9 @@ get_species_names <- function(lang, sp_data) {
 
     }
 
-    spps <- dplyr::select(sp_data, dplyr::all_of("Sci_name"))
-    spps <- purrr::pluck(spps, 1)
+    spps <- dplyr::pull(sp_data, "Sci_name")
 
-    sp_names <- dplyr::select(sp_data, !!name_field)
-    sp_names <- purrr::pluck(sp_names, 1)
+    sp_names <- dplyr::pull(sp_data, name_field)
 
     names(spps) <- paste0(sp_names, " (", spps, ")")
 

@@ -4,7 +4,6 @@ library(highcharter, warn.conflicts = FALSE, quietly = TRUE)
 library(httr2, warn.conflicts = FALSE, quietly = TRUE)
 library(logger, warn.conflicts = FALSE, quietly = TRUE)
 library(pool, warn.conflicts = FALSE, quietly = TRUE)
-library(purrr, warn.conflicts = FALSE, quietly = TRUE)
 library(RPostgres, warn.conflicts = FALSE, quietly = TRUE)
 library(shiny, warn.conflicts = FALSE, quietly = TRUE)
 library(shiny.i18n, warn.conflicts = FALSE, quietly = TRUE)
@@ -97,7 +96,7 @@ pb_list <- list(
 )
 
 choices <- translator[["get_languages"]]()
-names(choices) <- purrr::map_chr(choices, get_languages)
+names(choices) <- vapply(choices, haahka::get_languages, "")
 
 ui <- function(request) {
   shinydashboardPlus::dashboardPage(
