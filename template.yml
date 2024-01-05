@@ -18,8 +18,9 @@ parameters:
       "R",
       "-s",
       "-e",
-      "options(shiny.autoload.r=FALSE);
-        shiny::runApp(port = 3838, host = \"0.0.0.0\")"
+      "options(shiny.autoload.r = FALSE, shiny.port = 3838);
+        library(shiny, warn.conflicts = FALSE, quietly = TRUE);
+          shiny::runApp(\"app.R\", host = \"0.0.0.0\", quiet = TRUE)"
     ]'
   - name: DB
     required: true
