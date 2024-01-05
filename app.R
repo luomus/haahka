@@ -1363,7 +1363,7 @@ server <- function(input, output, session) {
       session,
       "species",
       label =  i18n()[["t"]]("Valitse laji"),
-      choices = get_species_names(input[["language"]]),
+      choices = get_species_names(input[["language"]], sp_data),
       selected = input[["species"]]
     )
   )
