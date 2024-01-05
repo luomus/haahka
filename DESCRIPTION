@@ -20,7 +20,8 @@ Imports:
     highcharter,
     shiny,
     shinyWidgets,
-    tibble,
+    stats,
+    tibble
 License: MIT + file LICENSE
 DisplayMode: Normal
 Tags: halias, birds
