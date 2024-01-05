@@ -1,5 +1,4 @@
 library(dplyr, warn.conflicts = FALSE, quietly = TRUE)
-library(forcats, warn.conflicts = FALSE, quietly = TRUE)
 library(ggsci, warn.conflicts = FALSE, quietly = TRUE)
 library(glue, warn.conflicts = FALSE, quietly = TRUE)
 library(highcharter, warn.conflicts = FALSE, quietly = TRUE)
@@ -754,8 +753,10 @@ server <- function(input, output, session) {
       )
       plot_data <- dplyr::mutate(
         plot_data,
-        epoch = forcats::fct_relevel(
-          .data[["epoch"]], "totalp1", "totalp2", "totalp3", "totalp4"
+        epoch = factor(
+          .data[["epoch"]],
+          c("totalp1", "totalp2", "totalp3", "totalp4"),
+          ordered = TRUE
         )
       )
 
