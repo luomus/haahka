@@ -1,4 +1,5 @@
 library(httr, warn.conflicts = FALSE, quietly = TRUE)
+library(tools, warn.conflicts = FALSE, quietly = TRUE)
 library(utils, warn.conflicts = FALSE, quietly = TRUE)
 
 download_file <- function(taxon, path = "var/data/sp_images/org") {
