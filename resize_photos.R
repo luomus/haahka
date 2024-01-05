@@ -1,5 +1,4 @@
 library(assertthat, warn.conflicts = FALSE, quietly = TRUE)
-library(here, warn.conflicts = FALSE, quietly = TRUE)
 library(magick, warn.conflicts = FALSE, quietly = TRUE)
 library(utils, warn.conflicts = FALSE, quietly = TRUE)
 
@@ -43,8 +42,8 @@ resize_all <- function(src_path, dst_path) {
 
 }
 
-src_path <- here::here("var/data/sp_images/org/")
-dst_path <- here::here("var/data/sp_images/resized/")
+src_path <- "var/data/sp_images/org/"
+dst_path <- "var/data/sp_images/resized/"
 
 resize_all(src_path, dst_path)
 
