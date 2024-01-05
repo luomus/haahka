@@ -1,6 +1,5 @@
 suppressPackageStartupMessages({
 
-  library(curl, warn.conflicts = FALSE, quietly = TRUE)
   library(dplyr, warn.conflicts = FALSE, quietly = TRUE)
   library(haahka, warn.conflicts = FALSE, quietly = TRUE)
   library(highcharter, warn.conflicts = FALSE, quietly = TRUE)
@@ -23,7 +22,7 @@ api <- paste0(
   "http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT")
 )
 
-while (readLines(curl::curl(paste0(api, "/healthz")), warn = FALSE) != '""') {
+while (attr(curlGetHeaders(paste0(api, "/healthz"), "status") != 200)) {
 
   Sys.sleep(1)
 
