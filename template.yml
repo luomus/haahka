@@ -14,7 +14,7 @@ parameters:
     value: "8000"
   - name: APP_CMD
     required: true
-    value: '["R", "-e", "shiny::runApp(port = 3838, host = \"0.0.0.0\")"]'
+    value: '["R", "-s", "-e", "shiny::runApp(port = 3838, host = \"0.0.0.0\")"]'
   - name: DB
     required: true
     value: postgres
