@@ -295,3 +295,46 @@ tile_observations <- function(x, day, value, size) {
   tibble::tibble(day = days, value_avgs = avgs)
 
 }
+
+#' Get species names
+#'
+#' Get species common names in a locale.
+#'
+#' @param lang Language shortcode.
+#' @param sp_data Species names.
+#'
+#' @importFrom dplyr select
+#' @importFrom purrr pluck
+#'
+#' @export
+get_species_names <- function(lang, sp_data) {
+
+  if (!is.null(lang)) {
+
+    if (lang == "fi") {
+
+      name_field <- "FIN_name"
+
+    } else if (lang == "en") {
+
+      name_field <- "ENG_name"
+
+    } else if (lang == "se") {
+
+      name_field <- "SWE_name"
+
+    }
+
+    spps <- dplyr::select(sp_data, dplyr::all_of("Sci_name"))
+    spps <- purrr::pluck(spps, 1)
+
+    sp_names <- dplyr::select(sp_data, !!name_field)
+    sp_names <- purrr::pluck(sp_names, 1)
+
+    names(spps) <- paste0(sp_names, " (", spps, ")")
+
+    spps
+
+  }
+
+}

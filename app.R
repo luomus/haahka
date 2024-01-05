@@ -330,38 +330,6 @@ server <- function(input, output, session) {
 
   }
 
-  get_species_names <- function(lang) {
-
-    if (!is.null(lang)) {
-
-      if (lang == "fi") {
-
-        name_field <- "FIN_name"
-
-      } else if (lang == "en") {
-
-        name_field <- "ENG_name"
-
-      } else if (lang == "se") {
-
-        name_field <- "SWE_name"
-
-      }
-
-      spps <- dplyr::select(sp_data, dplyr::all_of("Sci_name"))
-      spps <- purrr::pluck(spps, 1)
-
-      sp_names <- dplyr::select(sp_data, !!name_field)
-      sp_names <- purrr::pluck(sp_names, 1)
-
-      names(spps) <- paste0(sp_names, " (", spps, ")")
-
-      spps
-
-    }
-
-  }
-
   output[["render_sidebarmenu"]] <- shinydashboard::renderMenu({
 
     shiny::req(input[["language"]])
@@ -462,7 +430,7 @@ server <- function(input, output, session) {
 
     }
 
-    spps <- get_species_names(name_field)
+    spps <- haahka::get_species_names(name_field, sp_data)
 
     selected_sp <- dplyr::filter(
       sp_data, .data[["Species_Abb"]] == default_species

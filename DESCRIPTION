@@ -16,10 +16,12 @@ Description: Bird Migration browser.
 Depends: R (>= 3.5.0)
 Imports:
     assertthat,
+    dplyr,
     glue,
     highcharter,
     lubridate,
-    tibble
+    purrr,
+    tibble,
 License: MIT + file LICENSE
 DisplayMode: Normal
 Tags: halias, birds
