@@ -26,7 +26,7 @@ logger::log_layout(layout_glue_colors)
 logger::log_threshold(TRACE)
 
 download.file(
-  paste0(api_url, "/data/sp_images.zip"), "www/img/sp_images.zip"
+  paste0(api_url, "/data/sp_images.zip"), "www/img/sp_images.zip", quiet = TRUE
 )
 
 utils::unzip("www/img/sp_images.zip", exdir = "www/img/sp_images")
