@@ -17,7 +17,6 @@ Depends: R (>= 3.5.0)
 Imports:
     assertthat,
     dplyr,
-    glue,
     highcharter,
     lubridate,
     shiny,

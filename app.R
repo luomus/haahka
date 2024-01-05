@@ -1,5 +1,4 @@
 library(dplyr, warn.conflicts = FALSE, quietly = TRUE)
-library(glue, warn.conflicts = FALSE, quietly = TRUE)
 library(haahka, warn.conflicts = FALSE, quietly = TRUE)
 library(highcharter, warn.conflicts = FALSE, quietly = TRUE)
 library(httr2, warn.conflicts = FALSE, quietly = TRUE)
@@ -433,25 +432,34 @@ server <- function(input, output, session) {
 
     title <- i18n()[["t"]]("Viittausohje")
 
-    text_fi <- glue::glue(
-      "{current_sp[['FIN_name']]}. ",
+    text_fi <- paste(
+      paste0(current_sp[["FIN_name"]], "."),
       "Helsingin Seudun Lintutieteellinen Yhdistys Tringa ry. ",
       "Hangon lintuaseman aineisto: päiväsummat.",
-      "[{data_url}] [Viitattu {now}]"
+      paste0("[", data_url, "]"),
+      "[Viitattu",
+      now,
+      "]"
     )
 
-    text_se <- glue::glue(
-      "{current_sp[['SWE_name']]}. ",
-      "Helsingforstraktens Ornitologiska Förening Tringa rf. ",
+    text_se <- paste(
+      paste0(current_sp[["SWE_name"]], "."),
+      "Helsingforstraktens Ornitologiska Förening Tringa rf.",
       "Dataset från Hangö fågelstation: dagliga totalantal.",
-      "[{data_url}] [Citerad {now}]"
+      paste0("[", data_url, "]"),
+      "[Citerad",
+      now,
+      "]"
     )
 
-    text_en <- glue::glue(
-      "{current_sp[['ENG_name']]}. ",
-      "Ornithological society of Helsinki Tringa ry. ",
+    text_en <- paste(
+      paste0(current_sp[["ENG_name"]], "."),
+      "Ornithological society of Helsinki Tringa ry.",
       "Data of the Hanko Bird Observatory: Day counts.",
-      "[{data_url}] [Cited {now}]"
+      paste0("[", data_url, "]"),
+      "[Cited",
+      now,
+      "]"
     )
 
     payload <- switch(
@@ -497,7 +505,7 @@ server <- function(input, output, session) {
 
       payload <- shiny::div(
         shiny::img(
-          src = glue::glue("img/sp_images/{file_basename}"),
+          src = file.path("img", "sp_images", file_basename),
           width = "90%",
           class = "description"
         ),
