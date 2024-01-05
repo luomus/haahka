@@ -4,6 +4,9 @@ ENV STATUS_DIR="var/status"
 ENV LOG_DIR="var/logs"
 
 COPY renv.lock /home/user/renv.lock
+
+RUN R -s -e "renv::restore()"
+
 COPY app.R /home/user/app.R
 COPY api.R /home/user/api.R
 COPY update.R /home/user/update.R
@@ -20,6 +23,5 @@ COPY DESCRIPTION /home/user/DESCRIPTION
 COPY NAMESPACE /home/user/NAMESPACE
 COPY .Rbuildignore /home/user/.Rbuildignore
 
-RUN R -s -e "renv::restore()"
-RUN R CMD INSTALL .\
- && permissions.sh
+RUN R CMD INSTALL .
+RUN permissions.sh
