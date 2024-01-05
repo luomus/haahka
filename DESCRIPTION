@@ -18,7 +18,6 @@ Imports:
     assertthat,
     dplyr,
     highcharter,
-    lubridate,
     shiny,
     shinyWidgets,
     tibble,

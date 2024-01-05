@@ -117,15 +117,16 @@ is_odd <- function(x) {
 #' @param lang Language shortcode.
 #'
 #' @importFrom assertthat see_if
-#' @importFrom lubridate day month
 #' @export
 make_date_label <- function(x, lang) {
 
   assertthat::see_if(inherits(x, "Date"))
 
-  month_name <- get_months(lang, "long")[lubridate::month(x)]
+  m <- as.integer(format(x, "%m"))
 
-  dayx <- lubridate::day(x)
+  month_name <- get_months(lang, "long")[m]
+
+  dayx <- as.integer(format(Sys.Date(), "%d"))
 
   paste(month_name, dayx)
 
