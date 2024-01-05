@@ -1196,7 +1196,7 @@ server <- function(input, output, session) {
                   shiny::column(
                     width = 9,
                     shiny::p(
-                      get_value("Autumn", "Migr", "Sum"),
+                      get_value("Autumn", "Migr", "Sum", records_current, i18n),
                       class = "record-number"
                     )
                   ),
