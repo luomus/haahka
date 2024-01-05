@@ -767,7 +767,6 @@ server <- function(input, output, session) {
       options(highcharter.lang = hcoptslang)
 
       hc <- highcharter::hchart(
-        hc,
         plot_data,
         type = "line",
         highcharter::hcaes(
