@@ -1,5 +1,6 @@
 suppressPackageStartupMessages({
 
+  library(curl, warn.conflicts = FALSE, quietly = TRUE)
   library(dplyr, warn.conflicts = FALSE, quietly = TRUE)
   library(haahka, warn.conflicts = FALSE, quietly = TRUE)
   library(highcharter, warn.conflicts = FALSE, quietly = TRUE)
@@ -16,6 +17,12 @@ suppressPackageStartupMessages({
   library(utils, warn.conflicts = FALSE, quietly = TRUE)
 
 })
+
+while (is.null(curl::nslookup(Sys.getenv("API_HOSTNAME"), error = FALSE))) {
+
+  Sys.sleep(1)
+
+}
 
 api_url <- paste0(
   "http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT")
