@@ -19,6 +19,6 @@ COPY DESCRIPTION /home/user/DESCRIPTION
 COPY NAMESPACE /home/user/NAMESPACE
 COPY .Rbuildignore /home/user/.Rbuildignore
 
-RUN Rscript --vanilla -e "renv::restore()"
-RUN R CMD INSTALL . \
+RUN R -s -e "renv::restore()"
+RUN R CMD INSTALL .\
  && permissions.sh
