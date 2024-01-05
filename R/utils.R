@@ -27,15 +27,15 @@ get_months <- function(lang = "en", format) {
 
   supported_languages <- c("en", "fi", "se")
 
-  stopifnot(
-    lang %in% supported_languages,
-    msg = paste0(
-      "lang must be one of: ", paste(supported_languages, collapse = ", ")
-    )
+  cond <- lang %in% supported_languages
+
+  names(cond) <- paste0(
+    "lang must be one of: ", paste(supported_languages, collapse = ", ")
   )
+  stopifnot(cond)
 
   stopifnot(
-    format %in% c("long", "short"), msg = "format must be either long or short"
+    "format must be either long or short" = format %in% c("long", "short")
   )
 
   month_names <- list(
