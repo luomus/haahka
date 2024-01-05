@@ -682,6 +682,7 @@ server <- function(input, output, session) {
         plot_data_p1,
         day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
       )
+      plot_data_p1 <- dplyr::arrange(plot_data_p1, .data[["day"]])
       plot_data_p1 <- haahka::tile_observations(plot_data_p1, "totalp1")
       plot_data_p1 <- dplyr::rename(
         plot_data_p1, totalp1 = dplyr::all_of("value_avgs")
@@ -695,6 +696,7 @@ server <- function(input, output, session) {
         plot_data_p2,
         day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
       )
+      plot_data_p2 <- dplyr::arrange(plot_data_p2, .data[["day"]])
       plot_data_p2 <- haahka::tile_observations(plot_data_p2, "totalp2")
       plot_data_p2 <- dplyr::rename(
         plot_data_p2, totalp2 = dplyr::all_of("value_avgs")
@@ -708,6 +710,7 @@ server <- function(input, output, session) {
         plot_data_p3,
         day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
       )
+      plot_data_p3 <- dplyr::arrange(plot_data_p3, .data[["day"]])
       plot_data_p3 <- haahka::tile_observations(plot_data_p3, "totalp3")
       plot_data_p3 <- dplyr::rename(
         plot_data_p3, totalp3 = dplyr::all_of("value_avgs")
@@ -720,6 +723,7 @@ server <- function(input, output, session) {
       plot_data_p4 <- dplyr::mutate(plot_data_p4,
         day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
       )
+      plot_data_p4 <- dplyr::arrange(plot_data_p4, .data[["day"]])
       plot_data_p4 <- haahka::tile_observations(plot_data_p4, "totalp4")
       plot_data_p4 <- dplyr::rename(
         plot_data_p4, totalp4 = dplyr::all_of("value_avgs")
