@@ -311,25 +311,6 @@ server <- function(input, output, session) {
 
   })
 
-  create_popup <- function(session, filebody, lang_suffix) {
-
-    content_file <- file.path(
-      "www", "infos", paste0(filebody, lang_suffix, ".md")
-    )
-
-    if (file.exists(content_file)) {
-
-      shinyWidgets::sendSweetAlert(
-        session = session,
-        title = NULL,
-        text = shiny::tagList(shiny::includeMarkdown(content_file)),
-        html = TRUE
-      )
-
-    }
-
-  }
-
   output[["render_sidebarmenu"]] <- shinydashboard::renderMenu({
 
     shiny::req(input[["language"]])
@@ -1432,7 +1413,7 @@ server <- function(input, output, session) {
     input[["migration_info"]],
     {
       shiny::req(input[["language"]])
-      create_popup(session, "migration_info-", input[["language"]])
+      haahka::create_popup(session, "migration_info-", input[["language"]])
     }
   )
 
@@ -1440,7 +1421,7 @@ server <- function(input, output, session) {
     input[["local_info"]],
     {
       shiny::req(input[["language"]])
-      create_popup(session, "local_info-", input[["language"]])
+      haahka::create_popup(session, "local_info-", input[["language"]])
     }
   )
 
@@ -1448,7 +1429,7 @@ server <- function(input, output, session) {
     input[["change_info"]],
     {
       shiny::req(input[["language"]])
-      create_popup(session, "change_info-", input[["language"]])
+      haahka::create_popup(session, "change_info-", input[["language"]])
     }
   )
 
@@ -1456,7 +1437,7 @@ server <- function(input, output, session) {
     input[["median_info"]],
     {
       shiny::req(input[["language"]])
-      create_popup(session, "median_info-", input[["language"]])
+      haahka::create_popup(session, "median_info-", input[["language"]])
     }
   )
 

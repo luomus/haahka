@@ -338,3 +338,32 @@ get_species_names <- function(lang, sp_data) {
   }
 
 }
+
+#' Create popup
+#'
+#' Create an information popup in locale.
+#'
+#' @param session Shiny app session.
+#' @param filebody Species names.
+#' @param lang Language shortcode.
+#'
+#' @importFrom shiny includeMarkdown tagList
+#' @importFrom shinyWidgets sendSweetAlert
+#'
+#' @export
+create_popup <- function(session, filebody, lang) {
+
+  content_file <- file.path("www", "infos", paste0(filebody, lang, ".md"))
+
+  if (file.exists(content_file)) {
+
+    shinyWidgets::sendSweetAlert(
+      session = session,
+      title = NULL,
+      text = shiny::tagList(shiny::includeMarkdown(content_file)),
+      html = TRUE
+    )
+
+  }
+
+}
