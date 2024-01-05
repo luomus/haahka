@@ -4,13 +4,12 @@
 #'
 #' @param x Language shortcode.
 #'
-#' @importFrom assertthat assert_that
 #' @export
 get_languages <- function(x) {
 
   langs <- list("fi" = "Suomi", "en" = "English", "se" = "Svenska")
 
-  assertthat::assert_that(x %in% names(langs))
+  stopifnot(x %in% names(langs))
 
   langs[[x]]
 
@@ -23,23 +22,20 @@ get_languages <- function(x) {
 #' @param lang Language shortcode.
 #' @param format Format.
 #'
-#' @importFrom assertthat assert_that
 #' @export
 get_months <- function(lang = "en", format) {
 
   supported_languages <- c("en", "fi", "se")
 
-  assertthat::assert_that(
+  stopifnot(
     lang %in% supported_languages,
     msg = paste0(
-      "lang must be one of: ",
-      paste(supported_languages, collapse = ", ")
+      "lang must be one of: ", paste(supported_languages, collapse = ", ")
     )
   )
 
-  assertthat::assert_that(
-    format %in% c("long", "short"),
-    msg = "format must be either long or short"
+  stopifnot(
+    format %in% c("long", "short"), msg = "format must be either long or short"
   )
 
   month_names <- list(
@@ -99,11 +95,10 @@ get_timestamp <- function(x) {
 #'
 #' @param x Value.
 #'
-#' @importFrom assertthat assert_that
 #' @export
 is_odd <- function(x) {
 
-  assertthat::assert_that(is.numeric(x), length(x) == 1)
+  stopifnot(is.numeric(x), length(x) == 1)
 
   x %% 2 == 1
 
@@ -116,11 +111,10 @@ is_odd <- function(x) {
 #' @param x Date.
 #' @param lang Language shortcode.
 #'
-#' @importFrom assertthat see_if
 #' @export
 make_date_label <- function(x, lang) {
 
-  assertthat::see_if(inherits(x, "Date"))
+  stopifnot(inherits(x, "Date"))
 
   m <- as.integer(format(x, "%m"))
 
@@ -230,66 +224,31 @@ get_content <- function(x, h, lang) {
 #' Calculate a tiled average (non-overlapping windows) for yearly observations.
 #'
 #' An average is calculated over a specified window and assigned to the day in
-#' the middle of the windows. For example, if size is 5, then the average is
-#' assigned to day at index 3 etc.
+#' the middle of the window.
 #'
-#' @param x A tsibble.
-#' @param day String name of the variable containing datetime values.
+#' @param x A data.frame.
 #' @param value String name of the variable containing numeric observation
 #'   values.
-#' @param size Numeric size of the window over which average is calculated.
-#'   Must be an odd value.
 #'
 #' @return A data.frame with dates and corresponding (rounded) averages.
-#' @importFrom assertthat assert_that on_failure see_if
-#' @importFrom stats median
+#'
 #' @export
-tile_observations <- function(x, day, value, size) {
+tile_observations <- function(x, value) {
 
-  size <- as.integer(size)
+  day_index <- seq(3, nrow(x), by = 5)
 
-  assertthat::see_if(inherits(x, "tbl_ts"))
+  day_index <- c(day_index, 366)
 
-  assertthat::on_failure(is_odd) <- function(call, env) {
+  days <- x[["day"]][day_index]
 
-    paste0(deparse(call[["x"]]), " is even. size must be odd.")
+  avgs <- tapply(
+    x[[value]],
+    rep(seq_along(days), each = 5)[seq_len(nrow(x))],
+    mean,
+    na.rm = TRUE
+  )
 
-  }
-
-  assertthat::assert_that(is_odd(size))
-
-  if (size == 1) {
-
-    days <- x[[day]]
-
-    avgs <- x[[value]]
-
-  } else {
-
-    n_days <- 366
-
-    day_index <- seq(stats::median(1:size), nrow(x), by = size)
-
-    remainder <- n_days %% size
-
-    if (remainder != 0) {
-
-      day_index <- c(day_index, n_days)
-
-    }
-
-    days <- x[[day]][day_index]
-
-    avgs <- tapply(
-      x[[value]],
-      rep(seq_along(days), each = size)[seq_len(nrow(x))],
-      mean,
-      na.rm = TRUE
-    )
-
-    avgs <- round(avgs, 2)
-
-  }
+  avgs <- round(avgs, 2)
 
   data.frame(day = days, value_avgs = avgs)
 

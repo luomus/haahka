@@ -15,12 +15,10 @@ AuthorEmail: helpdesk@laji.fi
 Description: Bird Migration browser.
 Depends: R (>= 3.5.0)
 Imports:
-    assertthat,
     dplyr,
     highcharter,
     shiny,
-    shinyWidgets,
-    stats
+    shinyWidgets
 License: MIT + file LICENSE
 DisplayMode: Normal
 Tags: halias, birds

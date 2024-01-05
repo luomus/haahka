@@ -4,24 +4,18 @@
 \alias{tile_observations}
 \title{Calculate a tiled average (non-overlapping windows) for yearly observations.}
 \usage{
-tile_observations(x, day, value, size)
+tile_observations(x, value)
 }
 \arguments{
-\item{x}{A tsibble.}
-
-\item{day}{String name of the variable containing datetime values.}
+\item{x}{A data.frame.}
 
 \item{value}{String name of the variable containing numeric observation
 values.}
-
-\item{size}{Numeric size of the window over which average is calculated.
-Must be an odd value.}
 }
 \value{
 A data.frame with dates and corresponding (rounded) averages.
 }
 \description{
 An average is calculated over a specified window and assigned to the day in
-the middle of the windows. For example, if size is 5, then the average is
-assigned to day at index 3 etc.
+the middle of the window.
 }

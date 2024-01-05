@@ -1,16 +1,7 @@
-library(assertthat, warn.conflicts = FALSE, quietly = TRUE)
 library(magick, warn.conflicts = FALSE, quietly = TRUE)
 library(utils, warn.conflicts = FALSE, quietly = TRUE)
 
-resize_photo <- function(x, path = ".", width = 900, pb) {
-
-  assertthat::assert_that(
-    width > 0, msg = "Width must be positive integer"
-  )
-
-  assertthat::validate_that(
-    width < 2000, msg = "Rescaling to a large value, probably not a good idea"
-  )
+resize_photo <- function(x, path = ".") {
 
   if (path != "." && !file.exists(path)) {
 
@@ -21,7 +12,7 @@ resize_photo <- function(x, path = ".", width = 900, pb) {
   target_file <- file.path(path, basename(x))
 
   x <- magick::image_read(x)
-  x <- magick::image_scale(x, as.character(width))
+  x <- magick::image_scale(x, "900")
   x <- magick::image_write(x, path = target_file, format = "jpg")
 
   invisible(NULL)

@@ -48,7 +48,6 @@ author <- desc[["Author"]]
 author_email <- desc[["AuthorEmail"]]
 feedback <- "helpdesk@laji.fi"
 data_url <- "https://tun.fi/HR.2931"
-window_size <- 5
 default_species <- "CYGCYG"
 time_units <- 30 * 24 * 3600 * 1000
 xmin <- highcharter::datetime_to_timestamp(as.Date("2000-01-01", tz = "UTC"))
@@ -559,9 +558,7 @@ server <- function(input, output, session) {
     plot_data <- dplyr::mutate(
       plot_data, day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
     )
-    plot_data <- haahka::tile_observations(
-      plot_data, "day", "muutto", window_size
-    )
+    plot_data <- haahka::tile_observations(plot_data, "muutto")
 
     if (!is.null(plot_data)) {
 
@@ -622,9 +619,7 @@ server <- function(input, output, session) {
     plot_data <- dplyr::mutate(
       plot_data, day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
     )
-    plot_data <- haahka::tile_observations(
-      plot_data, "day", "paik", window_size
-    )
+    plot_data <- haahka::tile_observations(plot_data, "paik")
 
     if (!is.null(plot_data)) {
 
@@ -685,9 +680,7 @@ server <- function(input, output, session) {
         plot_data_p1,
         day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
       )
-      plot_data_p1 <- haahka::tile_observations(
-        plot_data_p1, "day", "totalp1", window_size
-      )
+      plot_data_p1 <- haahka::tile_observations(plot_data_p1, "totalp1")
       plot_data_p1 <- dplyr::rename(
         plot_data_p1, totalp1 = dplyr::all_of("value_avgs")
       )
@@ -700,9 +693,7 @@ server <- function(input, output, session) {
         plot_data_p2,
         day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
       )
-      plot_data_p2 <- haahka::tile_observations(
-        plot_data_p2, "day", "totalp2", window_size
-      )
+      plot_data_p2 <- haahka::tile_observations(plot_data_p2, "totalp2")
       plot_data_p2 <- dplyr::rename(
         plot_data_p2, totalp2 = dplyr::all_of("value_avgs")
       )
@@ -715,9 +706,7 @@ server <- function(input, output, session) {
         plot_data_p3,
         day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
       )
-      plot_data_p3 <- haahka::tile_observations(
-        plot_data_p3, "day", "totalp3", window_size
-      )
+      plot_data_p3 <- haahka::tile_observations(plot_data_p3, "totalp3")
       plot_data_p3 <- dplyr::rename(
         plot_data_p3, totalp3 = dplyr::all_of("value_avgs")
       )
@@ -729,9 +718,7 @@ server <- function(input, output, session) {
       plot_data_p4 <- dplyr::mutate(plot_data_p4,
         day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
       )
-      plot_data_p4 <- haahka::tile_observations(
-        plot_data_p4, "day", "totalp4", window_size
-      )
+      plot_data_p4 <- haahka::tile_observations(plot_data_p4, "totalp4")
       plot_data_p4 <- dplyr::rename(
         plot_data_p4, totalp4 = dplyr::all_of("value_avgs")
       )
