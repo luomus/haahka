@@ -1,7 +1,6 @@
 library(dplyr, warn.conflicts = FALSE, quietly = TRUE)
 library(haahka, warn.conflicts = FALSE, quietly = TRUE)
 library(highcharter, warn.conflicts = FALSE, quietly = TRUE)
-library(httr2, warn.conflicts = FALSE, quietly = TRUE)
 library(logger, warn.conflicts = FALSE, quietly = TRUE)
 library(pool, warn.conflicts = FALSE, quietly = TRUE)
 library(RPostgres, warn.conflicts = FALSE, quietly = TRUE)
@@ -14,8 +13,8 @@ library(shinyWidgets, warn.conflicts = FALSE, quietly = TRUE)
 library(tidyr, warn.conflicts = FALSE, quietly = TRUE)
 library(utils, warn.conflicts = FALSE, quietly = TRUE)
 
-req <- httr2::request(
-  paste0("http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT"))
+api_url <- paste0(
+  "http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT")
 )
 
 logger::log_layout(layout_glue_colors)
@@ -23,7 +22,7 @@ logger::log_layout(layout_glue_colors)
 logger::log_threshold(TRACE)
 
 download.file(
-  paste0(req[["url"]], "/data/sp_images.zip"), "www/img/sp_images.zip"
+  paste0(api_url, "/data/sp_images.zip"), "www/img/sp_images.zip"
 )
 
 utils::unzip("www/img/sp_images.zip", exdir = "www/img/sp_images")
@@ -38,9 +37,9 @@ translator <- shiny.i18n::Translator[["new"]](
   translation_json_path = "translation.json"
 )
 
-metadata <- readRDS(url(paste0(req[["url"]], "/data/photo_metadata.rds")))
+metadata <- readRDS(url(paste0(api_url, "/data/photo_metadata.rds")))
 
-descriptions <- readRDS(url(paste0(req[["url"]], "/data/descriptions.rds")))
+descriptions <- readRDS(url(paste0(api_url, "/data/descriptions.rds")))
 
 desc <- utils::packageDescription("haahka")
 version <- desc[["Version"]]
