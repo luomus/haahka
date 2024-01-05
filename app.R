@@ -23,7 +23,7 @@ api <- paste0(
   "http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT")
 )
 
-while (readLines(curl::curl(paste0(api, "/healhtz")), warn = FALSE) != '""') {
+while (readLines(curl::curl(paste0(api, "/healthz")), warn = FALSE) != '""') {
 
   Sys.sleep(1)
 
