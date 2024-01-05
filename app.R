@@ -1101,7 +1101,7 @@ server <- function(input, output, session) {
 
     payload <- NULL
 
-    if (nrow(records_current) < 0) {
+    if (nrow(records_current) > 0) {
 
       payload <- shinydashboardPlus::box(
         width = 12,
