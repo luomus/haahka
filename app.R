@@ -1087,7 +1087,7 @@ server <- function(input, output, session) {
     )
     hc <- highcharter::hc_exporting(hc, enabled = TRUE)
 
-    highcharter::hc_chart(zoomType = "xy")
+    highcharter::hc_chart(hc, zoomType = "xy")
 
   })
 
