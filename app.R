@@ -1,5 +1,6 @@
 library(dplyr, warn.conflicts = FALSE, quietly = TRUE)
 library(glue, warn.conflicts = FALSE, quietly = TRUE)
+library(haahka, warn.conflicts = FALSE, quietly = TRUE)
 library(highcharter, warn.conflicts = FALSE, quietly = TRUE)
 library(httr2, warn.conflicts = FALSE, quietly = TRUE)
 library(logger, warn.conflicts = FALSE, quietly = TRUE)
@@ -14,8 +15,6 @@ library(shinyWidgets, warn.conflicts = FALSE, quietly = TRUE)
 library(tidyr, warn.conflicts = FALSE, quietly = TRUE)
 library(tsibble, warn.conflicts = FALSE, quietly = TRUE)
 library(utils, warn.conflicts = FALSE, quietly = TRUE)
-library(yaml, warn.conflicts = FALSE, quietly = TRUE)
-library(haahka, warn.conflicts = FALSE, quietly = TRUE)
 
 req <- httr2::request(
   paste0("http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT"))
@@ -45,7 +44,7 @@ metadata <- readRDS(url(paste0(req[["url"]], "/data/photo_metadata.rds")))
 
 descriptions <- readRDS(url(paste0(req[["url"]], "/data/descriptions.rds")))
 
-desc <- yaml::yaml.load_file("DESCRIPTION")
+desc <- utils::packageDescription("haahka")
 version <- desc[["Version"]]
 repo_url <- desc[["URL"]]
 author <- desc[["Author"]]
