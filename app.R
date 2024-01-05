@@ -1045,7 +1045,7 @@ server <- function(input, output, session) {
         group = .data[["epoch"]]
       ),
       name = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
-      color =c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF", "#D62728FF")
+      color = c("#1F77B4FF", "#FF7F0EFF", "#2CA02CFF", "#D62728FF")
     )
     hc <- highcharter::hc_yAxis(
       hc,
