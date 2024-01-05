@@ -249,13 +249,13 @@ server <- function(input, output, session) {
 
   i18n <- shiny::reactive({
 
-    selected <- input[["language"]]
+    lang <- input[["language"]]
 
-    if (length(selected) > 0 && selected %in% translator[["get_languages"]]()) {
+    if (length(lang) > 0) {
 
-      logger::log_debug("Language changed to: {selected}")
+      logger::log_debug("Language changed to: {lang}")
 
-      translator[["set_translation_language"]](selected)
+      translator[["set_translation_language"]](lang)
 
     }
 
@@ -401,15 +401,9 @@ server <- function(input, output, session) {
 
   output[["render_species"]] <- shiny::renderUI({
 
-    if (is.null(input[["language"]])) {
+    shiny::req(input[["language"]])
 
-      name_field <- "fi"
-
-    } else {
-
-      name_field <- input[["language"]]
-
-    }
+    name_field <- input[["language"]]
 
     spps <- haahka::get_species_names(name_field, sp_data)
 
@@ -464,23 +458,16 @@ server <- function(input, output, session) {
       "[{data_url}] [Cited {now}]"
     )
 
-    if (input[["language"]] == "fi") {
-
-      payload <- shiny::tagList(
+    payload <- switch(
+      input[["language"]],
+      fi = shiny::tagList(
         shiny::h4(title), shiny::p(text_fi, shiny::br(), text_en)
-      )
-
-    } else if (input[["language"]] == "se") {
-
-      payload <- shiny::tagList(
+      ),
+      se = shiny::tagList(
         shiny::h4(title), shiny::p(text_se, shiny::br(), text_en)
-      )
-
-    } else if (input[["language"]] == "en") {
-
-      payload <- shiny::tagList(shiny::h4(title), shiny::p(text_en))
-
-    }
+      ),
+      shiny::tagList(shiny::h4(title), shiny::p(text_en))
+    )
 
     shiny::tagList(shiny::div(payload, class = "description"))
 
@@ -492,43 +479,39 @@ server <- function(input, output, session) {
 
     current_meta <- get_current_meta()
 
-    if (!is.null(current_sp)) {
+    sp_abbr <- current_sp[["Species_Abb"]]
 
-      sp_abbr <- current_sp[["Species_Abb"]]
+    img_file <- list.files(
+      file.path("www", "img", "sp_images"),
+      pattern = paste0("(", sp_abbr, ")"),
+      full.names = TRUE
+    )
 
-      img_file <- list.files(
-        file.path("www", "img", "sp_images"),
-        pattern = paste0("(", sp_abbr, ")"),
-        full.names = TRUE
+    payload <- shiny::p(
+      i18n()[["t"]]("Kuvausteksti tulossa myöhemmin"), class = "description"
+    )
+
+    cond <- length(img_file) > 0 && file.exists(img_file)
+
+    if (cond) {
+
+      caption <- current_meta[["caption"]]
+
+      file_basename <- basename(img_file)
+
+      payload <- shiny::div(
+        shiny::img(
+          src = glue::glue("img/sp_images/{file_basename}"),
+          width = "90%",
+          class = "description"
+        ),
+        shiny::p(shiny::HTML(caption), class = "description"),
+        shiny::br()
       )
 
-      if (length(img_file) > 0 && file.exists(img_file)) {
-
-        caption <- current_meta[["caption"]]
-
-        file_basename <- basename(img_file)
-
-        payload <- shiny::div(
-          shiny::img(
-            src = glue::glue("img/sp_images/{file_basename}"),
-            width = "90%",
-            class = "description"
-          ),
-          shiny::p(shiny::HTML(caption), class = "description"),
-          shiny::br()
-        )
-
-      } else {
-
-        payload <- shiny::p(
-          i18n()[["t"]]("Kuvausteksti tulossa myöhemmin"), class = "description"
-        )
-
-      }
-
-      payload
-
     }
+
+    payload
 
   })
 
@@ -540,39 +523,28 @@ server <- function(input, output, session) {
 
     description <- haahka::parse_description(current_desc, input[["language"]])
 
-    if (!is.null(current_sp)) {
+    sp_abbr <- current_sp[["Species_Abb"]]
 
-      sp_abbr <- current_sp[["Species_Abb"]]
+    sci_name <- current_sp[["Sci_name"]]
 
-      sci_name <- current_sp[["Sci_name"]]
+    common_name <- switch(
+      input[["language"]],
+      en = current_sp[["ENG_name"]],
+      fi = current_sp[["FIN_name"]],
+      se = current_sp[["SWE_name"]]
+    )
 
-      if (input[["language"]] == "en") {
-
-        common_name <- current_sp[["ENG_name"]]
-
-      } else if (input[["language"]] == "fi") {
-
-        common_name <- current_sp[["FIN_name"]]
-
-      } else if (input[["language"]] == "se") {
-
-        common_name <- current_sp[["SWE_name"]]
-
-      }
-
-      shiny::withTags(
-        shiny::div(
-          shiny::h2(common_name, class = "description"),
-          shiny::h3(sci_name, class = "description sci-name"),
-          shiny::br(),
-          shiny::uiOutput("render_image"),
-          shiny::div(shiny::HTML(description), class = "description"),
-          shiny::br(),
-          shiny::uiOutput("render_citation")
-        )
+    shiny::withTags(
+      shiny::div(
+        shiny::h2(common_name, class = "description"),
+        shiny::h3(sci_name, class = "description sci-name"),
+        shiny::br(),
+        shiny::uiOutput("render_image"),
+        shiny::div(shiny::HTML(description), class = "description"),
+        shiny::br(),
+        shiny::uiOutput("render_citation")
       )
-
-    }
+    )
 
   })
 
@@ -846,43 +818,51 @@ server <- function(input, output, session) {
 
     short <- stats_current[["slopeShort"]]
 
-    if (!is.na(long) & long > 0) {
+    lt_number_color <- "gray"
+    lt_number_icon <- shiny::icon(NULL)
+    lt_number <- "-"
+
+    lgt <- !is.na(long) & long > 0
+
+    if (lgt) {
 
       lt_number_color <- "green"
       lt_number_icon <- shiny::icon("caret-up")
       lt_number <- paste0("+", long, "%")
 
-    } else if (!is.na(long) & long < 0) {
+    }
+
+    llt <- !is.na(long) & long < 0
+
+    if (llt) {
 
       lt_number_color <- "red"
       lt_number_icon <- shiny::icon("caret-down")
       lt_number <- paste0(long, "%")
 
-    } else if (is.na(long) | long == 0) {
-
-      lt_number_color <- "gray"
-      lt_number_icon <- shiny::icon(NULL)
-      lt_number <- "-"
-
     }
 
-    if (!is.na(short) & short > 0) {
+    st_number_color <- "gray"
+    st_number_icon <- shiny::icon(NULL)
+    st_number <- "-"
+
+    sgt <- !is.na(short) & short > 0
+
+    if (sgt) {
 
       st_number_color <- "green"
       st_number_icon <- shiny::icon("caret-up")
       st_number <- paste0("+", short, "%")
 
-    } else if (!is.na(short) & short < 0) {
+    }
+
+    slt <- !is.na(short) & short < 0
+
+    if (slt) {
 
       st_number_color <- "red"
       st_number_icon <- shiny::iconicon("caret-down")
       st_number <- paste0(short, "%")
-
-    } else if (is.na(short) | short == 0) {
-
-      st_number_color <- "gray"
-      st_number_icon <- shiny::icon(NULL)
-      st_number <- "-"
 
     }
 
@@ -1122,13 +1102,11 @@ server <- function(input, output, session) {
       date = as.Date(paste(.data[["year"]], .data[["day"]]), "%Y %j")
     )
 
-    if (nrow(records_current) == 0) {
+    payload <- NULL
 
-      NULL
+    if (nrow(records_current) < 0) {
 
-    } else {
-
-      shinydashboardPlus::box(
+      payload <- shinydashboardPlus::box(
         width = 12,
         solidHeader = FALSE,
         title = i18n()[["t"]]("Runsausennätykset"),
@@ -1276,6 +1254,8 @@ server <- function(input, output, session) {
       )
 
     }
+
+    payload
 
   })
 
