@@ -18,22 +18,23 @@ suppressPackageStartupMessages({
 
 })
 
-while (is.null(curl::nslookup(Sys.getenv("API_HOSTNAME"), error = FALSE))) {
+
+api <- paste0(
+  "http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT")
+)
+
+while (readLines(curl::curl(paste0(api, "/healhtz")), warn = FALSE) != '""') {
 
   Sys.sleep(1)
 
 }
-
-api_url <- paste0(
-  "http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT")
-)
 
 logger::log_layout(layout_glue_colors)
 
 logger::log_threshold(TRACE)
 
 download.file(
-  paste0(api_url, "/data/sp_images.zip"), "www/img/sp_images.zip", quiet = TRUE
+  paste0(api, "/data/sp_images.zip"), "www/img/sp_images.zip", quiet = TRUE
 )
 
 utils::unzip("www/img/sp_images.zip", exdir = "www/img/sp_images")
@@ -48,9 +49,9 @@ translator <- shiny.i18n::Translator[["new"]](
   translation_json_path = "translation.json"
 )
 
-metadata <- readRDS(url(paste0(api_url, "/data/photo_metadata.rds")))
+metadata <- readRDS(url(paste0(api, "/data/photo_metadata.rds")))
 
-descriptions <- readRDS(url(paste0(api_url, "/data/descriptions.rds")))
+descriptions <- readRDS(url(paste0(api, "/data/descriptions.rds")))
 
 desc <- utils::packageDescription("haahka")
 version <- desc[["Version"]]
