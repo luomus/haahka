@@ -72,7 +72,7 @@ function() {
       'src="../public/logo.png" ',
       'width=36px style=\"margin-left:7px\"/>'
     ),
-    heading_text = paste("F2G", version),
+    heading_text = paste("Haahka", version),
     regular_font = "Roboto, Helvetica Neue, Helvetica, Arial, sans-serif",
     font_size = "largest",
     sort_tags = "false",
@@ -114,7 +114,7 @@ list()
 #* @assets ./var/status /api/status
 list()
 
-#* @assets /usr/local/lib/R/site-library/rapidoc/dist /api/__docs__/
+#* @assets /usr/local/lib/R/site-library/rapidoc/dist /api/docs/
 list()
 
 #* @plumber

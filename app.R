@@ -4,6 +4,7 @@ suppressPackageStartupMessages({
   library(haahka, warn.conflicts = FALSE, quietly = TRUE)
   library(highcharter, warn.conflicts = FALSE, quietly = TRUE)
   library(logger, warn.conflicts = FALSE, quietly = TRUE)
+  library(markdown, warn.conflicts = FALSE, quietly = TRUE)
   library(pool, warn.conflicts = FALSE, quietly = TRUE)
   library(RPostgres, warn.conflicts = FALSE, quietly = TRUE)
   library(shiny, warn.conflicts = FALSE, quietly = TRUE)
