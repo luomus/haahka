@@ -87,7 +87,7 @@ dplyr::copy_to(
 
 years <- dplyr::distinct(events, .data[["year"]])
 years <- dplyr::collect(years)
-years <- dplyr::pull("year")
+years <- dplyr::pull(years, "year")
 
 dplyr::copy_to(
   con,
