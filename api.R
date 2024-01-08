@@ -1,6 +1,7 @@
 suppressPackageStartupMessages({
 
   library(callr, warn.conflicts = FALSE, quietly = TRUE)
+  library(utils, warn.conflicts = FALSE, quietly = TRUE)
 
 })
 
@@ -47,6 +48,63 @@ function() {
   ""
 }
 
+#* Get API spec
+#* @get /api/docs/openapi.json
+#* @serializer unboxedJSON
+function(req) {
+
+  req[["pr"]][["getApiSpec"]]()
+
+}
+
+#* Get API docs
+#* @get /api/docs
+#* @serializer html
+function() {
+  rapidoc::rapidoc_spec(
+    bg_color ="#141B15",
+    text_color = "#FFFFFF",
+    primary_color = "#55AAE2",
+    render_style = "read",
+    slots = paste0(
+      '<img ',
+      'slot="logo" ',
+      'src="../public/logo.png" ',
+      'width=36px style=\"margin-left:7px\"/>'
+    ),
+    heading_text = paste("F2G", version),
+    regular_font = "Roboto, Helvetica Neue, Helvetica, Arial, sans-serif",
+    font_size = "largest",
+    sort_tags = "false",
+    sort_endpoints_by = "summary",
+    allow_spec_file_load = "false"
+  )
+}
+
+#* @get /api/favicon.ico
+#* @serializer contentType list(type="image/x-icon")
+function() {
+
+  readBin("favicon.ico", "raw", n = file.info("favicon.ico")$size)
+
+}
+
+#* @get /api/robots.txt
+#* @serializer contentType list(type="text/plain")
+function() {
+
+  readBin("robots.txt", "raw", n = file.info("robots.txt")$size)
+
+}
+
+#* @get /api
+function(res) {
+
+  res$status <- 303L
+  res$setHeader("Location", "/api/docs")
+
+}
+
 #* @assets ./var/data /api/data
 list()
 
@@ -55,3 +113,34 @@ list()
 
 #* @assets ./var/status /api/status
 list()
+
+#* @assets /usr/local/lib/R/site-library/rapidoc/dist /api/__docs__/
+list()
+
+#* @plumber
+function(pr) {
+
+  version <- as.character(utils::packageVersion("haahka"))
+
+  pr_set_api_spec(
+    pr,
+    function(spec) {
+
+      spec[[c("info","version")]] <- version
+
+      spec[[c("paths", "/api/docs")]] <- NULL
+      spec[[c("paths", "/api/docs/openapi.json")]] <- NULL
+      spec[[c("paths", "/api/favicon.ico")]] <- NULL
+      spec[[c("paths", "/api/healthz")]] <- NULL
+      spec[[c("paths", "/api/job")]] <- NULL
+      spec[[c("paths", "/api/robots.txt")]] <- NULL
+      spec[[c("paths", "/api")]] <- NULL
+
+      spec
+
+    }
+  )
+
+  pr[["setDocs"]](FALSE)
+
+}

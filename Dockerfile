@@ -22,6 +22,7 @@ COPY www/ /home/user/www
 COPY DESCRIPTION /home/user/DESCRIPTION
 COPY NAMESPACE /home/user/NAMESPACE
 COPY .Rbuildignore /home/user/.Rbuildignore
+COPY favicon.ico /home/user/favicon.ico
 
 RUN R CMD INSTALL .
 RUN permissions.sh
