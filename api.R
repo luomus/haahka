@@ -22,7 +22,7 @@ function(req, res) {
 
 }
 
-#* @get /job
+#* @get /api/job
 #* @serializer unboxedJSON
 function() {
 
@@ -38,8 +38,8 @@ function() {
 }
 
 #* Check the liveness of the API
-#* @head /healthz
-#* @get /healthz
+#* @head /api/healthz
+#* @get /api/healthz
 #* @tag status
 #* @response 200 A json object
 #* @serializer unboxedJSON
@@ -47,11 +47,11 @@ function() {
   ""
 }
 
-#* @assets ./var/data /data
+#* @assets ./var/data /api/data
 list()
 
-#* @assets ./var/logs /logs
+#* @assets ./var/logs /api/logs
 list()
 
-#* @assets ./var/status /status
+#* @assets ./var/status /api/status
 list()

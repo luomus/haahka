@@ -19,7 +19,7 @@ suppressPackageStartupMessages({
 
 
 api <- paste0(
-  "http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT")
+  "http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT"), "/api"
 )
 
 while (attr(curlGetHeaders(paste0(api, "/healthz")), "status") != 200) {

@@ -69,7 +69,7 @@ parameters:
       "sh",
       "-c",
       "curl -s -w \"%{stderr}Code: %{response_code} URL: %{url_effective}\n\"
-        $API_HOSTNAME:$API_PORT/job?secret=$JOB_SECRET"
+        $API_HOSTNAME:$API_PORT/api/job?secret=$JOB_SECRET"
     ]'
   - name: CRON_LIMIT
     required: true
@@ -267,13 +267,13 @@ objects:
           - containerPort: ${{API_PORT}}
           livenessProbe:
             httpGet:
-              path: /healthz
+              path: /api/healthz
               port: ${{API_PORT}}
             failureThreshold: 5
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: /api/healthz
               port: ${{API_PORT}}
             initialDelaySeconds: 5
             periodSeconds: 5
@@ -410,6 +410,23 @@ objects:
     to:
       kind: Service
       name: ${APP}-${BRANCH}
+    wildcardPolicy: None
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: ${APP}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    host: ${HOST}
+    path: /api
+    port:
+      targetPort: ${{API_PORT}}
+    tls:
+      termination: edge
+    to:
+      kind: Service
+      name: ${API}-${BRANCH}
     wildcardPolicy: None
 - kind: CronJob
   apiVersion: batch/v1beta1
