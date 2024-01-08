@@ -49,7 +49,7 @@ function() {
 }
 
 #* Get API spec
-#* @get /api/docs/openapi.json
+#* @get /api/__docs__/openapi.json
 #* @serializer unboxedJSON
 function(req) {
 
@@ -58,7 +58,7 @@ function(req) {
 }
 
 #* Get API docs
-#* @get /api/docs
+#* @get /api/__docs__/
 #* @serializer html
 function() {
   rapidoc::rapidoc_spec(
@@ -69,7 +69,7 @@ function() {
     slots = paste0(
       '<img ',
       'slot="logo" ',
-      'src="../public/logo.png" ',
+      'src="../img/halias_logo.gif" ',
       'width=36px style=\"margin-left:7px\"/>'
     ),
     heading_text = paste("Haahka", version),
@@ -101,9 +101,18 @@ function() {
 function(res) {
 
   res$status <- 303L
-  res$setHeader("Location", "/api/docs")
+  res$setHeader("Location", "/api/__docs__/")
 
 }
+
+#* @get /api/
+function(res) {
+
+  res$status <- 303L
+  res$setHeader("Location", "/api/__docs__/")
+
+}
+
 
 #* @assets ./var/data /api/data
 list()
@@ -114,7 +123,7 @@ list()
 #* @assets ./var/status /api/status
 list()
 
-#* @assets /usr/local/lib/R/site-library/rapidoc/dist /api/docs/
+#* @assets /usr/local/lib/R/site-library/rapidoc/dist /api/__docs__/
 list()
 
 #* @plumber
@@ -128,8 +137,8 @@ function(pr) {
 
       spec[[c("info","version")]] <- version
 
-      spec[[c("paths", "/api/docs")]] <- NULL
-      spec[[c("paths", "/api/docs/openapi.json")]] <- NULL
+      spec[[c("paths", "/api/__docs__/")]] <- NULL
+      spec[[c("paths", "/api/__docs__/openapi.json")]] <- NULL
       spec[[c("paths", "/api/favicon.ico")]] <- NULL
       spec[[c("paths", "/api/healthz")]] <- NULL
       spec[[c("paths", "/api/job")]] <- NULL
