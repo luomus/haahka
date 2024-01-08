@@ -61,7 +61,11 @@ function(req) {
 #* @get /api/__docs__/
 #* @serializer html
 function() {
+
+  version <- as.character(utils::packageVersion("haahka"))
+
   rapidoc::rapidoc_spec(
+    spec_url = "./openapi.json",
     bg_color ="#141B15",
     text_color = "#FFFFFF",
     primary_color = "#55AAE2",
@@ -79,6 +83,7 @@ function() {
     sort_endpoints_by = "summary",
     allow_spec_file_load = "false"
   )
+
 }
 
 #* @get /api/favicon.ico
