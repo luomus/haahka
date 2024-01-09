@@ -1,8 +1,13 @@
+#* @apiTitle Haahka
+#* @apiTOS https://laji.fi/en/about/845
+#* @apiContact list(name = "laji.fi support", email = "helpdesk@laji.fi")
+#* @apiLicense list(name = "MIT", url = "https://opensource.org/licenses/MIT")
+
 suppressPackageStartupMessages({
 
   library(callr, warn.conflicts = FALSE, quietly = TRUE)
   library(utils, warn.conflicts = FALSE, quietly = TRUE)
-  library(rapidoc, warn.conflicts = FALSE,  quietly = TRUE)
+  library(rapidoc, warn.conflicts = FALSE, quietly = TRUE)
 
 })
 
@@ -24,7 +29,7 @@ function(req, res) {
 
 }
 
-#* @get /job
+#* @get /api/job
 #* @serializer unboxedJSON
 function() {
 
@@ -40,64 +45,42 @@ function() {
 }
 
 #* Check the liveness of the API
-#* @head /healthz
-#* @get /healthz
-#* @tag status
+#* @head /api/healthz
+#* @get /api/healthz
 #* @response 200 A json object
 #* @serializer unboxedJSON
 function() {
   ""
 }
 
-#* @get /favicon.ico
-#* @serializer contentType list(type="image/x-icon")
-function() {
+#* Get API spec
+#* @get /api/__docs__/openapi.json
+#* @serializer unboxedJSON
+function(req) {
 
-  readBin("favicon.ico", "raw", n = file.info("favicon.ico")$size)
+  spec <- req[["pr"]][["getApiSpec"]]()
+
+  spec[[c("paths", "/api/__docs__/")]] <- NULL
+  spec[[c("paths", "/api/__docs__/openapi.json")]] <- NULL
+  spec[[c("paths", "/api/favicon.ico")]] <- NULL
+  spec[[c("paths", "/api/healthz")]] <- NULL
+  spec[[c("paths", "/api/job")]] <- NULL
+  spec[[c("paths", "/api/robots.txt")]] <- NULL
+  spec[[c("paths", "/api")]] <- NULL
+
+  spec
 
 }
 
-#* @get /robots.txt
-#* @serializer contentType list(type="text/plain")
+#* Get API docs
+#* @get /api/__docs__/
+#* @serializer html
 function() {
-
-  readBin("robots.txt", "raw", n = file.info("robots.txt")$size)
-
-}
-
-#* @assets ./var/data /data
-list()
-
-#* @assets ./var/logs /logs
-list()
-
-#* @assets ./var/status /status
-list()
-
-#* @plumber
-function(pr) {
 
   version <- as.character(utils::packageVersion("haahka"))
 
-  pr_set_api_spec(
-    pr,
-    function(spec) {
-
-      spec[[c("info","version")]] <- version
-
-      spec[[c("paths", "/favicon.ico")]] <- NULL
-      spec[[c("paths", "/healthz")]] <- NULL
-      spec[[c("paths", "/job")]] <- NULL
-      spec[[c("paths", "/robots.txt")]] <- NULL
-      spec[[c("paths", "/")]] <- NULL
-
-      spec
-
-    }
-  )
-
-  pr$setDocs(
-    "rapidoc",
+  rapidoc::rapidoc_spec(
+    spec_url = "./openapi.json",
     bg_color ="#141B15",
     text_color = "#FFFFFF",
     primary_color = "#55AAE2",
@@ -105,7 +88,7 @@ function(pr) {
     slots = paste0(
       '<img ',
       'slot="logo" ',
-      'src="../public/logo.png" ',
+      'src="../../img/halias_logo.gif" ',
       'width=36px style=\"margin-left:7px\"/>'
     ),
     heading_text = paste("Haahka", version),
@@ -117,3 +100,47 @@ function(pr) {
   )
 
 }
+
+#* @get /api/favicon.ico
+#* @serializer contentType list(type="image/x-icon")
+function() {
+
+  readBin("favicon.ico", "raw", n = file.info("favicon.ico")$size)
+
+}
+
+#* @get /api/robots.txt
+#* @serializer contentType list(type="text/plain")
+function() {
+
+  readBin("robots.txt", "raw", n = file.info("robots.txt")$size)
+
+}
+
+#* @get /api
+function(res) {
+
+  res$status <- 303L
+  res$setHeader("Location", "/api/__docs__/")
+
+}
+
+#* @get /api/
+function(res) {
+
+  res$status <- 303L
+  res$setHeader("Location", "/api/__docs__/")
+
+}
+
+#* @assets ./var/data /api/data
+list()
+
+#* @assets ./var/logs /api/logs
+list()
+
+#* @assets ./var/status /api/status
+list()
+
+#* @assets /usr/local/lib/R/site-library/rapidoc/dist /api/__docs__/
+list()
