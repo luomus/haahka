@@ -99,6 +99,22 @@ pb_list <- list(
 choices <- translator[["get_languages"]]()
 names(choices) <- vapply(choices, haahka::get_languages, "")
 
+css_script <- shiny::tags[["link"]](
+  rel = "stylesheet", type = "text/css", href = "custom.css"
+)
+
+plausible_script <- shiny::tags[["script"]](
+  defer = NA,
+  `data-domain` = "haahka.laji.fi",
+  src = "https://plausible.io/js/script.js"
+)
+
+tag_head <- switch(
+  Sys.getenv("BRANCH"),
+  main = shiny::tags[["head"]](css_script, plausible_script),
+  shiny::tags[["head"]](css_script)
+)
+
 ui <- function(request) {
   shinydashboardPlus::dashboardPage(
     title = "Haahka - muuttolintuselain",
@@ -121,16 +137,7 @@ ui <- function(request) {
       shiny::uiOutput("render_sidebarfooter")
     ),
     shinydashboard::dashboardBody(
-      shiny::tags[["head"]](
-        shiny::tags[["link"]](
-          rel = "stylesheet", type = "text/css", href = "custom.css"
-        ),
-        shiny::tags[["script"]](
-          defer = NA,
-          `data-domain` = "haahka.laji.fi",
-          src = "https://plausible.io/js/script.js"
-        )
-      ),
+      tag_head,
       shinydashboard::tabItems(
         shinydashboard::tabItem(
           tabName = "species",

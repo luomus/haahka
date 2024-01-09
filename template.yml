@@ -196,6 +196,8 @@ objects:
             value: ${API}-${BRANCH}
           - name: API_PORT
             value: ${API_PORT}
+          - name: BRANCH
+            value: ${BRANCH}
           ports:
           - containerPort: ${{APP_PORT}}
           livenessProbe:
