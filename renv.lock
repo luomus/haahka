@@ -75,14 +75,14 @@
     },
     "Rcpp": {
       "Package": "Rcpp",
-      "Version": "1.0.11",
+      "Version": "1.0.12",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "methods",
         "utils"
       ],
-      "Hash": "ae6cbbe1492f4de79c45fce06f967ce8"
+      "Hash": "5ea2700d21e038ace58269ecdbeb9ec0"
     },
     "TTR": {
       "Package": "TTR",
@@ -435,7 +435,7 @@
       "RemoteUsername": "luomus",
       "RemoteRepo": "finbif",
       "RemoteRef": "dev",
-      "RemoteSha": "a6a21abd559726583eed65397e23427d5b87065d",
+      "RemoteSha": "63e07fa776ec824860aaabb2aa81553dd1a95bd5",
       "Requirements": [
         "R",
         "digest",
@@ -443,7 +443,7 @@
         "lutz",
         "utils"
       ],
-      "Hash": "ce88f77251496e56c50624f65282559a"
+      "Hash": "e3aa9f883517534f07e0683872955e80"
     },
     "fontawesome": {
       "Package": "fontawesome",
