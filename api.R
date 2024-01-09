@@ -66,13 +66,17 @@ function(req) {
 
   spec[[c("paths", "/__docs__/")]] <- NULL
   spec[[c("paths", "/__docs__/index.html")]] <- NULL
+  spec[[c("paths", "/api/__docs__/")]] <- NULL
+  spec[[c("paths", "/api/__docs__/openapi.json")]] <- NULL
   spec[[c("paths", "/api/favicon.ico")]] <- NULL
   spec[[c("paths", "/api/healthz")]] <- NULL
   spec[[c("paths", "/api/job")]] <- NULL
   spec[[c("paths", "/api/robots.txt")]] <- NULL
   spec[[c("paths", "/api/")]] <- NULL
+  spec[[c("paths", "/api")]] <- NULL
   spec[[c("paths", "/openapi.json")]] <- NULL
   spec[[c("paths", "/__swagger__/")]] <- NULL
+  spec[[c("paths", "/__swagger__/index.html")]] <- NULL
   spec[[c("paths", "/__swagger__/openapi.json")]] <- NULL
 
   spec
