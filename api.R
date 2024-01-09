@@ -68,10 +68,8 @@ function(req) {
   spec[[c("paths", "/__docs__/index.html")]] <- NULL
   spec[[c("paths", "/api/__docs__/")]] <- NULL
   spec[[c("paths", "/api/__docs__/openapi.json")]] <- NULL
-  spec[[c("paths", "/api/favicon.ico")]] <- NULL
   spec[[c("paths", "/api/healthz")]] <- NULL
   spec[[c("paths", "/api/job")]] <- NULL
-  spec[[c("paths", "/api/robots.txt")]] <- NULL
   spec[[c("paths", "/api/")]] <- NULL
   spec[[c("paths", "/api")]] <- NULL
   spec[[c("paths", "/openapi.json")]] <- NULL
@@ -107,22 +105,6 @@ function() {
     sort_endpoints_by = "summary",
     allow_spec_file_load = "false"
   )
-
-}
-
-#* @get /api/favicon.ico
-#* @serializer contentType list(type="image/x-icon")
-function() {
-
-  readBin("favicon.ico", "raw", n = file.info("favicon.ico")$size)
-
-}
-
-#* @get /api/robots.txt
-#* @serializer contentType list(type="text/plain")
-function() {
-
-  readBin("robots.txt", "raw", n = file.info("robots.txt")$size)
 
 }
 
