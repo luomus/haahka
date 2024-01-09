@@ -2,6 +2,7 @@ suppressPackageStartupMessages({
 
   library(callr, warn.conflicts = FALSE, quietly = TRUE)
   library(utils, warn.conflicts = FALSE, quietly = TRUE)
+  library(rapidoc, warn.conflicts = FALSE,  quietly = TRUE)
 
 })
 
