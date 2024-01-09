@@ -9,6 +9,9 @@ parameters:
   - name: API
     required: true
     value: plumber
+  - name: PAGE_TITLE
+    required: true
+    value: Haahka
   - name: API_PORT
     required: true
     value: "8000"
@@ -263,6 +266,8 @@ objects:
             value: ${DB_SUPER_PASSWORD}
           - name: DB_NAME
             value: ${APP}
+          - name: PAGE_TITLE
+            value: ${PAGE_TITLE}
           ports:
           - containerPort: ${{API_PORT}}
           livenessProbe:
