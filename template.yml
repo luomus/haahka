@@ -193,7 +193,7 @@ objects:
           - name: DB_NAME
             value: ${APP}
           - name: API_HOSTNAME
-            value: ${API}-${BRANCH}.${APP}.svc
+            value: ${API}-${BRANCH}
           - name: API_PORT
             value: ${API_PORT}
           ports:
@@ -457,7 +457,7 @@ objects:
               - name: JOB_SECRET
                 value: ${JOB_SECRET}
               - name: API_HOSTNAME
-                value: ${API}-${BRANCH}.${APP}.svc
+                value: ${API}-${BRANCH}
               - name: API_PORT
                 value: ${API_PORT}
             restartPolicy: Never
