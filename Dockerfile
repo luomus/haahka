@@ -1,4 +1,4 @@
-FROM ghcr.io/luomus/base-r-image@sha256:075c4f0c32a9ddf369a1bf43c8b17ea50862c275c716416442083a737f1b1d6a
+FROM ghcr.io/luomus/base-r-image@sha256:0f9cc984724cfc5a268ecc9bfea057fc8f6ef2251f7dcf96baa173de4579e711
 
 ENV STATUS_DIR="var/status"
 ENV LOG_DIR="var/logs"

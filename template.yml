@@ -69,7 +69,7 @@ parameters:
       "sh",
       "-c",
       "curl -s -w \"%{stderr}Code: %{response_code} URL: %{url_effective}\n\"
-        $API_HOSTNAME:$API_PORT/api/job?secret=$JOB_SECRET"
+        $API_HOSTNAME:$API_PORT/job?secret=$JOB_SECRET"
     ]'
   - name: CRON_LIMIT
     required: true
@@ -263,17 +263,19 @@ objects:
             value: ${DB_SUPER_PASSWORD}
           - name: DB_NAME
             value: ${APP}
+          - name: API_PATH
+            value: api
           ports:
           - containerPort: ${{API_PORT}}
           livenessProbe:
             httpGet:
-              path: /api/healthz
+              path: /healthz
               port: ${{API_PORT}}
             failureThreshold: 5
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /api/healthz
+              path: /healthz
               port: ${{API_PORT}}
             initialDelaySeconds: 5
             periodSeconds: 5

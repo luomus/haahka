@@ -23,7 +23,7 @@ function(req, res) {
 
 }
 
-#* @get /api/job
+#* @get /job
 #* @serializer unboxedJSON
 function() {
 
@@ -39,8 +39,8 @@ function() {
 }
 
 #* Check the liveness of the API
-#* @head /api/healthz
-#* @get /api/healthz
+#* @head /healthz
+#* @get /healthz
 #* @tag status
 #* @response 200 A json object
 #* @serializer unboxedJSON
@@ -48,45 +48,7 @@ function() {
   ""
 }
 
-#* Get API spec
-#* @get /api/__docs__/openapi.json
-#* @serializer unboxedJSON
-function(req) {
-
-  req[["pr"]][["getApiSpec"]]()
-
-}
-
-#* Get API docs
-#* @get /api/__docs__/
-#* @serializer html
-function() {
-
-  version <- as.character(utils::packageVersion("haahka"))
-
-  rapidoc::rapidoc_spec(
-    spec_url = "./openapi.json",
-    bg_color ="#141B15",
-    text_color = "#FFFFFF",
-    primary_color = "#55AAE2",
-    render_style = "read",
-    slots = paste0(
-      '<img ',
-      'slot="logo" ',
-      'src="../../img/halias_logo.gif" ',
-      'width=36px style=\"margin-left:7px\"/>'
-    ),
-    heading_text = paste("Haahka", version),
-    regular_font = "Roboto, Helvetica Neue, Helvetica, Arial, sans-serif",
-    font_size = "largest",
-    sort_tags = "false",
-    sort_endpoints_by = "summary",
-    allow_spec_file_load = "false"
-  )
-
-}
-
-#* @get /api/favicon.ico
+#* @get /favicon.ico
 #* @serializer contentType list(type="image/x-icon")
 function() {
 
@@ -94,7 +56,7 @@ function() {
 
 }
 
-#* @get /api/robots.txt
+#* @get /robots.txt
 #* @serializer contentType list(type="text/plain")
 function() {
 
@@ -102,33 +64,13 @@ function() {
 
 }
 
-#* @get /api
-function(res) {
-
-  res$status <- 303L
-  res$setHeader("Location", "/api/__docs__/")
-
-}
-
-#* @get /api/
-function(res) {
-
-  res$status <- 303L
-  res$setHeader("Location", "/api/__docs__/")
-
-}
-
-
-#* @assets ./var/data /api/data
+#* @assets ./var/data /data
 list()
 
-#* @assets ./var/logs /api/logs
+#* @assets ./var/logs /logs
 list()
 
-#* @assets ./var/status /api/status
-list()
-
-#* @assets /usr/local/lib/R/site-library/rapidoc/dist /api/__docs__/
+#* @assets ./var/status /status
 list()
 
 #* @plumber
@@ -142,17 +84,35 @@ function(pr) {
 
       spec[[c("info","version")]] <- version
 
-      spec[[c("paths", "/api/__docs__/")]] <- NULL
-      spec[[c("paths", "/api/__docs__/openapi.json")]] <- NULL
-      spec[[c("paths", "/api/favicon.ico")]] <- NULL
-      spec[[c("paths", "/api/healthz")]] <- NULL
-      spec[[c("paths", "/api/job")]] <- NULL
-      spec[[c("paths", "/api/robots.txt")]] <- NULL
-      spec[[c("paths", "/api")]] <- NULL
+      spec[[c("paths", "/favicon.ico")]] <- NULL
+      spec[[c("paths", "/healthz")]] <- NULL
+      spec[[c("paths", "/job")]] <- NULL
+      spec[[c("paths", "/robots.txt")]] <- NULL
+      spec[[c("paths", "/")]] <- NULL
 
       spec
 
     }
+  )
+
+  pr$setDocs(
+    "rapidoc",
+    bg_color ="#141B15",
+    text_color = "#FFFFFF",
+    primary_color = "#55AAE2",
+    render_style = "read",
+    slots = paste0(
+      '<img ',
+      'slot="logo" ',
+      'src="../public/logo.png" ',
+      'width=36px style=\"margin-left:7px\"/>'
+    ),
+    heading_text = paste("Haahka", version),
+    regular_font = "Roboto, Helvetica Neue, Helvetica, Arial, sans-serif",
+    font_size = "largest",
+    sort_tags = "false",
+    sort_endpoints_by = "summary",
+    allow_spec_file_load = "false"
   )
 
 }
