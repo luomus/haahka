@@ -22,7 +22,7 @@ api <- paste0(
   "http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT"), "/api"
 )
 
-while (inherits(try(curlGetHeaders(api)), "try-error")) {
+while (inherits(try(curlGetHeaders(api), silent = TRUE), "try-error")) {
 
   Sys.sleep(1)
 
