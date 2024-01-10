@@ -1,5 +1,9 @@
-library(magick, warn.conflicts = FALSE, quietly = TRUE)
-library(utils, warn.conflicts = FALSE, quietly = TRUE)
+suppressPackageStartupMessages({
+
+  library(magick, warn.conflicts = FALSE, quietly = TRUE)
+  library(utils, warn.conflicts = FALSE, quietly = TRUE)
+
+})
 
 resize_photo <- function(x, path = ".") {
 

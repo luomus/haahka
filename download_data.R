@@ -1,9 +1,13 @@
-library(DBI, warn.conflicts = FALSE, quietly = TRUE)
-library(dbplyr, warn.conflicts = FALSE, quietly = TRUE)
-library(dplyr, warn.conflicts = FALSE, quietly = TRUE)
-library(finbif, warn.conflicts = FALSE, quietly = TRUE)
-library(RPostgres, warn.conflicts = FALSE, quietly = TRUE)
-library(tidyr, warn.conflicts = FALSE, quietly = TRUE)
+suppressPackageStartupMessages({
+
+  library(DBI, warn.conflicts = FALSE, quietly = TRUE)
+  library(dbplyr, warn.conflicts = FALSE, quietly = TRUE)
+  library(dplyr, warn.conflicts = FALSE, quietly = TRUE)
+  library(finbif, warn.conflicts = FALSE, quietly = TRUE)
+  library(RPostgres, warn.conflicts = FALSE, quietly = TRUE)
+  library(tidyr, warn.conflicts = FALSE, quietly = TRUE)
+
+})
 
 con <- DBI::dbConnect(RPostgres::Postgres(), dbname = Sys.getenv("DB_NAME"))
 
@@ -106,7 +110,7 @@ for (i in seq_len(nrow(taxa))) {
 
   if (aue < 1) aue <- 366L + aue
 
-  message(sprintf("INFO [%s] Checking %s...", Sys.time(), sp))
+  message(sprintf("INFO [%s] Checking %s...", format(Sys.time()), sp))
 
   last_update <- dplyr::tbl(con, "last_update")
   last_update <- dplyr::filter(last_update, .data[["tbl"]] == !!sp)
@@ -117,7 +121,7 @@ for (i in seq_len(nrow(taxa))) {
 
   if (length(last_mod) > 0L && !isTRUE(last_update > last_mod)) {
 
-    message(sprintf("INFO [%s] Updating %s...", Sys.time(), sp))
+    message(sprintf("INFO [%s] Updating %s...", format(Sys.time()), sp))
 
     data_tbl_name <- paste0(sp, "_data")
 
