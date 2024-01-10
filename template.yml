@@ -270,6 +270,8 @@ objects:
             value: ${APP}
           - name: PAGE_TITLE
             value: ${PAGE_TITLE}
+          - name: BRANCH
+            value: ${BRANCH}
           ports:
           - containerPort: ${{API_PORT}}
           livenessProbe:

@@ -1,4 +1,9 @@
-library(httr, warn.conflicts = FALSE, quietly = TRUE)
+suppressPackageStartupMessages({
+
+  library(haahka, warn.conflicts = FALSE, quietly = TRUE)
+  library(httr, warn.conflicts = FALSE, quietly = TRUE)
+
+})
 
 download_descriptions <- function(taxon) {
 
@@ -26,7 +31,7 @@ download_descriptions <- function(taxon) {
 
 }
 
-taxa <- readRDS("taxa.rds")
+taxa <- read_taxa("taxa.rds")
 taxa <- taxa[["Species_Abb"]]
 descriptions <- lapply(taxa, download_descriptions)
 names(descriptions) <- taxa

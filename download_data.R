@@ -4,6 +4,7 @@ suppressPackageStartupMessages({
   library(dbplyr, warn.conflicts = FALSE, quietly = TRUE)
   library(dplyr, warn.conflicts = FALSE, quietly = TRUE)
   library(finbif, warn.conflicts = FALSE, quietly = TRUE)
+  library(haahka, warn.conflicts = FALSE, quietly = TRUE)
   library(RPostgres, warn.conflicts = FALSE, quietly = TRUE)
   library(tidyr, warn.conflicts = FALSE, quietly = TRUE)
 
@@ -21,7 +22,7 @@ options(
   finbif_use_cache_metadata = TRUE
 )
 
-taxa <- readRDS("taxa.rds")
+taxa <- read_taxa("taxa.rds")
 
 filter <- c(collection = "HR.2931")
 

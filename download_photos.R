@@ -1,5 +1,6 @@
 suppressPackageStartupMessages({
 
+  library(haahka, warn.conflicts = FALSE, quietly = TRUE)
   library(httr, warn.conflicts = FALSE, quietly = TRUE)
   library(tools, warn.conflicts = FALSE, quietly = TRUE)
   library(utils, warn.conflicts = FALSE, quietly = TRUE)
@@ -67,7 +68,7 @@ download_file <- function(taxon, path = "var/data/sp_images/org") {
 }
 
 if (!dir.exists("var/data/sp_images/org")) dir.create("var/data/sp_images/org")
-taxa <- readRDS("taxa.rds")
+taxa <- read_taxa("taxa.rds")
 taxa <- taxa[["Species_Abb"]]
 meta_data <- lapply(taxa, download_file)
 names(meta_data) <- taxa

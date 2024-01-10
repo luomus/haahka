@@ -376,3 +376,25 @@ get_value <- function(season, type, value, records, i18n) {
   res
 
 }
+
+#' Read taxa
+#'
+#' Read taxon metadata from a file.
+#'
+#' @param file An rds file.
+#'
+#' @export
+read_taxa <- function(file) {
+
+  ans <- readRDS(file)
+
+  if (Sys.getenv("BRANCH") != "main") {
+
+    ans <- ans[1:10, ]
+
+  }
+
+  ans
+
+}
+
