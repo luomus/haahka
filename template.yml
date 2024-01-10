@@ -71,8 +71,8 @@ parameters:
     value: '[
       "sh",
       "-c",
-      "curl -s -w \"%{stderr}Code: %{response_code} URL: %{url_effective}\n\"
-        $API_HOSTNAME:$API_PORT/api/job?secret=$JOB_SECRET"
+      "curl -s -w \"%{stderr} Code: %{response_code} URL: %{url_effective}\n\"
+        $API_HOSTNAME/api/job?secret=$JOB_SECRET"
     ]'
   - name: CRON_LIMIT
     required: true
@@ -460,6 +460,4 @@ objects:
                 value: ${JOB_SECRET}
               - name: API_HOSTNAME
                 value: ${API}-${BRANCH}
-              - name: API_PORT
-                value: ${API_PORT}
             restartPolicy: Never
