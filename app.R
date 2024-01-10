@@ -22,15 +22,21 @@ api <- paste0(
   "http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT"), "/api"
 )
 
-api_status <- paste(api, "/healthz")
+logger::log_layout(layout_simple)
+
+logger::log_threshold(TRACE)
+
+api_status <- paste0(api, "/healthz")
 
 while (inherits(try(curlGetHeaders(api_status), silent = TRUE), "try-error")) {
 
-  Sys.sleep(1)
+  logger::log_info("Waiting for API.")
+
+  Sys.sleep(5)
 
 }
 
-logger::log_threshold(TRACE)
+logger::log_info("API reachable.")
 
 download.file(
   paste0(api, "/data/sp_images.zip"), "www/img/sp_images.zip", quiet = TRUE
