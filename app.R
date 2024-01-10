@@ -18,12 +18,15 @@ suppressPackageStartupMessages({
 
 })
 
-
 api <- paste0(
   "http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT"), "/api"
 )
 
-logger::log_layout(layout_glue_colors)
+while (inherits(try(curlGetHeaders(api)), "try-error")) {
+
+  Sys.sleep(1)
+
+}
 
 logger::log_threshold(TRACE)
 
