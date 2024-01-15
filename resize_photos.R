@@ -17,8 +17,8 @@ resize_photo <- function(x, path = ".") {
 
   x <- magick::image_read(x)
   x <- magick::image_scale(x, "900")
-  x <- magick::image_write(x, path = target_file, format = "jpg")
 
+  magick::image_write(x, path = target_file, format = "jpg")
   magick::image_destroy(x)
 
 }
