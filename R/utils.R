@@ -74,21 +74,6 @@ get_months <- function(lang = "en", format) {
 
 }
 
-#' Get timestamp
-#'
-#' Return numeric timestamp value based on a Date. Needed for highcharts
-#' x-axis settings and plotting.
-#'
-#' @param x Date.
-#'
-#' @importFrom highcharter datetime_to_timestamp
-#' @export
-get_timestamp <- function(x) {
-
-  highcharter::datetime_to_timestamp(as.Date(x, tz = "UTC"))
-
-}
-
 #' Make date label
 #'
 #' Create a date label.
@@ -257,35 +242,6 @@ get_species_names <- function(lang, sp_data) {
     names(spps) <- paste0(sp_names, " (", spps, ")")
 
     spps
-
-  }
-
-}
-
-#' Create popup
-#'
-#' Create an information popup in locale.
-#'
-#' @param session Shiny app session.
-#' @param filebody Species names.
-#' @param lang Language shortcode.
-#'
-#' @importFrom shiny includeMarkdown tagList
-#' @importFrom shinyWidgets sendSweetAlert
-#'
-#' @export
-create_popup <- function(session, filebody, lang) {
-
-  content_file <- file.path("www", "infos", paste0(filebody, lang, ".md"))
-
-  if (file.exists(content_file)) {
-
-    shinyWidgets::sendSweetAlert(
-      session = session,
-      title = NULL,
-      text = shiny::tagList(shiny::includeMarkdown(content_file)),
-      html = TRUE
-    )
 
   }
 

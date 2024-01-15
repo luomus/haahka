@@ -75,36 +75,12 @@ x_yearly_labels <- list(
   "se" = haahka::get_months("se", "short")
 )
 pb_list <- list(
-  list(
-    from = haahka::get_timestamp("2000-02-01"),
-    to = haahka::get_timestamp("2000-03-01"),
-    color = "rgba(240, 240, 245, 0.4)"
-  ),
-  list(
-    from = haahka::get_timestamp("2000-04-01"),
-    to = haahka::get_timestamp("2000-05-01"),
-    color = "rgba(240, 240, 245, 0.4)"
-  ),
-  list(
-    from = haahka::get_timestamp("2000-06-01"),
-    to = haahka::get_timestamp("2000-07-01"),
-    color = "rgba(240, 240, 245, 0.4)"
-  ),
-  list(
-    from = haahka::get_timestamp("2000-08-01"),
-    to = haahka::get_timestamp("2000-09-01"),
-    color = "rgba(240, 240, 245, 0.4)"
-  ),
-  list(
-    from = haahka::get_timestamp("2000-10-01"),
-    to = haahka::get_timestamp("2000-11-01"),
-    color = "rgba(240, 240, 245, 0.4)"
-  ),
-  list(
-    from = haahka::get_timestamp("2000-12-01"),
-    to = haahka::get_timestamp("2000-12-31"),
-    color = "rgba(240, 240, 245, 0.4)"
-  )
+  list(from = 9493632e5, to = 9518688e5, color = "rgba(240, 240, 245, 0.4)"),
+  list(from = 9545472e5, to = 9571392e5, color = "rgba(240, 240, 245, 0.4)"),
+  list(from = 9598176e5, to = 9624096e5, color = "rgba(240, 240, 245, 0.4)"),
+  list(from = 9650880e5, to = 9677664e5, color = "rgba(240, 240, 245, 0.4)"),
+  list(from = 9703584e5, to = 9730368e5, color = "rgba(240, 240, 245, 0.4)"),
+  list(from = 9756288e5, to = 9782208e5, color = "rgba(240, 240, 245, 0.4)")
 )
 
 choices <- translator[["get_languages"]]()
@@ -1387,7 +1363,16 @@ server <- function(input, output, session) {
     input[["migration_info"]],
     {
       shiny::req(input[["language"]])
-      haahka::create_popup(session, "migration_info-", input[["language"]])
+      shinyWidgets::sendSweetAlert(
+        session = session,
+        title = NULL,
+        text = shiny::tagList(
+          shiny::includeMarkdown(
+            sprintf("www/infos/migration_info-%s.md", input[["language"]])
+          )
+        ),
+        html = TRUE
+      )
     }
   )
 
@@ -1395,7 +1380,16 @@ server <- function(input, output, session) {
     input[["local_info"]],
     {
       shiny::req(input[["language"]])
-      haahka::create_popup(session, "local_info-", input[["language"]])
+      shinyWidgets::sendSweetAlert(
+        session = session,
+        title = NULL,
+        text = shiny::tagList(
+          shiny::includeMarkdown(
+            sprintf("www/infos/local_info-%s.md", input[["language"]])
+          )
+        ),
+        html = TRUE
+      )
     }
   )
 
@@ -1403,7 +1397,16 @@ server <- function(input, output, session) {
     input[["change_info"]],
     {
       shiny::req(input[["language"]])
-      haahka::create_popup(session, "change_info-", input[["language"]])
+      shinyWidgets::sendSweetAlert(
+        session = session,
+        title = NULL,
+        text = shiny::tagList(
+          shiny::includeMarkdown(
+            sprintf("www/infos/change_info-%s.md", input[["language"]])
+          )
+        ),
+        html = TRUE
+      )
     }
   )
 
@@ -1411,7 +1414,16 @@ server <- function(input, output, session) {
     input[["median_info"]],
     {
       shiny::req(input[["language"]])
-      haahka::create_popup(session, "median_info-", input[["language"]])
+      shinyWidgets::sendSweetAlert(
+        session = session,
+        title = NULL,
+        text = shiny::tagList(
+          shiny::includeMarkdown(
+            sprintf("www/infos/median_info-%s.md", input[["language"]])
+          )
+        ),
+        html = TRUE
+      )
     }
   )
 
