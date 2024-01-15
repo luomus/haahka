@@ -266,9 +266,13 @@ get_value <- function(season, type, value, records, and = "and") {
 
   idx <- paste0(record_value, "_")
 
-  value <- switch(value, date_string = "date", Sum = record_value)
+  row <- records[which(as.logical(records[[idx]])), ]
 
-  res <- records[which(as.logical(records[[idx]])), ][[value]]
+  num <- row[[record_value]]
+
+  date <- row[["date"]]
+
+  res <- switch(value, date_string = date, Sum = num)
 
   if (is.numeric(res)) {
 
@@ -286,7 +290,7 @@ get_value <- function(season, type, value, records, and = "and") {
 
   }
 
-  if (length(res) == 0) {
+  if (num == 0) {
 
     res <- "-"
 
