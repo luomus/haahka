@@ -62,7 +62,7 @@ function(req) {
 
   spec <- req[["pr"]][["getApiSpec"]]()
 
-  spec[[c("info","version")]] <- version
+  spec[[c("info", "version")]] <- version
 
   spec[[c("paths", "/__docs__/")]] <- NULL
   spec[[c("paths", "/__docs__/index.html")]] <- NULL
@@ -88,15 +88,15 @@ function() {
 
   rapidoc::rapidoc_spec(
     spec_url = "./openapi.json",
-    bg_color ="#141B15",
+    bg_color = "#141B15",
     text_color = "#FFFFFF",
     primary_color = "#55AAE2",
     render_style = "read",
     slots = paste0(
-      '<img ',
-      'slot="logo" ',
-      'src="../../img/halias_logo.gif" ',
-      'width=36px style=\"margin-left:7px\"/>'
+      "<img ",
+      "slot=\"logo\" ",
+      "src=\"../../img/halias_logo.gif\" ",
+      "width=36px style=\"margin-left:7px\"/>"
     ),
     heading_text = paste("Haahka", version),
     regular_font = "Roboto, Helvetica Neue, Helvetica, Arial, sans-serif",
