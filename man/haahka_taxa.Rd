@@ -2,10 +2,10 @@
 % Please edit documentation in R/utils.R
 \name{haahka_taxa}
 \alias{haahka_taxa}
-\title{Read taxa}
+\title{Get taxa}
 \usage{
-haahka_taxa(file)
+haahka_taxa()
 }
 \description{
-Read taxon metadata from a file.
+Get taxon metadata.
 }

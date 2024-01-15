@@ -300,12 +300,12 @@ get_value <- function(season, type, value, records, and = "and") {
 
 }
 
-#' Read taxa
+#' Get taxa
 #'
-#' Read taxon metadata from a file.
+#' Get taxon metadata.
 #'
 #' @export
-haahka_taxa <- function(file) {
+haahka_taxa <- function() {
 
   switch(Sys.getenv("BRANCH"), main = taxa, taxa[1:10, ])
 
