@@ -106,27 +106,24 @@ make_date_label <- function(x, lang) {
 #' @export
 parse_description <- function(text, lang) {
 
+  parse_env <- new.env()
+
   assign("ans", NULL, envir = parse_env)
 
-  on.exit(remove(list = "ans", envir = parse_env))
-
-  lapply(text, get_text, h = 3, lang = lang)
+  lapply(text, get_text, h = 3, lang = lang, parse_env = parse_env)
 
   get("ans", envir = parse_env)
 
 }
 
 #' @noRd
-parse_env <- new.env()
-
-#' @noRd
-get_text <- function(x, h, lang) {
+get_text <- function(x, h, lang, parse_env) {
 
   if (!is.null(x[["title"]]) || !is.null(x[["content"]])) {
 
-    get_title(x, h, lang)
+    get_title(x, h, lang, parse_env)
 
-    get_content(x, h, lang)
+    get_content(x, h, lang, parse_env)
 
     h <- h + 1
 
@@ -136,7 +133,7 @@ get_text <- function(x, h, lang) {
 
     if (is.list(x[[i]])) {
 
-      get_text(x[[i]], h, lang)
+      get_text(x[[i]], h, lang, parse_env)
 
     }
 
@@ -145,7 +142,7 @@ get_text <- function(x, h, lang) {
 }
 
 #' @noRd
-get_title <- function(x, h, lang) {
+get_title <- function(x, h, lang, parse_env) {
 
   if (!is.null(x[["title"]])) {
 
@@ -160,7 +157,7 @@ get_title <- function(x, h, lang) {
 }
 
 #' @noRd
-get_content <- function(x, h, lang) {
+get_content <- function(x, h, lang, parse_env) {
 
   if (!is.null(x[["content"]])) {
 
