@@ -253,10 +253,10 @@ get_species_names <- function(lang, sp_data) {
 #' @param type Character. Migration "Migr" or "Local".
 #' @param value Character. "date_string" or "Sum".
 #' @param records Records table.
-#' @param i18n Translation function.
+#' @param and Character. "and" string.
 #'
 #' @export
-get_value <- function(season, type, value, records, i18n) {
+get_value <- function(season, type, value, records, and = "and") {
 
   season <- switch(season, Spring = "s", Autumn = "a")
 
@@ -268,7 +268,7 @@ get_value <- function(season, type, value, records, i18n) {
 
   value <- switch(value, date_string = "date", Sum = record_value)
 
-  res <- records[[which(as.logical(records[[idx]])), value]]
+  res <- records[which(as.logical(records[[idx]])), ][[value]]
 
   if (is.numeric(res)) {
 
@@ -282,7 +282,7 @@ get_value <- function(season, type, value, records, i18n) {
 
     }
 
-    res <- paste(res, collapse = i18n()[["t"]](" ja "))
+    res <- paste(res, collapse = and)
 
   }
 

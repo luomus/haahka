@@ -4,7 +4,7 @@
 \alias{get_value}
 \title{Get record value}
 \usage{
-get_value(season, type, value, records, i18n)
+get_value(season, type, value, records, and = "and")
 }
 \arguments{
 \item{season}{Character. "Spring" or "Autumn".}
@@ -15,7 +15,7 @@ get_value(season, type, value, records, i18n)
 
 \item{records}{Records table.}
 
-\item{i18n}{Translation function.}
+\item{and}{Character. "and" string.}
 }
 \description{
 Get record value for a species.

@@ -1097,6 +1097,8 @@ server <- function(input, output, session) {
 
     if (nrow(records_current) > 0) {
 
+      and <- i18n()[["t"]](" ja ")
+
       payload <- shinydashboardPlus::box(
         width = 12,
         solidHeader = FALSE,
@@ -1119,7 +1121,7 @@ server <- function(input, output, session) {
                   shiny::column(
                     width = 9,
                     shiny::p(
-                      get_value("Spring", "Migr", "Sum", records_current, i18n),
+                      get_value("Spring", "Migr", "Sum", records_current, and),
                       class = "record-number"
                     )
                   ),
@@ -1130,7 +1132,7 @@ server <- function(input, output, session) {
                     width = 9,
                     shiny::p(
                       get_value(
-                        "Spring", "Migr", "date_string", records_current, i18n
+                        "Spring", "Migr", "date_string", records_current, and
                       )
                     )
                   )
@@ -1151,7 +1153,7 @@ server <- function(input, output, session) {
                     width = 9,
                     shiny::p(
                       get_value(
-                        "Spring", "Local", "Sum", records_current, i18n
+                        "Spring", "Local", "Sum", records_current, and
                       ),
                       class = "record-number"
                     )
@@ -1163,7 +1165,7 @@ server <- function(input, output, session) {
                     width = 9,
                     shiny::p(
                       get_value(
-                        "Spring", "Local", "date_string", records_current, i18n
+                        "Spring", "Local", "date_string", records_current, and
                       )
                     )
                   )
@@ -1189,7 +1191,7 @@ server <- function(input, output, session) {
                   shiny::column(
                     width = 9,
                     shiny::p(
-                      get_value("Autumn", "Migr", "Sum", records_current, i18n),
+                      get_value("Autumn", "Migr", "Sum", records_current, and),
                       class = "record-number"
                     )
                   ),
@@ -1200,7 +1202,7 @@ server <- function(input, output, session) {
                     width = 9,
                     shiny::p(
                       get_value(
-                        "Autumn", "Migr", "date_string", records_current, i18n
+                        "Autumn", "Migr", "date_string", records_current, and
                       )
                     )
                   )
@@ -1221,7 +1223,7 @@ server <- function(input, output, session) {
                     width = 9,
                     shiny::p(
                       get_value(
-                        "Autumn", "Local", "Sum", records_current, i18n
+                        "Autumn", "Local", "Sum", records_current, and
                       ),
                       class = "record-number"
                     )
@@ -1233,7 +1235,7 @@ server <- function(input, output, session) {
                     width = 9,
                     shiny::p(
                       get_value(
-                        "Autumn", "Local", "date_string", records_current, i18n
+                        "Autumn", "Local", "date_string", records_current, and
                       )
                     )
                   )
