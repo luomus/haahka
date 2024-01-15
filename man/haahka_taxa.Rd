@@ -6,9 +6,6 @@
 \usage{
 haahka_taxa(file)
 }
-\arguments{
-\item{file}{An rds file.}
-}
 \description{
 Read taxon metadata from a file.
 }
