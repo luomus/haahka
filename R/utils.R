@@ -307,6 +307,16 @@ get_value <- function(season, type, value, records, and = "and") {
 #' @export
 haahka_taxa <- function() {
 
-  switch(Sys.getenv("BRANCH"), main = taxa, taxa[1:10, ])
+  branch <-  Sys.getenv("BRANCH")
+
+  ans <- taxa
+
+  if (branch != "main") {
+
+    ans <- taxa[1:10, ]
+
+  }
+
+  ans
 
 }
