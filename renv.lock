@@ -1272,6 +1272,18 @@
       ],
       "Hash": "8548b44f79a35ba1791308b61e6012d7"
     },
+    "tinytest": {
+      "Package": "tinytest",
+      "Version": "1.4.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "parallel",
+        "utils"
+      ],
+      "Hash": "1f344373b4f0fe61b6a0d4e3d3c842ca"
+    },
     "tinytex": {
       "Package": "tinytex",
       "Version": "0.49",
