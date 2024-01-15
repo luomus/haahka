@@ -851,7 +851,7 @@ server <- function(input, output, session) {
     if (slt) {
 
       st_number_color <- "red"
-      st_number_icon <- shiny::iconicon("caret-down")
+      st_number_icon <- shiny::icon("caret-down")
       st_number <- paste0(short, "%")
 
     }
