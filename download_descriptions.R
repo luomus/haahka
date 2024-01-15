@@ -31,7 +31,7 @@ download_descriptions <- function(taxon) {
 
 }
 
-taxa <- read_taxa("taxa.rds")
+taxa <- haahka_taxa()
 taxa <- taxa[["Species_Abb"]]
 descriptions <- lapply(taxa, download_descriptions)
 names(descriptions) <- taxa

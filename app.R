@@ -48,7 +48,7 @@ unlink("www/img/sp_images.zip")
 
 con <- pool::dbPool(RPostgres::Postgres(), dbname = Sys.getenv("DB_NAME"))
 
-sp_data <- read_taxa("taxa.rds")
+sp_data <- haahka_taxa()
 
 translator <- shiny.i18n::Translator[["new"]](
   translation_json_path = "translation.json"

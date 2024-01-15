@@ -352,17 +352,8 @@ get_value <- function(season, type, value, records, i18n) {
 #' @param file An rds file.
 #'
 #' @export
-read_taxa <- function(file) {
+haahka_taxa <- function(file) {
 
-  ans <- readRDS(file)
-
-  if (Sys.getenv("BRANCH") != "main") {
-
-    ans <- ans[1:10, ]
-
-  }
-
-  ans
+  switch(Sys.getenv("BRANCH"), main = taxa, taxa[1:10, ])
 
 }
-

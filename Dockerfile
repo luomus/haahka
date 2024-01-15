@@ -11,7 +11,6 @@ RUN R -s -e "renv::restore()"
 COPY app.R /home/user/app.R
 COPY api.R /home/user/api.R
 COPY update.R /home/user/update.R
-COPY taxa.rds /home/user/taxa.rds
 COPY translation.json /home/user/translation.json
 COPY R/ /home/user/R/
 COPY man /home/user/man
