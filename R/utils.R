@@ -217,31 +217,15 @@ tile_observations <- function(x, value) {
 #' @export
 get_species_names <- function(lang, sp_data) {
 
-  if (!is.null(lang)) {
+  name_field <- switch(lang, fi = "FIN_name", en  = "ENG_name", se = "SWE_name")
 
-    if (lang == "fi") {
+  spps <- sp_data[["Sci_name"]]
 
-      name_field <- "FIN_name"
+  sp_names <- sp_data[[name_field]]
 
-    } else if (lang == "en") {
+  names(spps) <- paste0(sp_names, " (", spps, ")")
 
-      name_field <- "ENG_name"
-
-    } else if (lang == "se") {
-
-      name_field <- "SWE_name"
-
-    }
-
-    spps <- sp_data[["Sci_name"]]
-
-    sp_names <- sp_data[[name_field]]
-
-    names(spps) <- paste0(sp_names, " (", spps, ")")
-
-    spps
-
-  }
+  spps
 
 }
 
