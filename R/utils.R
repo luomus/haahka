@@ -89,21 +89,6 @@ get_timestamp <- function(x) {
 
 }
 
-#' Check is odd
-#'
-#' Check that a value is odd numeric.
-#'
-#' @param x Value.
-#'
-#' @export
-is_odd <- function(x) {
-
-  stopifnot(is.numeric(x), length(x) == 1)
-
-  x %% 2 == 1
-
-}
-
 #' Make date label
 #'
 #' Create a date label.
@@ -123,23 +108,6 @@ make_date_label <- function(x, lang) {
   dayx <- as.integer(format(x, "%d"))
 
   paste(month_name, dayx)
-
-}
-
-#' Parse author
-#'
-#' Parse author name.
-#'
-#' @param x Author name.
-#'
-#' @export
-parse_author <- function(x) {
-
-  tokens <- unlist(strsplit(x, " "))
-
-  initial <- paste0(substring(tokens[1], 1, 1), ".")
-
-  paste(c(tokens[2], initial), collapse = ", ")
 
 }
 
