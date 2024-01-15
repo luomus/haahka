@@ -120,7 +120,7 @@ make_date_label <- function(x, lang) {
 
   month_name <- get_months(lang, "long")[m]
 
-  dayx <- as.integer(format(Sys.Date(), "%d"))
+  dayx <- as.integer(format(x, "%d"))
 
   paste(month_name, dayx)
 
