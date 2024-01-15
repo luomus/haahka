@@ -214,8 +214,6 @@ tile_observations <- function(x, value) {
 #' @param lang Language shortcode.
 #' @param sp_data Species names.
 #'
-#' @importFrom dplyr select
-#'
 #' @export
 get_species_names <- function(lang, sp_data) {
 
@@ -235,9 +233,9 @@ get_species_names <- function(lang, sp_data) {
 
     }
 
-    spps <- dplyr::pull(sp_data, "Sci_name")
+    spps <- sp_data[["Sci_name"]]
 
-    sp_names <- dplyr::pull(sp_data, name_field)
+    sp_names <- sp_data[[name_field]]
 
     names(spps) <- paste0(sp_names, " (", spps, ")")
 
@@ -257,8 +255,6 @@ get_species_names <- function(lang, sp_data) {
 #' @param records Records table.
 #' @param i18n Translation function.
 #'
-#' @importFrom dplyr .data filter pull
-#'
 #' @export
 get_value <- function(season, type, value, records, i18n) {
 
@@ -272,8 +268,7 @@ get_value <- function(season, type, value, records, i18n) {
 
   value <- switch(value, date_string = "date", Sum = record_value)
 
-  res <- dplyr::filter(records, as.logical(.data[[idx]]))
-  res <- dplyr::pull(res, value)
+  res <- records[[which(as.logical(records[[idx]])), value]]
 
   if (is.numeric(res)) {
 
@@ -304,8 +299,6 @@ get_value <- function(season, type, value, records, i18n) {
 #' Read taxa
 #'
 #' Read taxon metadata from a file.
-#'
-#' @param file An rds file.
 #'
 #' @export
 haahka_taxa <- function(file) {

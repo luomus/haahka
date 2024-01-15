@@ -14,8 +14,6 @@ Authors@R: c(
 AuthorEmail: helpdesk@laji.fi
 Description: Bird Migration browser.
 Depends: R (>= 3.5.0)
-Imports:
-    dplyr
 Suggests: 
     tinytest
 License: MIT + file LICENSE
