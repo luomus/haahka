@@ -185,6 +185,10 @@ get_content <- function(x, h, lang, parse_env) {
 #' @export
 tile_observations <- function(x, value) {
 
+  x[["day"]] <- as.Date(paste(2000, x[["day"]]), format = "%Y %j")
+
+  x <- x[order(x[["day"]]), ]
+
   day_index <- seq(3, nrow(x), by = 5)
 
   day_index <- c(day_index, 366)
@@ -200,7 +204,11 @@ tile_observations <- function(x, value) {
 
   avgs <- round(avgs, 2)
 
-  data.frame(day = days, value_avgs = avgs)
+  ans <- data.frame(day = days)
+
+  ans[[value]] <- as.vector(avgs)
+
+  ans
 
 }
 

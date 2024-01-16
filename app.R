@@ -267,7 +267,9 @@ server <- function(input, output, session) {
 
     sp_current <- get_current_sp()
 
-    dplyr::tbl(con, paste0(sp_current[["Species_Abb"]], "_data"))
+    ans <- dplyr::tbl(con, paste0(sp_current[["Species_Abb"]], "_data"))
+
+    dplyr::collect(ans)
 
   })
 
@@ -553,13 +555,7 @@ server <- function(input, output, session) {
 
     obs_current <- get_current_data()
 
-    plot_data <- dplyr::select(obs_current, dplyr::all_of(c("day", "muutto")))
-    plot_data <- dplyr::collect(plot_data)
-    plot_data <- dplyr::mutate(
-      plot_data, day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
-    )
-    plot_data <- dplyr::arrange(plot_data, .data[["day"]])
-    plot_data <- haahka::tile_observations(plot_data, "muutto")
+    plot_data <- haahka::tile_observations(obs_current, "muutto")
 
     if (!is.null(plot_data)) {
 
@@ -572,7 +568,7 @@ server <- function(input, output, session) {
       hc <- highcharter::hchart(
         plot_data,
         type = "line",
-        highcharter::hcaes(.data[["day"]], .data[["value_avgs"]]),
+        highcharter::hcaes(.data[["day"]], .data[["muutto"]]),
         name = i18n()[["t"]]("Muuttajamäärien keskiarvot"),
         color = "#1f78b4"
       )
@@ -615,13 +611,7 @@ server <- function(input, output, session) {
 
     obs_current <- get_current_data()
 
-    plot_data <- dplyr::select(obs_current, dplyr::all_of(c("day", "paik")))
-    plot_data <- dplyr::collect(plot_data)
-    plot_data <- dplyr::mutate(
-      plot_data, day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
-    )
-    plot_data <- dplyr::arrange(plot_data, .data[["day"]])
-    plot_data <- haahka::tile_observations(plot_data, "paik")
+    plot_data <- haahka::tile_observations(obs_current, "paik")
 
     if (!is.null(plot_data)) {
 
@@ -634,7 +624,7 @@ server <- function(input, output, session) {
       hc <- highcharter::hchart(
         plot_data,
         type = "line",
-        highcharter::hcaes(.data[["day"]], .data[["value_avgs"]]),
+        highcharter::hcaes(.data[["day"]], .data[["paik"]]),
         name = i18n()[["t"]]("Paikallisten määrien keskiarvot"),
         color = "#1f78b4"
       )
@@ -674,73 +664,19 @@ server <- function(input, output, session) {
 
     if (!is.null(obs_current)) {
 
-      plot_data_p1 <- dplyr::select(
-        obs_current, dplyr::all_of(c("day", "totalp1"))
-      )
-      plot_data_p1 <- dplyr::collect(plot_data_p1)
-      plot_data_p1 <- dplyr::mutate(
-        plot_data_p1,
-        day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
-      )
-      plot_data_p1 <- dplyr::arrange(plot_data_p1, .data[["day"]])
-      plot_data_p1 <- haahka::tile_observations(plot_data_p1, "totalp1")
-      plot_data_p1 <- dplyr::rename(
-        plot_data_p1, totalp1 = dplyr::all_of("value_avgs")
-      )
+      plot_data_p1 <- haahka::tile_observations(obs_current, "totalp1")
+      plot_data_p2 <- haahka::tile_observations(obs_current, "totalp2")
+      plot_data_p3 <- haahka::tile_observations(obs_current, "totalp3")
+      plot_data_p4 <- haahka::tile_observations(obs_current, "totalp4")
 
-      plot_data_p2 <- dplyr::select(
-        obs_current, dplyr::all_of(c("day", "totalp2"))
-      )
-      plot_data_p2 <- dplyr::collect(plot_data_p2)
-      plot_data_p2 <- dplyr::mutate(
-        plot_data_p2,
-        day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
-      )
-      plot_data_p2 <- dplyr::arrange(plot_data_p2, .data[["day"]])
-      plot_data_p2 <- haahka::tile_observations(plot_data_p2, "totalp2")
-      plot_data_p2 <- dplyr::rename(
-        plot_data_p2, totalp2 = dplyr::all_of("value_avgs")
-      )
+      plot_data <- dplyr::left_join(plot_data_p1, plot_data_p2, by = "day")
+      plot_data <- dplyr::left_join(plot_data, plot_data_p3, by = "day")
+      plot_data <- dplyr::left_join(plot_data, plot_data_p4, by = "day")
 
-      plot_data_p3 <- dplyr::select(
-        obs_current, dplyr::all_of(c("day", "totalp3"))
-      )
-      plot_data_p3 <- dplyr::collect(plot_data_p3)
-      plot_data_p3 <- dplyr::mutate(
-        plot_data_p3,
-        day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
-      )
-      plot_data_p3 <- dplyr::arrange(plot_data_p3, .data[["day"]])
-      plot_data_p3 <- haahka::tile_observations(plot_data_p3, "totalp3")
-      plot_data_p3 <- dplyr::rename(
-        plot_data_p3, totalp3 = dplyr::all_of("value_avgs")
-      )
-
-      plot_data_p4 <- dplyr::select(
-        obs_current, dplyr::all_of(c("day", "totalp4"))
-      )
-      plot_data_p4 <- dplyr::collect(plot_data_p4)
-      plot_data_p4 <- dplyr::mutate(plot_data_p4,
-        day = as.Date(paste(2000, .data[["day"]]), format = "%Y %j")
-      )
-      plot_data_p4 <- dplyr::arrange(plot_data_p4, .data[["day"]])
-      plot_data_p4 <- haahka::tile_observations(plot_data_p4, "totalp4")
-      plot_data_p4 <- dplyr::rename(
-        plot_data_p4, totalp4 = dplyr::all_of("value_avgs")
-      )
-
-      plot_data <- dplyr::left_join(
-        plot_data_p1, plot_data_p2, by = c("day" = "day")
-      )
-      plot_data <- dplyr::left_join(
-        plot_data, plot_data_p3, by = c("day" = "day")
-      )
-      plot_data <- dplyr::left_join(
-        plot_data, plot_data_p4, by = c("day" = "day")
-      )
       plot_data <- tidyr::pivot_longer(
         plot_data, -dplyr::all_of("day"), names_to = "epoch"
       )
+
       plot_data <- dplyr::mutate(
         plot_data,
         epoch = factor(
