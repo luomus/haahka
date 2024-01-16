@@ -97,7 +97,7 @@ function(type, sp) {
       fill = "#f0f0f566"
     ) +
     ggplot2::geom_line(
-      ggplot2::aes(day, value), data, lwd = .5, col = "#1f78b4"
+      ggplot2::aes(day, .data[[type]]), data, lwd = .5, col = "#1f78b4"
     ) +
     ggplot2::scale_x_date(
       breaks = seq(as.Date("2000-01-01"), by = "month", length.out = 12),
