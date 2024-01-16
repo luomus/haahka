@@ -40,8 +40,12 @@ dst_path <- "var/data/sp_images/resized/"
 
 resize_all(src_path, dst_path)
 
+tmp <- tempfile(fileext = ".zip")
+
 utils::zip(
-  "var/data/sp_images.zip",
+  tmp,
   list.files("var/data/sp_images/resized", full.names = TRUE),
   flags = "-j"
 )
+
+file.copy(tmp, "var/data/sp_images.zip", overwrite = TRUE)
