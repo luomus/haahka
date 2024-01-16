@@ -166,14 +166,14 @@ for (i in seq_len(nrow(taxa))) {
       Migr = ifelse(is.na(.data[["Migr"]]), 0L, as.integer(.data[["Migr"]]))
     )
 
-    data <- dplyr::group_by(counts, dplyr::all_of("day"))
+    data <- dplyr::group_by(counts, .data[["day"]])
     data <- dplyr::summarise(
       data,
       paik = mean(.data[["Local"]], na.rm = TRUE),
       muutto = mean(.data[["Migr"]], na.rm = TRUE)
     )
 
-    data_long <- dplyr::group_by(counts, day, period)
+    data_long <- dplyr::group_by(counts, .data[["day"]], .data[["period"]])
     data_long <- dplyr::summarise(
       data_long,
       paik = mean(.data[["Local"]], na.rm = TRUE),
@@ -271,7 +271,7 @@ for (i in seq_len(nrow(taxa))) {
     records <- dplyr::right_join(
       counts, dplyr::tbl(con, "days"), by = c("day", "year")
     )
-    records <- dplyr::group_by(records, dplyr::all_of("year"))
+    records <- dplyr::group_by(records, .data[["year"]])
     records <- dbplyr::window_order(records, .data[["day"]])
     records <- dplyr::mutate(
       records,
