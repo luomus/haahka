@@ -120,7 +120,7 @@ function(type, sp) {
       axis.text.x = ggplot2::element_text(colour = "#666666"),
       axis.line.x = ggplot2::element_line(colour = "#ccd6eb", linewidth = 1),
       axis.ticks.x = ggplot2::element_line(colour = "#ccd6eb", linewidth = 1),
-      axis.ticks.length.x = ggplot2::unit(10, "pt"),
+      axis.ticks.length.x = ggplot2::unit(20, "pt"),
       axis.title.y = ggplot2::element_text(colour = "#666666"),
       axis.ticks.y = ggplot2::element_blank(),
       axis.text.y = ggplot2::element_text(
