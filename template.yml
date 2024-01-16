@@ -1,41 +1,85 @@
 kind: Template
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 parameters:
   - name: APP
     required: true
     value: haahka
   - name: BRANCH
     required: true
-  - name: GIT_HOST
+  - name: API
     required: true
-    value: https://github.com
-  - name: ORG
+    value: plumber
+  - name: PAGE_TITLE
     required: true
-    value: luomus
-  - name: TAG
+    value: Haahka
+  - name: API_PORT
     required: true
-    value: latest
+    value: "8000"
+  - name: APP_CMD
+    required: true
+    value: '[
+      "R",
+      "-s",
+      "-e",
+      "options(shiny.autoload.r = FALSE, shiny.port = 3838);
+        library(shiny, warn.conflicts = FALSE, quietly = TRUE);
+          shiny::runApp(\"app.R\", host = \"0.0.0.0\", quiet = TRUE)"
+    ]'
+  - name: DB
+    required: true
+    value: postgres
+  - name: DB_IMAGE
+    required: true
+    value: crunchydata/crunchy-postgres:centos8-13.6-4.7.5
+  - name: DB_HEALTHCHECK
+    required: true
+    value: '[
+      "sh",
+      "-c",
+      "PGPASSWORD=$PG_PASSWORD
+        psql -h 0.0.0.0 -U $PG_USER -d $PG_DATABASE -c \"SELECT 1\""
+    ]'
+  - name: DB_PORT
+    required: true
+    value: "5432"
+  - name: DB_USER_PASSWORD
+    required: true
+  - name: DB_PRIMARY_PASSWORD
+    required: true
+  - name: DB_SUPER_PASSWORD
+    required: true
   - name: STORAGE
     required: true
     value: "20Gi"
+  - name: SMALL_STORAGE
+    required: true
+    value: "3Gi"
+  - name: STORAGE_CLASS
+    required: true
+    value: "standard-rwo"
   - name: CRON
     required: true
     value: job
+  - name: CRON_IMAGE
+    required: true
+    value: docker.io/redhat/ubi9:9.3-1476
   - name: CRON_SCHEDULE
     required: true
     value: "0 20 * * *"
   - name: CRON_CMD
     required: true
-    value: '["Rscript", "--vanilla", "update.R"]'
+    value: '[
+      "sh",
+      "-c",
+      "curl -s -w \"%{stderr} Code: %{response_code} URL: %{url_effective}\n\"
+        $API_HOSTNAME:$API_PORT/api/job?secret=$JOB_SECRET"
+    ]'
   - name: CRON_LIMIT
     required: true
     value: "7"
   - name: CRON_CONCURRENCY
     required: true
     value: "Forbid"
-  - name: PATH
-    required: true
-    value: /home/user/data
   - name: FINBIF_ACCESS_TOKEN
     required: true
   - name: FINBIF_API_URL
@@ -53,9 +97,46 @@ parameters:
     required: true
     generate: expression
     from: "[a-zA-Z0-9]{64}"
+  - name: JOB_SECRET
+    required: true
+    generate: expression
+    from: "[a-zA-Z0-9]{64}"
 metadata:
   name: ${APP}
 objects:
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+   name: ${DB}-${BRANCH}
+  spec:
+    storageClassName: ${STORAGE_CLASS}
+    accessModes:
+    - ReadWriteOnce
+    persistentVolumeReclaimPolicy: Retain
+    resources:
+      requests:
+        storage: ${STORAGE}
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+   name: ${API}-${BRANCH}
+  spec:
+    storageClassName: ${STORAGE_CLASS}
+    accessModes:
+    - ReadWriteOnce
+    persistentVolumeReclaimPolicy: Retain
+    resources:
+      requests:
+        storage: ${SMALL_STORAGE}
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: ${APP}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    lookupPolicy:
+      local: true
 - kind: BuildConfig
   apiVersion: v1
   metadata:
@@ -66,11 +147,11 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: ${APP}-${BRANCH}:${TAG}
+        name: ${APP}-${BRANCH}:latest
     source:
       type: Git
       git:
-        uri: ${GIT_HOST}/${ORG}/${APP}.git
+        uri: https://github.com/luomus/${APP}.git
         ref: ${BRANCH}
     strategy:
       type: Docker
@@ -79,15 +160,6 @@ objects:
     - type: GitHub
       github:
         secret: ${GITHUB_SECRET}
-- kind: ImageStream
-  apiVersion: v1
-  metadata:
-    name: ${APP}-${BRANCH}
-    labels:
-      app: ${APP}
-  spec:
-    lookupPolicy:
-      local: true
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
@@ -106,26 +178,40 @@ objects:
           deploymentconfig: ${APP}-${BRANCH}
       spec:
         containers:
-        - image: ${APP}-${BRANCH}:${TAG}
+        - image: ${APP}-${BRANCH}:latest
           name: ${APP}-${BRANCH}
-          volumeMounts:
-          - mountPath: ${PATH}
-            name: ${APP}-${BRANCH}
+          command: ${{APP_CMD}}
           env:
-          - name: FINBIF_ACCESS_TOKEN
-            value: ${FINBIF_ACCESS_TOKEN}
-          - name: FINBIF_API_URL
-            value: ${FINBIF_API_URL}
-          - name: FINBIF_EMAIL
-            value: ${FINBIF_EMAIL}
-          - name: FINBIF_WAREHOUSE
-            value: ${FINBIF_WAREHOUSE}
+          - name: PGHOST
+            value: ${DB}-${BRANCH}
+          - name: PGPORT
+            value: ${DB_PORT}
+          - name: PGUSER
+            value: ${DB}
+          - name: PGPASSWORD
+            value: ${DB_SUPER_PASSWORD}
+          - name: DB_NAME
+            value: ${APP}
+          - name: API_HOSTNAME
+            value: ${API}-${BRANCH}
+          - name: API_PORT
+            value: ${API_PORT}
+          - name: BRANCH
+            value: ${BRANCH}
           ports:
-          - containerPort: ${APP_PORT}
-        volumes:
-        - name: ${APP}-${BRANCH}
-          persistentVolumeClaim:
-            claimName: ${APP}-${BRANCH}
+          - containerPort: ${{APP_PORT}}
+          livenessProbe:
+            httpGet:
+              path: /robots.txt
+              port: ${{APP_PORT}}
+            failureThreshold: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /robots.txt
+              port: ${{APP_PORT}}
+            initialDelaySeconds: 5
+            periodSeconds: 5
     triggers:
     - type: ConfigChange
     - type: ImageChange
@@ -135,18 +221,147 @@ objects:
         - ${APP}-${BRANCH}
         from:
           kind: ImageStreamTag
-          name: ${APP}-${BRANCH}:${TAG}
-- kind: PersistentVolumeClaim
+          name: ${APP}-${BRANCH}:latest
+- kind: DeploymentConfig
   apiVersion: v1
   metadata:
-   name: ${APP}-${BRANCH}
+    name: ${API}-${BRANCH}
+    labels:
+      app: ${APP}
   spec:
-    accessModes:
-    - ReadWriteMany
-    persistentVolumeReclaimPolicy: Retain
-    resources:
-      requests:
-        storage: ${STORAGE}
+    replicas: 1
+    selector:
+      app: ${APP}
+      deploymentconfig: ${API}-${BRANCH}
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          app: ${APP}
+          deploymentconfig: ${API}-${BRANCH}
+      spec:
+        containers:
+        - image: ${APP}-${BRANCH}:latest
+          name: ${API}-${BRANCH}
+          volumeMounts:
+          - mountPath: /home/user/var
+            name: ${API}-${BRANCH}
+          env:
+          - name: FINBIF_ACCESS_TOKEN
+            value: ${FINBIF_ACCESS_TOKEN}
+          - name: FINBIF_API_URL
+            value: ${FINBIF_API_URL}
+          - name: FINBIF_WAREHOUSE
+            value: ${FINBIF_WAREHOUSE}
+          - name: FINBIF_EMAIL
+            value: ${FINBIF_EMAIL}
+          - name: JOB_SECRET
+            value: ${JOB_SECRET}
+          - name: PGHOST
+            value: ${DB}-${BRANCH}
+          - name: PGPORT
+            value: ${DB_PORT}
+          - name: PGUSER
+            value: ${DB}
+          - name: PGPASSWORD
+            value: ${DB_SUPER_PASSWORD}
+          - name: DB_NAME
+            value: ${APP}
+          - name: PAGE_TITLE
+            value: ${PAGE_TITLE}
+          - name: BRANCH
+            value: ${BRANCH}
+          ports:
+          - containerPort: ${{API_PORT}}
+          livenessProbe:
+            httpGet:
+              path: /api/healthz
+              port: ${{API_PORT}}
+            failureThreshold: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/healthz
+              port: ${{API_PORT}}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+        volumes:
+        - name: ${API}-${BRANCH}
+          persistentVolumeClaim:
+            claimName: ${API}-${BRANCH}
+    triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+        - ${API}-${BRANCH}
+        from:
+          kind: ImageStreamTag
+          name: ${APP}-${BRANCH}:latest
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    name: ${DB}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    replicas: 1
+    selector:
+      app: ${APP}
+      deploymentconfig: ${DB}-${BRANCH}
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          app: ${APP}
+          deploymentconfig: ${DB}-${BRANCH}
+      spec:
+        containers:
+        - image: ${DB_IMAGE}
+          name: ${DB}-${BRANCH}
+          volumeMounts:
+          - mountPath: /pgdata
+            name: ${DB}-${BRANCH}
+          ports:
+            - containerPort: ${{DB_PORT}}
+          livenessProbe:
+            exec:
+              command: ${{DB_HEALTHCHECK}}
+            failureThreshold: 5
+            periodSeconds: 30
+          readinessProbe:
+            exec:
+              command: ${{DB_HEALTHCHECK}}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          env:
+          - name: MODE
+            value: ${DB}
+          - name: PG_MODE
+            value: primary
+          - name: PG_PRIMARY_PORT
+            value: ${DB_PORT}
+          - name: PG_DATABASE
+            value: ${APP}
+          - name: PG_USER
+            value: ${APP}
+          - name: PG_PRIMARY_USER
+            value: primaryuser
+          - name: PG_PASSWORD
+            value: ${DB_USER_PASSWORD}
+          - name: PG_PRIMARY_PASSWORD
+            value: ${DB_PRIMARY_PASSWORD}
+          - name: PG_ROOT_PASSWORD
+            value: ${DB_SUPER_PASSWORD}
+        volumes:
+        - name: ${DB}-${BRANCH}
+          persistentVolumeClaim:
+            claimName: ${DB}-${BRANCH}
+    triggers:
+    - type: ConfigChange
 - kind: Service
   apiVersion: v1
   metadata:
@@ -156,11 +371,39 @@ objects:
   spec:
     ports:
     - name: ${APP_PORT}
-      port: ${APP_PORT}
+      port: ${{APP_PORT}}
       targetPort: ${{APP_PORT}}
     selector:
       app: ${APP}
       deploymentconfig: ${APP}-${BRANCH}
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: ${API}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    ports:
+    - name: ${API_PORT}
+      port: ${{API_PORT}}
+      targetPort: ${{API_PORT}}
+    selector:
+      app: ${APP}
+      deploymentconfig: ${API}-${BRANCH}
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: ${DB}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    ports:
+    - name: ${DB_PORT}
+      port: ${{DB_PORT}}
+      targetPort: ${{DB_PORT}}
+    selector:
+      app: ${APP}
+      deploymentconfig: ${DB}-${BRANCH}
 - kind: Route
   apiVersion: v1
   metadata:
@@ -170,12 +413,29 @@ objects:
   spec:
     host: ${HOST}
     port:
-      targetPort: ${APP_PORT}
+      targetPort: ${{APP_PORT}}
     tls:
       termination: edge
     to:
       kind: Service
       name: ${APP}-${BRANCH}
+    wildcardPolicy: None
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: ${APP}-${BRANCH}
+    labels:
+      app: ${APP}
+  spec:
+    host: ${HOST}
+    path: /api
+    port:
+      targetPort: ${{API_PORT}}
+    tls:
+      termination: edge
+    to:
+      kind: Service
+      name: ${API}-${BRANCH}
     wildcardPolicy: None
 - kind: CronJob
   apiVersion: batch/v1beta1
@@ -195,22 +455,13 @@ objects:
           spec:
             containers:
             - name: ${APP}-${BRANCH}-${CRON}
-              image: ${APP}-${BRANCH}:${TAG}
+              image: ${CRON_IMAGE}
               command: ${{CRON_CMD}}
-              volumeMounts:
-              - mountPath: ${PATH}
-                name: ${APP}-${BRANCH}
               env:
-              - name: FINBIF_ACCESS_TOKEN
-                value: ${FINBIF_ACCESS_TOKEN}
-              - name: FINBIF_API_URL
-                value: ${FINBIF_API_URL}
-              - name: FINBIF_EMAIL
-                value: ${FINBIF_EMAIL}
-              - name: FINBIF_WAREHOUSE
-                value: ${FINBIF_WAREHOUSE}
-            volumes:
-            - name: ${APP}-${BRANCH}
-              persistentVolumeClaim:
-                claimName: ${APP}-${BRANCH}
+              - name: JOB_SECRET
+                value: ${JOB_SECRET}
+              - name: API_HOSTNAME
+                value: ${API}-${BRANCH}.${APP}.svc
+              - name: API_PORT
+                value: ${API_PORT}
             restartPolicy: Never

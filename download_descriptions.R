@@ -1,8 +1,9 @@
-#!/usr/bin/env Rscript
+suppressPackageStartupMessages({
 
-# Download a taxon description from laji.fi
-#
-# @param taxon taxon shortcode
+  library(haahka, warn.conflicts = FALSE, quietly = TRUE)
+  library(httr, warn.conflicts = FALSE, quietly = TRUE)
+
+})
 
 download_descriptions <- function(taxon) {
 
@@ -30,9 +31,8 @@ download_descriptions <- function(taxon) {
 
 }
 
-# Process downloads ---------------------------------------------------
-taxa <- readRDS("taxa.rds")
+taxa <- haahka_taxa()
 taxa <- taxa[["Species_Abb"]]
 descriptions <- lapply(taxa, download_descriptions)
 names(descriptions) <- taxa
-saveRDS(descriptions, "data/descriptions.rds")
+saveRDS(descriptions, "var/data/descriptions.rds")
