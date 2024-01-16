@@ -65,7 +65,7 @@ function() {
 
 #* Get graphics for a species
 #* @tag graphics
-#* @get /plot/<type:str>/<sp:str>
+#* @get /api/plot/<type:str>/<sp:str>
 #* @param type:str Migration or Local
 #* @param sp:str Taxon code
 #* @serializer png list(width = 1200, height = 600, unit = "px", bg = "transparent")
