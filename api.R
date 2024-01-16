@@ -97,7 +97,7 @@ function(type, sp) {
       fill = "#f0f0f566"
     ) +
     ggplot2::geom_line(
-      ggplot2::aes(day, .data[[type]]), data, lwd = .5, col = "#1f78b4"
+      ggplot2::aes(day, .data[[type]]), data, lwd = 1.5, col = "#1f78b4"
     ) +
     ggplot2::scale_x_date(
       breaks = seq(as.Date("2000-01-01"), by = "month", length.out = 12),
@@ -107,27 +107,27 @@ function(type, sp) {
     ) +
     ggplot2::scale_y_continuous(limits = c(0, NA), expand = c(0, 0)) +
     ggplot2::xlab(NULL) +
-    ggplot2::ylab("Individuals/obs. day") +
+    ggplot2::ylab("Individuals / obs. day") +
     ggplot2::ggtitle(sprintf("Average number of %s birds", type_label)) +
-    ggplot2::theme_gray(base_size = 12) +
+    ggplot2::theme_gray(base_size = 16) +
     ggplot2::theme(
       plot.title = ggplot2::element_text(
-        hjust = 0.5, colour = "#333333", size = 9
+        hjust = 0.5, colour = "#333333", size = 28
       ),
       axis.text.x = ggplot2::element_text(colour = "#666666"),
-      axis.line.x = ggplot2::element_line(colour = "#ccd6eb", linewidth = .25),
-      axis.ticks.x = ggplot2::element_line(colour = "#ccd6eb", linewidth = .25),
-      axis.ticks.length.x = ggplot2::unit(5, "pt"),
+      axis.line.x = ggplot2::element_line(colour = "#ccd6eb", linewidth = .5),
+      axis.ticks.x = ggplot2::element_line(colour = "#ccd6eb", linewidth = .5),
+      axis.ticks.length.x = ggplot2::unit(10, "pt"),
       axis.title.y = ggplot2::element_text(colour = "#666666"),
       axis.ticks.y = ggplot2::element_blank(),
       axis.text.y = ggplot2::element_text(
-        margin = ggplot2::margin(0, 5, 0, 0), colour = "#666666"
+        margin = ggplot2::margin(0, 12, 0, 0), colour = "#666666"
       ),
       panel.background = ggplot2::element_rect(fill = "transparent"),
       panel.grid.major.x = ggplot2::element_blank(),
       panel.grid.minor.x = ggplot2::element_blank(),
       panel.grid.major.y = ggplot2::element_line(
-        colour = "#e6e6e6", linewidth = .25
+        colour = "#e6e6e6", linewidth = .5
       ),
       panel.grid.minor.y = ggplot2::element_blank(),
       plot.background = ggplot2::element_rect(fill = "transparent", color = NA)
