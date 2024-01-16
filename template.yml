@@ -423,7 +423,7 @@ objects:
 - kind: Route
   apiVersion: v1
   metadata:
-    name: ${APP}-${BRANCH}
+    name: ${API}-${BRANCH}
     labels:
       app: ${APP}
   spec:
