@@ -105,7 +105,10 @@ function(type, sp) {
       limits = as.Date(c("2000-01-01", "2000-12-31")),
       expand = c(0, 0)
     ) +
-    ggplot2::scale_y_continuous(limits = c(0, NA), expand = c(0, 0)) +
+    ggplot2::scale_y_continuous(
+      limits = c(0, NA),
+      expand = ggplot2::expansion(mult = c(0, .2))
+    ) +
     ggplot2::xlab(NULL) +
     ggplot2::ylab("Individuals / obs. day") +
     ggplot2::ggtitle(sprintf("Average number of %s birds", type_label)) +
