@@ -89,8 +89,11 @@ function(type, sp) {
     ggplot2::geom_rect(
       ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
       data.frame(
-        xmin = seq(as.Date("2000-02-01"), by = "2 months", length.out = 7),
-        xmax = seq(as.Date("2000-03-01"), by = "2 months", length.out = 7),
+        xmin = seq(as.Date("2000-02-01"), by = "2 months", length.out = 6),
+        xmax = c(
+          seq(as.Date("2000-03-01"), by = "2 months", length.out = 5),
+          as.Date("2000-12-31")
+        ),
         ymin = 0,
         ymax = Inf
       ),
