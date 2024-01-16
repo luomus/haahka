@@ -109,14 +109,14 @@ function(type, sp) {
     ggplot2::xlab(NULL) +
     ggplot2::ylab("Individuals / obs. day") +
     ggplot2::ggtitle(sprintf("Average number of %s birds", type_label)) +
-    ggplot2::theme_gray(base_size = 16) +
+    ggplot2::theme_gray(base_size = 24) +
     ggplot2::theme(
       plot.title = ggplot2::element_text(
-        hjust = 0.5, colour = "#333333", size = 28
+        hjust = 0.5, colour = "#333333", size = 36
       ),
       axis.text.x = ggplot2::element_text(colour = "#666666"),
-      axis.line.x = ggplot2::element_line(colour = "#ccd6eb", linewidth = .5),
-      axis.ticks.x = ggplot2::element_line(colour = "#ccd6eb", linewidth = .5),
+      axis.line.x = ggplot2::element_line(colour = "#ccd6eb", linewidth = 1),
+      axis.ticks.x = ggplot2::element_line(colour = "#ccd6eb", linewidth = 1),
       axis.ticks.length.x = ggplot2::unit(10, "pt"),
       axis.title.y = ggplot2::element_text(colour = "#666666"),
       axis.ticks.y = ggplot2::element_blank(),
@@ -127,7 +127,7 @@ function(type, sp) {
       panel.grid.major.x = ggplot2::element_blank(),
       panel.grid.minor.x = ggplot2::element_blank(),
       panel.grid.major.y = ggplot2::element_line(
-        colour = "#e6e6e6", linewidth = .5
+        colour = "#e6e6e6", linewidth = 1
       ),
       panel.grid.minor.y = ggplot2::element_blank(),
       plot.background = ggplot2::element_rect(fill = "transparent", color = NA)
