@@ -109,7 +109,7 @@ function(type, sp) {
     ggplot2::xlab(NULL) +
     ggplot2::ylab("Individuals/obs. day") +
     ggplot2::ggtitle(sprintf("Average number of %s birds", type_label)) +
-    ggplot2::theme_gray(base_size = 6) +
+    ggplot2::theme_gray(base_size = 12) +
     ggplot2::theme(
       plot.title = ggplot2::element_text(
         hjust = 0.5, colour = "#333333", size = 9
