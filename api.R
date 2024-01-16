@@ -84,7 +84,8 @@ function(type, sp) {
 
   data <- haahka::tile_observations(data, type)
 
-  ggplot2::ggplot() +
+  plot <-
+    ggplot2::ggplot() +
     ggplot2::geom_rect(
       ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
       data.frame(
@@ -131,6 +132,8 @@ function(type, sp) {
       panel.grid.minor.y = ggplot2::element_blank(),
       plot.background = ggplot2::element_rect(fill = "transparent", color = NA)
     )
+
+  print(plot)
 
 }
 
