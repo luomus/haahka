@@ -222,7 +222,7 @@ function() {
     sort_endpoints_by = "summary",
     allow_spec_file_load = "false",
     allow_server_selection = "false",
-    allow-authentication = "false"
+    allow_authentication = "false"
   )
 
 }
