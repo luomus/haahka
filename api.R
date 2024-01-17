@@ -127,7 +127,7 @@ function(type, sp, locale = "fi") {
       expand = c(0, 0)
     ) +
     ggplot2::scale_y_continuous(
-      limits = c(0, NA), expand = ggplot2::expansion(mult = c(0, .3))
+      limits = c(0, NA), expand = ggplot2::expansion(mult = c(0, 1 / 3))
     ) +
     ggplot2::xlab(NULL) +
     ggplot2::ylab(ylab) +
@@ -140,7 +140,7 @@ function(type, sp, locale = "fi") {
         size = 36,
         margin = ggplot2::margin(0, 12, 0, 0)
       ),
-      plot.margin = ggplot2::unit(c(20, 20, 20, 20), "pt"),
+      plot.margin = ggplot2::unit(c(25, 20, 30, 30), "pt"),
       axis.text.x = ggplot2::element_text(colour = "#666666", size = 20),
       axis.line.x = ggplot2::element_line(colour = "#ccd6eb"),
       axis.ticks.x = ggplot2::element_line(colour = "#ccd6eb"),
@@ -148,7 +148,7 @@ function(type, sp, locale = "fi") {
       axis.title.y = ggplot2::element_text(colour = "#666666"),
       axis.ticks.y = ggplot2::element_blank(),
       axis.text.y = ggplot2::element_text(
-        margin = ggplot2::margin(0, 12, 0, 0), colour = "#666666", size = 20
+        margin = ggplot2::margin(0, 0, 12, 0), colour = "#666666", size = 20
       ),
       panel.background = ggplot2::element_rect(fill = "transparent"),
       panel.grid.major.x = ggplot2::element_blank(),
