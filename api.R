@@ -76,7 +76,7 @@ function() {
 #* @param locale:str Locale
 #* @serializer png list(width = 1200, height = 600, bg = "transparent")
 #* @response 200 A png file response
-function(type, sp, locale = c("fi", "en", "se")) {
+function(type, sp, locale = "fi") {
 
   data <- dplyr::tbl(con, paste0(sp, "_data"))
 
@@ -118,7 +118,7 @@ function(type, sp, locale = c("fi", "en", "se")) {
       fill = "#f0f0f566"
     ) +
     ggplot2::geom_line(
-      ggplot2::aes(day, .data[[type]]), data, lwd = 1.5, col = "#1f78b4"
+      ggplot2::aes(day, .data[[type]]), data, lwd = 2, col = "#1f78b4"
     ) +
     ggplot2::scale_x_date(
       breaks = seq(as.Date("2000-01-01"), by = "month", length.out = 12),
@@ -127,8 +127,7 @@ function(type, sp, locale = c("fi", "en", "se")) {
       expand = c(0, 0)
     ) +
     ggplot2::scale_y_continuous(
-      limits = c(0, NA),
-      expand = ggplot2::expansion(mult = c(0, .25))
+      limits = c(0, NA), expand = ggplot2::expansion(mult = c(0, .3))
     ) +
     ggplot2::xlab(NULL) +
     ggplot2::ylab(ylab) +
@@ -138,11 +137,12 @@ function(type, sp, locale = c("fi", "en", "se")) {
       plot.title = ggplot2::element_text(
         hjust = 0.5, colour = "#333333", size = 36
       ),
-      axis.text.x = ggplot2::element_text(colour = "#666666"),
-      axis.line.x = ggplot2::element_line(colour = "#ccd6eb", linewidth = 1),
-      axis.ticks.x = ggplot2::element_line(colour = "#ccd6eb", linewidth = 1),
+      plot.margin = ggplot2::unit(c(20, 20, 20, 20), "pt"),
+      axis.text.x = ggplot2::element_text(colour = "#666666", size = 28),
+      axis.line.x = ggplot2::element_line(colour = "#ccd6eb"),
+      axis.ticks.x = ggplot2::element_line(colour = "#ccd6eb"),
       axis.ticks.length.x = ggplot2::unit(20, "pt"),
-      axis.title.y = ggplot2::element_text(colour = "#666666"),
+      axis.title.y = ggplot2::element_text(colour = "#666666", size = 28),
       axis.ticks.y = ggplot2::element_blank(),
       axis.text.y = ggplot2::element_text(
         margin = ggplot2::margin(0, 12, 0, 0), colour = "#666666"
@@ -150,9 +150,7 @@ function(type, sp, locale = c("fi", "en", "se")) {
       panel.background = ggplot2::element_rect(fill = "transparent"),
       panel.grid.major.x = ggplot2::element_blank(),
       panel.grid.minor.x = ggplot2::element_blank(),
-      panel.grid.major.y = ggplot2::element_line(
-        colour = "#e6e6e6", linewidth = 1
-      ),
+      panel.grid.major.y = ggplot2::element_line(colour = "#e6e6e6"),
       panel.grid.minor.y = ggplot2::element_blank(),
       plot.background = ggplot2::element_rect(fill = "transparent", color = NA)
     )
