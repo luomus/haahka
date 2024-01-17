@@ -13,6 +13,7 @@ suppressPackageStartupMessages({
   library(pool, warn.conflicts = FALSE, quietly = TRUE)
   library(rapidoc, warn.conflicts = FALSE, quietly = TRUE)
   library(RPostgres, warn.conflicts = FALSE, quietly = TRUE)
+  library(shiny.i18n, warn.conflicts = FALSE, quietly = TRUE)
   library(utils, warn.conflicts = FALSE, quietly = TRUE)
 
 })
@@ -20,6 +21,10 @@ suppressPackageStartupMessages({
 version <- as.character(utils::packageVersion("haahka"))
 
 con <- pool::dbPool(RPostgres::Postgres(), dbname = Sys.getenv("DB_NAME"))
+
+translator <- shiny.i18n::Translator[["new"]](
+  translation_json_path = "translation.json"
+)
 
 #* @filter secret
 function(req, res) {
@@ -68,9 +73,10 @@ function() {
 #* @get /api/plot/<type:str>/<sp:str>
 #* @param type:str Migration or Local
 #* @param sp:str Taxon code
+#* @param locale:str Locale
 #* @serializer png list(width = 1200, height = 600, bg = "transparent")
 #* @response 200 A png file response
-function(type, sp) {
+function(type, sp, locale = c("fi", "en", "se")) {
 
   data <- dplyr::tbl(con, paste0(sp, "_data"))
 
@@ -78,11 +84,23 @@ function(type, sp) {
 
   type <- tolower(type)
 
-  type_label <- switch(type, migration = "migrating", local = "stationary")
+  title <- switch(
+    type,
+    migration = "Muuttajamäärien keskiarvot",
+    local = "Paikallisten määrien keskiarvot"
+  )
 
   type <- switch(type, migration = "muutto", local = "paik")
 
   data <- haahka::tile_observations(data, type)
+
+  month_labels <- haahka::get_months(locale, "short")
+
+  translator[["set_translation_language"]](locale)
+
+  ylab <-  translator[["t"]]("Yksilöä / havaintopäivä")
+
+  title <- translator[["t"]](title)
 
   plot <-
     ggplot2::ggplot() +
@@ -104,17 +122,17 @@ function(type, sp) {
     ) +
     ggplot2::scale_x_date(
       breaks = seq(as.Date("2000-01-01"), by = "month", length.out = 12),
-      date_labels = "%b",
+      labels = month_labels,
       limits = as.Date(c("2000-01-01", "2000-12-31")),
       expand = c(0, 0)
     ) +
     ggplot2::scale_y_continuous(
       limits = c(0, NA),
-      expand = ggplot2::expansion(mult = c(0, .2))
+      expand = ggplot2::expansion(mult = c(0, .25))
     ) +
     ggplot2::xlab(NULL) +
-    ggplot2::ylab("Individuals / obs. day") +
-    ggplot2::ggtitle(sprintf("Average number of %s birds", type_label)) +
+    ggplot2::ylab(ylab) +
+    ggplot2::ggtitle(title) +
     ggplot2::theme_gray(base_size = 24) +
     ggplot2::theme(
       plot.title = ggplot2::element_text(
