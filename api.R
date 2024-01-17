@@ -1,4 +1,5 @@
 #* @apiTitle Haahka
+#* @apiDescription Bird Migration browser HTTP API.
 #* @apiTOS https://laji.fi/en/about/845
 #* @apiContact list(name = "laji.fi support", email = "helpdesk@laji.fi")
 #* @apiLicense list(name = "MIT", url = "https://opensource.org/licenses/MIT")
@@ -10,6 +11,7 @@ suppressPackageStartupMessages({
   library(callr, warn.conflicts = FALSE, quietly = TRUE)
   library(ggplot2, warn.conflicts = FALSE, quietly = TRUE)
   library(haahka, warn.conflicts = FALSE, quietly = TRUE)
+  library(plumber, warn.conflicts = FALSE, quietly = TRUE)
   library(pool, warn.conflicts = FALSE, quietly = TRUE)
   library(rapidoc, warn.conflicts = FALSE, quietly = TRUE)
   library(RPostgres, warn.conflicts = FALSE, quietly = TRUE)
@@ -38,7 +40,7 @@ function(req, res) {
 
   } else {
 
-    forward()
+    plumber::forward()
 
   }
 
@@ -195,8 +197,14 @@ function(req) {
 #* @serializer html
 function() {
 
+  suffix <- switch(Sys.getenv("BRANCH"), dev = "-dev", "")
+
+  spec_url <- sprintf(
+    "https://haahka%s.laji.fi/api/__docs__/openapi.json", suffix
+  )
+
   rapidoc::rapidoc_spec(
-    spec_url = "./openapi.json",
+    spec_url = spec_url,
     bg_color = "#141B15",
     text_color = "#FFFFFF",
     primary_color = "#55AAE2",
@@ -212,7 +220,9 @@ function() {
     font_size = "largest",
     sort_tags = "false",
     sort_endpoints_by = "summary",
-    allow_spec_file_load = "false"
+    allow_spec_file_load = "false",
+    allow_server_selection = "false",
+    allow-authentication = "false"
   )
 
 }
