@@ -27,7 +27,21 @@ download_descriptions <- function(taxon) {
     query = list(lang = "multi")
   )
 
-  httr::content(res)
+  message(
+    sprintf("INFO [%s] Updated %s description", format(Sys.time()), taxon)
+  )
+
+  res <- httr::content(res)
+
+  default <- which(vapply(res, getElement, "", "id") == "default")
+
+  if (length(default) > 0L) {
+
+    res <- res[[default]]
+
+  }
+
+  res
 
 }
 
