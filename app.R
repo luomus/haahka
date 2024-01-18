@@ -48,7 +48,7 @@ unlink("www/img/sp_images.zip")
 
 con <- pool::dbPool(RPostgres::Postgres(), dbname = Sys.getenv("DB_NAME"))
 
-sp_data <- haahka_taxa()
+sp_data <- haahka::haahka_taxa()
 
 translator <- shiny.i18n::Translator[["new"]](
   translation_json_path = "translation.json"
@@ -1029,150 +1029,145 @@ server <- function(input, output, session) {
       date = as.Date(paste(.data[["year"]], .data[["day"]]), "%Y %j")
     )
 
-    payload <- NULL
+    and <- i18n()[["t"]](" ja ")
 
-    if (nrow(records_current) > 0) {
-
-      and <- i18n()[["t"]](" ja ")
-
-      payload <- shinydashboardPlus::box(
-        width = 12,
-        solidHeader = FALSE,
-        title = i18n()[["t"]]("Runsausennätykset"),
-        status = "info",
-        shiny::fluidRow(
+    shinydashboardPlus::box(
+      width = 12,
+      solidHeader = FALSE,
+      title = i18n()[["t"]]("Runsausennätykset"),
+      status = "info",
+      shiny::fluidRow(
+        shiny::column(
+          width = 12,
+          shiny::tagList(shiny::h4(i18n()[["t"]]("Kevät"), class = "record")),
           shiny::column(
-            width = 12,
-            shiny::tagList(shiny::h4(i18n()[["t"]]("Kevät"), class = "record")),
-            shiny::column(
-              width = 6,
-              shiny::tagList(
-                shiny::h5(i18n()[["t"]]("Muuttavat"), class = "record"),
-                shiny::div(
-                  class = "record",
-                  shiny::column(
-                    width = 3,
-                    shiny::icon("trophy", class = "icon-record icon-gold")
-                  ),
-                  shiny::column(
-                    width = 9,
-                    shiny::p(
-                      get_value("Spring", "Migr", "Sum", records_current, and),
-                      class = "record-number"
-                    )
-                  ),
-                  shiny::column(
-                    width = 3, shiny::icon("calendar", class = "icon-record")
-                  ),
-                  shiny::column(
-                    width = 9,
-                    shiny::p(
-                      get_value(
-                        "Spring", "Migr", "date_string", records_current, and
-                      )
+            width = 6,
+            shiny::tagList(
+              shiny::h5(i18n()[["t"]]("Muuttavat"), class = "record"),
+              shiny::div(
+                class = "record",
+                shiny::column(
+                  width = 3,
+                  shiny::icon("trophy", class = "icon-record icon-gold")
+                ),
+                shiny::column(
+                  width = 9,
+                  shiny::p(
+                    get_value("Spring", "Migr", "Sum", records_current, and),
+                    class = "record-number"
+                  )
+                ),
+                shiny::column(
+                  width = 3, shiny::icon("calendar", class = "icon-record")
+                ),
+                shiny::column(
+                  width = 9,
+                  shiny::p(
+                    get_value(
+                      "Spring", "Migr", "date_string", records_current, and
                     )
                   )
                 )
               )
-            ),
-            shiny::column(
-              width = 6,
-              shiny::tagList(
-                shiny::h5(i18n()[["t"]]("Paikalliset"), class = "record"),
-                shiny::div(
-                  class = "record",
-                  shiny::column(
-                    width = 3,
-                    shiny::icon("trophy", class = "icon-record icon-gold")
-                  ),
-                  shiny::column(
-                    width = 9,
-                    shiny::p(
-                      get_value(
-                        "Spring", "Local", "Sum", records_current, and
-                      ),
-                      class = "record-number"
-                    )
-                  ),
-                  shiny::column(
-                    width = 3, shiny::icon("calendar", class = "icon-record")
-                  ),
-                  shiny::column(
-                    width = 9,
-                    shiny::p(
-                      get_value(
-                        "Spring", "Local", "date_string", records_current, and
-                      )
+            )
+          ),
+          shiny::column(
+            width = 6,
+            shiny::tagList(
+              shiny::h5(i18n()[["t"]]("Paikalliset"), class = "record"),
+              shiny::div(
+                class = "record",
+                shiny::column(
+                  width = 3,
+                  shiny::icon("trophy", class = "icon-record icon-gold")
+                ),
+                shiny::column(
+                  width = 9,
+                  shiny::p(
+                    get_value(
+                      "Spring", "Local", "Sum", records_current, and
+                    ),
+                    class = "record-number"
+                  )
+                ),
+                shiny::column(
+                  width = 3, shiny::icon("calendar", class = "icon-record")
+                ),
+                shiny::column(
+                  width = 9,
+                  shiny::p(
+                    get_value(
+                      "Spring", "Local", "date_string", records_current, and
                     )
                   )
                 )
               )
             )
           )
-        ),
-        shiny::fluidRow(
+        )
+      ),
+      shiny::fluidRow(
+        shiny::column(
+          width = 12,
+          shiny::tagList(shiny::h4(i18n()[["t"]]("Syksy"), class = "record")),
           shiny::column(
-            width = 12,
-            shiny::tagList(shiny::h4(i18n()[["t"]]("Syksy"), class = "record")),
-            shiny::column(
-              width = 6,
-              shiny::tagList(
-                shiny::h5(i18n()[["t"]]("Muuttavat"), class = "record"),
-                shiny::div(
-                  class = "record",
-                  shiny::column(
-                    width = 3,
-                    shiny::icon("trophy", class = "icon-record icon-gold")
-                  ),
-                  shiny::column(
-                    width = 9,
-                    shiny::p(
-                      get_value("Autumn", "Migr", "Sum", records_current, and),
-                      class = "record-number"
-                    )
-                  ),
-                  shiny::column(
-                    width = 3, shiny::icon("calendar", class = "icon-record")
-                  ),
-                  shiny::column(
-                    width = 9,
-                    shiny::p(
-                      get_value(
-                        "Autumn", "Migr", "date_string", records_current, and
-                      )
+            width = 6,
+            shiny::tagList(
+              shiny::h5(i18n()[["t"]]("Muuttavat"), class = "record"),
+              shiny::div(
+                class = "record",
+                shiny::column(
+                  width = 3,
+                  shiny::icon("trophy", class = "icon-record icon-gold")
+                ),
+                shiny::column(
+                  width = 9,
+                  shiny::p(
+                    get_value("Autumn", "Migr", "Sum", records_current, and),
+                    class = "record-number"
+                  )
+                ),
+                shiny::column(
+                  width = 3, shiny::icon("calendar", class = "icon-record")
+                ),
+                shiny::column(
+                  width = 9,
+                  shiny::p(
+                    get_value(
+                      "Autumn", "Migr", "date_string", records_current, and
                     )
                   )
                 )
               )
-            ),
-            shiny::column(
-              width = 6,
-              shiny::tagList(
-                shiny::h5(i18n()[["t"]]("Paikalliset"), class = "record"),
-                shiny::div(
-                  class = "record",
-                  shiny::column(
-                    width = 3,
-                    shiny::icon("trophy", class = "icon-record icon-gold")
-                  ),
-                  shiny::column(
-                    width = 9,
-                    shiny::p(
-                      get_value(
-                        "Autumn", "Local", "Sum", records_current, and
-                      ),
-                      class = "record-number"
-                    )
-                  ),
-                  shiny::column(
-                    width = 3, shiny::icon("calendar", class = "icon-record")
-                  ),
-                  shiny::column(
-                    width = 9,
-                    shiny::p(
-                      get_value(
-                        "Autumn", "Local", "date_string", records_current, and
-                      )
+            )
+          ),
+          shiny::column(
+            width = 6,
+            shiny::tagList(
+              shiny::h5(i18n()[["t"]]("Paikalliset"), class = "record"),
+              shiny::div(
+                class = "record",
+                shiny::column(
+                  width = 3,
+                  shiny::icon("trophy", class = "icon-record icon-gold")
+                ),
+                shiny::column(
+                  width = 9,
+                  shiny::p(
+                    get_value(
+                      "Autumn", "Local", "Sum", records_current, and
+                    ),
+                    class = "record-number"
+                  )
+                ),
+                shiny::column(
+                  width = 3, shiny::icon("calendar", class = "icon-record")
+                ),
+                shiny::column(
+                  width = 9,
+                  shiny::p(
+                    get_value(
+                      "Autumn", "Local", "date_string", records_current, and
                     )
                   )
                 )
@@ -1181,11 +1176,7 @@ server <- function(input, output, session) {
           )
         )
       )
-
-    }
-
-    payload
-
+    )
   })
 
   output[["render_helpsections"]] <- shiny::renderUI({
