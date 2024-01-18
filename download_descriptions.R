@@ -37,7 +37,7 @@ download_descriptions <- function(taxon) {
 
   if (length(default) > 0L) {
 
-    res <- res[[default]]
+    res <- list(res[[default]])
 
   }
 

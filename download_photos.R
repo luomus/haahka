@@ -51,12 +51,12 @@ download_file <- function(taxon, path = "var/data/sp_images/org") {
 
     if (ans == 0) {
 
-      message(sprintf("INFO [%s] Updated %s image.", format(Sys.time()), taxon))
+      message(sprintf("INFO [%s] Updated %s image", format(Sys.time()), taxon))
 
     } else {
 
       message(
-        sprintf("ERROR [%s] %s image update failed.", format(Sys.time()), taxon)
+        sprintf("ERROR [%s] %s image update failed", format(Sys.time()), taxon)
       )
 
     }
