@@ -585,11 +585,6 @@ server <- function(input, output, session) {
         tickInterval = time_units,
         plotBands = pb_list
       )
-      hc <- highcharter::hc_plotOptions(
-        hc,
-        line = list(marker = list(enabled = input[["show_markers"]])),
-        spline = list(marker = list(enabled = input[["show_markers"]]))
-      )
       hc <- highcharter::hc_title(
         hc, text = i18n()[["t"]]("Muuttajamäärien keskiarvot")
       )
