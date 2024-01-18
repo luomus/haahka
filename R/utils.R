@@ -279,7 +279,7 @@ get_value <- function(season, type, value, records, and = "and") {
 
   }
 
-  if (num == 0) {
+  if (any(num == 0)) {
 
     res <- "-"
 
