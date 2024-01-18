@@ -998,6 +998,30 @@
       "Repository": "CRAN",
       "Hash": "09eb987710984fc2905c7129c7d85e65"
     },
+    "plumber": {
+      "Package": "plumber",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "R6",
+        "crayon",
+        "ellipsis",
+        "httpuv",
+        "jsonlite",
+        "lifecycle",
+        "magrittr",
+        "mime",
+        "promises",
+        "rlang",
+        "sodium",
+        "stringi",
+        "swagger",
+        "webutils"
+      ],
+      "Hash": "8b65a7a00ef8edc5ddc6fabf0aff1194"
+    },
     "pool": {
       "Package": "pool",
       "Version": "1.0.1",
@@ -1045,14 +1069,14 @@
     },
     "ps": {
       "Package": "ps",
-      "Version": "1.7.5",
+      "Version": "1.7.6",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "utils"
       ],
-      "Hash": "709d852d33178db54b17c722e5b1e594"
+      "Hash": "dd2b9319ee0656c8acf45c7f40c59de7"
     },
     "purrr": {
       "Package": "purrr",
@@ -1326,6 +1350,13 @@
       ],
       "Hash": "5045276dcad7ad9b785d593b1a710681"
     },
+    "sodium": {
+      "Package": "sodium",
+      "Version": "1.3.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "dd86d6fd2a01d4eb3777dfdee7076d56"
+    },
     "sourcetools": {
       "Package": "sourcetools",
       "Version": "0.1.7-1",
@@ -1365,6 +1396,13 @@
         "vctrs"
       ],
       "Hash": "960e2ae9e09656611e0b8214ad543207"
+    },
+    "swagger": {
+      "Package": "swagger",
+      "Version": "3.33.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f28d25ed70c903922254157c11b0081d"
     },
     "sys": {
       "Package": "sys",
@@ -1433,14 +1471,14 @@
     },
     "timechange": {
       "Package": "timechange",
-      "Version": "0.2.0",
+      "Version": "0.3.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "cpp11"
       ],
-      "Hash": "8548b44f79a35ba1791308b61e6012d7"
+      "Hash": "c5f3c201b931cd6474d17d8700ccb1c8"
     },
     "tinytest": {
       "Package": "tinytest",
@@ -1509,6 +1547,17 @@
         "shiny"
       ],
       "Hash": "93e6b6c8ae3f81d4be77a0dc74e5cf5e"
+    },
+    "webutils": {
+      "Package": "webutils",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "curl",
+        "jsonlite"
+      ],
+      "Hash": "6a7f2a3084c7249d2f1466d6e4cc2e84"
     },
     "withr": {
       "Package": "withr",
