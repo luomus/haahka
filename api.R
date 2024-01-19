@@ -209,8 +209,13 @@ function(type, sp, locale = "fi") {
       legend.position = "bottom",
       legend.title = ggplot2::element_blank(),
       legend.text = ggplot2::element_text(colour = "#333333"),
-      legend.background = ggplot2::element_rect(fill = "transparent"),
-      legend.box.background = ggplot2::element_rect(fill = "transparent"),
+      legend.background = ggplot2::element_rect(
+        fill = "transparent", color = NA
+      ),
+      legend.box.background = ggplot2::element_rect(
+        fill = "transparent", color = NA
+      ),
+      legend.key =ggplot2::element_rect(fill = "transparent", color = NA),
       plot.background = ggplot2::element_rect(fill = "transparent", color = NA)
     )
 
