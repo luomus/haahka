@@ -1018,7 +1018,6 @@ server <- function(input, output, session) {
 
     records_current <- get_current_records()
     records_current <- dplyr::collect(records_current)
-    records_current <- dplyr::filter(records_current, !is.na(.data[["period"]]))
     records_current <- dplyr::mutate(
       records_current,
       date = as.Date(paste(.data[["year"]], .data[["day"]]), "%Y %j")
