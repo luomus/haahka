@@ -146,7 +146,7 @@ function(type, sp, locale = "fi") {
     plot <-
       plot +
       ggplot2::geom_line(
-        ggplot2::aes(day, .data[[type]], colour = .data[["epoch"]]),
+        ggplot2::aes(day, .data[["value"]], colour = .data[["epoch"]]),
         plot_data,
         lwd = 2,
         col = "#1f78b4"
