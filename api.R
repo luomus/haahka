@@ -131,30 +131,30 @@ function(type, sp, locale = "fi") {
         by = "day"
       )
 
-      plot_data <- tidyr::pivot_longer(
-        plot_data, -dplyr::all_of("day"), names_to = "epoch"
-      )
-
-      plot_data[["epoch"]] <- factor(
-        plot_data[["epoch"]],
-        c("totalp1", "totalp2", "totalp3", "totalp4"),
-        ordered = TRUE
-      )
-
-      plot <-
-        plot +
-        ggplot2::geom_line(
-          ggplot2::aes(day, .data[[type]], colour = .data[["epoch"]]),
-          plot_data,
-          lwd = 2,
-          col = "#1f78b4"
-        ) +
-        ggplot2::scale_color_manual(
-          labels = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
-          values = c("#1f78b4", "#ff7f0e", "#2ca02c", "#d62728")
-        )
-
     }
+
+    plot_data <- tidyr::pivot_longer(
+      plot_data, -dplyr::all_of("day"), names_to = "epoch"
+    )
+
+    plot_data[["epoch"]] <- factor(
+      plot_data[["epoch"]],
+      c("totalp1", "totalp2", "totalp3", "totalp4"),
+      ordered = TRUE
+    )
+
+    plot <-
+      plot +
+      ggplot2::geom_line(
+        ggplot2::aes(day, .data[[type]], colour = .data[["epoch"]]),
+        plot_data,
+        lwd = 2,
+        col = "#1f78b4"
+      ) +
+      ggplot2::scale_color_manual(
+        labels = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
+        values = c("#1f78b4", "#ff7f0e", "#2ca02c", "#d62728")
+      )
 
   } else {
 
