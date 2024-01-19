@@ -913,10 +913,6 @@ server <- function(input, output, session) {
 
   output[["migration_medians"]] <- highcharter::renderHighchart({
 
-    sp_current <- get_current_sp()
-
-    origin <- as.Date("2000-01-01")
-
     plot_data <- get_current_stats()
     plot_data <- dplyr::collect(plot_data)
     plot_data <- dplyr::select(
@@ -954,7 +950,7 @@ server <- function(input, output, session) {
         ordered = TRUE
       ),
       epochnum = as.numeric(.data[["epoch"]]) - 1,
-      date = origin + .data[["value"]],
+      date = as.Date("2000-01-01") + .data[["value"]],
       date_print = haahka::make_date_label(
         .data[["date"]], input[["language"]]
       )
