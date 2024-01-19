@@ -709,9 +709,6 @@ server <- function(input, output, session) {
         tickInterval = time_units,
         plotBands = pb_list
       )
-      hc <- highcharter::hc_plotOptions(
-        hc, line = list(marker = list(enabled = FALSE))
-      )
       hc <- highcharter::hc_title(
         hc, text = i18n()[["t"]]("Runsauksien muutokset")
       )
