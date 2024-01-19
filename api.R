@@ -103,7 +103,7 @@ function(type, sp, locale = "fi") {
     migration = "muutto",
     local = "paik",
     change = "totalp",
-    median = "phen"
+    medians = "phen"
   )
 
   month_labels <- haahka::get_months(locale, "short")
