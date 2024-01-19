@@ -73,7 +73,7 @@ function() {
 #* Get graphics for a species
 #* @tag graphics
 #* @get /api/plot/<type:str>/<sp:str>
-#* @param type:str Migration or Local
+#* @param type:str migration, local or change
 #* @param sp:str Taxon code
 #* @param locale:str Locale
 #* @serializer png list(width = 1200, height = 600, bg = "transparent")
@@ -89,12 +89,11 @@ function(type, sp, locale = "fi") {
   title <- switch(
     type,
     migration = "Muuttajamäärien keskiarvot",
-    local = "Paikallisten määrien keskiarvot"
+    local = "Paikallisten määrien keskiarvot",
+    change = "Runsauksien muutokset"
   )
 
-  type <- switch(type, migration = "muutto", local = "paik")
-
-  data <- haahka::tile_observations(data, type)
+  type <- switch(type, migration = "muutto", local = "paik", change = "totalp")
 
   month_labels <- haahka::get_months(locale, "short")
 
@@ -118,10 +117,59 @@ function(type, sp, locale = "fi") {
         ymax = Inf
       ),
       fill = "#f0f0f566"
-    ) +
-    ggplot2::geom_line(
-      ggplot2::aes(day, .data[[type]]), data, lwd = 2, col = "#1f78b4"
-    ) +
+    )
+
+  if (type == "totalp") {
+
+    plot_data <- haahka::tile_observations(data, paste0(type, 1))
+
+    for (i in 1:3) {
+
+      plot_data <- merge(
+        plot_data,
+        haahka::tile_observations(data, paste0(type, i + 1)),
+        by = "day"
+      )
+
+      plot_data <- tidyr::pivot_longer(
+        plot_data, -dplyr::all_of("day"), names_to = "epoch"
+      )
+
+      plot_data[["epoch"]] <- factor(
+        plot_data[["epoch"]],
+        c("totalp1", "totalp2", "totalp3", "totalp4"),
+        ordered = TRUE
+      )
+
+      plot <-
+        plot +
+        ggplot2::geom_line(
+          ggplot2::aes(day, .data[[type]], colour = .data[["epoch"]]),
+          plot_data,
+          lwd = 2,
+          col = "#1f78b4"
+        ) +
+        ggplot2::scale_color_manual(
+          labels = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
+          values = c("#1f78b4", "#ff7f0e", "#2ca02c", "#d62728")
+        )
+
+    }
+
+  } else {
+
+    plot_data <- haahka::tile_observations(data, type)
+
+    plot <-
+      plot +
+      ggplot2::geom_line(
+        ggplot2::aes(day, .data[[type]]), plot_data, lwd = 2, col = "#1f78b4"
+      )
+
+  }
+
+  plot <-
+    plot +
     ggplot2::scale_x_date(
       breaks = seq(as.Date("2000-01-01"), by = "month", length.out = 12),
       labels = month_labels,
@@ -159,6 +207,8 @@ function(type, sp, locale = "fi") {
       panel.grid.minor.x = ggplot2::element_blank(),
       panel.grid.major.y = ggplot2::element_line(colour = "#e6e6e6"),
       panel.grid.minor.y = ggplot2::element_blank(),
+      legend.position = "bottom",
+      legend.title = ggplot2::element_blank(),
       plot.background = ggplot2::element_rect(fill = "transparent", color = NA)
     )
 
