@@ -946,7 +946,7 @@ server <- function(input, output, session) {
       epoch = factor(
         .data[["epoch"]],
         levels = c("p1", "p2", "p3", "p4"),
-        labels = rev(c("1979-1999", "2000-2009", "2010-2019", "2020-")),
+        labels = c("2020-", "2010-2019", "2000-2009", "1979-1999"),
         ordered = TRUE
       ),
       epochnum = as.numeric(.data[["epoch"]]) - 1,
