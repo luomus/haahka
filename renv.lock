@@ -1024,7 +1024,7 @@
     },
     "pool": {
       "Package": "pool",
-      "Version": "1.0.1",
+      "Version": "1.0.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1033,10 +1033,9 @@
         "R6",
         "later",
         "methods",
-        "rlang",
-        "withr"
+        "rlang"
       ],
-      "Hash": "52d086ff1a2ccccbae6d462cb0773835"
+      "Hash": "b1b9ed1ae7c4b93b7be712e0cedfab67"
     },
     "processx": {
       "Package": "processx",
