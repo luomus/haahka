@@ -1048,7 +1048,9 @@ server <- function(input, output, session) {
                 shiny::column(
                   width = 9,
                   shiny::p(
-                    get_value("Spring", "Migr", "Sum", records_current, and),
+                    haahka::get_value(
+                      "Spring", "Migr", "Sum", records_current, and
+                    ),
                     class = "record-number"
                   )
                 ),
@@ -1058,7 +1060,7 @@ server <- function(input, output, session) {
                 shiny::column(
                   width = 9,
                   shiny::p(
-                    get_value(
+                    haahka::get_value(
                       "Spring", "Migr", "date_string", records_current, and
                     )
                   )
@@ -1079,7 +1081,7 @@ server <- function(input, output, session) {
                 shiny::column(
                   width = 9,
                   shiny::p(
-                    get_value(
+                    haahka::get_value(
                       "Spring", "Local", "Sum", records_current, and
                     ),
                     class = "record-number"
@@ -1091,7 +1093,7 @@ server <- function(input, output, session) {
                 shiny::column(
                   width = 9,
                   shiny::p(
-                    get_value(
+                    haahka::get_value(
                       "Spring", "Local", "date_string", records_current, and
                     )
                   )
@@ -1118,7 +1120,9 @@ server <- function(input, output, session) {
                 shiny::column(
                   width = 9,
                   shiny::p(
-                    get_value("Autumn", "Migr", "Sum", records_current, and),
+                    haahka::get_value(
+                      "Autumn", "Migr", "Sum", records_current, and
+                    ),
                     class = "record-number"
                   )
                 ),
@@ -1128,7 +1132,7 @@ server <- function(input, output, session) {
                 shiny::column(
                   width = 9,
                   shiny::p(
-                    get_value(
+                    haahka::get_value(
                       "Autumn", "Migr", "date_string", records_current, and
                     )
                   )
@@ -1149,7 +1153,7 @@ server <- function(input, output, session) {
                 shiny::column(
                   width = 9,
                   shiny::p(
-                    get_value(
+                    haahka::get_value(
                       "Autumn", "Local", "Sum", records_current, and
                     ),
                     class = "record-number"
@@ -1161,7 +1165,7 @@ server <- function(input, output, session) {
                 shiny::column(
                   width = 9,
                   shiny::p(
-                    get_value(
+                    haahka::get_value(
                       "Autumn", "Local", "date_string", records_current, and
                     )
                   )
@@ -1278,7 +1282,7 @@ server <- function(input, output, session) {
       session,
       "species",
       label =  i18n()[["t"]]("Valitse laji"),
-      choices = get_species_names(input[["language"]], sp_data),
+      choices = haahka::get_species_names(input[["language"]], sp_data),
       selected = input[["species"]]
     )
   )
