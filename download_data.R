@@ -22,7 +22,7 @@ options(
   finbif_use_cache_metadata = TRUE
 )
 
-taxa <- haahka_taxa()
+taxa <- haahka::haahka_taxa()
 
 filter <- c(collection = "HR.2931")
 

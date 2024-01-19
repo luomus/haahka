@@ -259,6 +259,12 @@ get_value <- function(season, type, value, records, and = "and") {
 
   num <- row[[record_value]]
 
+  if (length(num) == 0) {
+
+    num <- 0
+
+  }
+
   date <- row[["date"]]
 
   res <- switch(value, date_string = date, Sum = num)
