@@ -73,14 +73,18 @@ function() {
 #* Get graphics for a species
 #* @tag graphics
 #* @get /api/plot/<type:str>/<sp:str>
-#* @param type:str migration, local or change
+#* @param type:str migration, local, change or medians
 #* @param sp:str Taxon code
 #* @param locale:str Locale
 #* @serializer png list(width = 1200, height = 600, bg = "transparent")
 #* @response 200 A png file response
 function(type, sp, locale = "fi") {
 
-  data <- dplyr::tbl(con, paste0(sp, "_data"))
+  data <- switch(
+    type,
+    medians = dplyr::tbl(con, paste0(sp, "_stats")),
+    dplyr::tbl(con, paste0(sp, "_data"))
+  )
 
   data <- dplyr::collect(data)
 
@@ -90,10 +94,17 @@ function(type, sp, locale = "fi") {
     type,
     migration = "Muuttajamäärien keskiarvot",
     local = "Paikallisten määrien keskiarvot",
-    change = "Runsauksien muutokset"
+    change = "Runsauksien muutokset",
+    medians = "Muuton ajoittumisen mediaanipäivämäärä"
   )
 
-  type <- switch(type, migration = "muutto", local = "paik", change = "totalp")
+  type <- switch(
+    type,
+    migration = "muutto",
+    local = "paik",
+    change = "totalp",
+    median = "phen"
+  )
 
   month_labels <- haahka::get_months(locale, "short")
 
@@ -146,14 +157,73 @@ function(type, sp, locale = "fi") {
     plot <-
       plot +
       ggplot2::geom_line(
-        ggplot2::aes(day, .data[["value"]], colour = .data[["epoch"]]),
+        ggplot2::aes(
+          .data[["day"]], .data[["value"]], colour = .data[["epoch"]]
+        ),
         plot_data,
         lwd = 2
       ) +
       ggplot2::scale_color_manual(
         labels = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
         values = c("#1f78b4", "#ff7f0e", "#2ca02c", "#d62728")
+      ) +
+      ggplot2::scale_y_continuous(
+        limits = c(0, NA), expand = ggplot2::expansion(mult = c(0, 1 / 3))
+      ) +
+      ggplot2::xlab(NULL) +
+      ggplot2::ylab(ylab)
+
+  } else if (type == "phen") {
+
+    plot_data <- dplyr::select(
+      data,
+      dplyr::all_of(
+        c(
+          "sphenp1",
+          "sphenp2",
+          "sphenp3",
+          "sphenp4",
+          "aphenp1",
+          "aphenp2",
+          "aphenp3",
+          "aphenp4"
+        )
       )
+    )
+    plot_data <- tidyr::pivot_longer(
+      plot_data, dplyr::everything(), names_to = "variable"
+    )
+    plot_data <- tidyr::separate(
+      plot_data, col = "variable", into = c("season", "epoch"), sep = type
+    )
+    plot_data <- dplyr::mutate(
+      plot_data,
+      epoch = factor(
+        .data[["epoch"]],
+        levels = c("p1", "p2", "p3", "p4"),
+        labels = c("2020-", "2010-2019", "2000-2009", "1979-1999"),
+        ordered = TRUE
+      ),
+      epochnum = as.numeric(.data[["epoch"]]) - 1,
+      date = as.Date("2000-01-01") + .data[["value"]],
+      date_print = haahka::make_date_label(.data[["date"]], locale)
+    )
+
+    plot <-
+      plot +
+      ggplot2::geom_point(
+        ggplot2::aes(
+          .data[["date"]], .data[["epochnum"]], colour = .data[["epoch"]]
+        ),
+        plot_data,
+        lwd = 2
+      ) +
+      ggplot2::scale_color_manual(
+        labels = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
+        values = c("#1f78b4", "#ff7f0e", "#2ca02c", "#d62728")
+      ) +
+      ggplot2::xlab(NULL) +
+      ggplot2::ylab(NULL)
 
   } else {
 
@@ -163,7 +233,12 @@ function(type, sp, locale = "fi") {
       plot +
       ggplot2::geom_line(
         ggplot2::aes(day, .data[[type]]), plot_data, lwd = 2, col = "#1f78b4"
-      )
+      ) +
+      ggplot2::scale_y_continuous(
+        limits = c(0, NA), expand = ggplot2::expansion(mult = c(0, 1 / 3))
+      ) +
+      ggplot2::xlab(NULL) +
+      ggplot2::ylab(ylab)
 
   }
 
@@ -175,11 +250,6 @@ function(type, sp, locale = "fi") {
       limits = as.Date(c("2000-01-01", "2000-12-31")),
       expand = c(0, 0)
     ) +
-    ggplot2::scale_y_continuous(
-      limits = c(0, NA), expand = ggplot2::expansion(mult = c(0, 1 / 3))
-    ) +
-    ggplot2::xlab(NULL) +
-    ggplot2::ylab(ylab) +
     ggplot2::ggtitle(title) +
     ggplot2::theme_gray(base_size = 24) +
     ggplot2::theme(
