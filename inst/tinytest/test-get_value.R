@@ -11,3 +11,4 @@ expect_identical(
   get_value("Autumn", "Migr", "date_string", records), "2000-04-10"
 )
 expect_identical(get_value("Spring", "Migr", "Sum", records), "-")
+expect_identical(get_value("Spring", "Local", "Sum", records), "-")
