@@ -148,8 +148,7 @@ function(type, sp, locale = "fi") {
       ggplot2::geom_line(
         ggplot2::aes(day, .data[["value"]], colour = .data[["epoch"]]),
         plot_data,
-        lwd = 2,
-        col = "#1f78b4"
+        lwd = 2
       ) +
       ggplot2::scale_color_manual(
         labels = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
