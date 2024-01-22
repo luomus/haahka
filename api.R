@@ -213,10 +213,10 @@ function(type, sp, locale = "fi") {
       plot +
       ggplot2::geom_point(
         ggplot2::aes(
-          .data[["date"]], .data[["epochnum"]], colour = .data[["epoch"]]
+          .data[["date"]], .data[["epochnum"]] + 0.5, colour = .data[["epoch"]]
         ),
         plot_data,
-        size = 20
+        size = 30
       ) +
       ggplot2::scale_color_manual(
         labels = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
