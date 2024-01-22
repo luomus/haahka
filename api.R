@@ -216,11 +216,21 @@ function(type, sp, locale = "fi") {
           .data[["date"]], .data[["epochnum"]], colour = .data[["epoch"]]
         ),
         plot_data,
-        lwd = 2
+        size = 20
       ) +
       ggplot2::scale_color_manual(
         labels = c("1979-1999", "2000-2009", "2010-2019", "2020-"),
         values = c("#1f78b4", "#ff7f0e", "#2ca02c", "#d62728")
+      ) +
+      ggplot2::scale_y_continuous(
+        breaks = 0:4,
+        labels = c("1979-1999", "2000-2009", "2010-2019", "2020-", ""),
+        limits = c(0, 4),
+        expand = c(0, .01)
+      ) +
+      +
+      ggplot2::guides(
+        colour = ggplot2::guide_legend(override.aes = list(size = 10))
       ) +
       ggplot2::xlab(NULL) +
       ggplot2::ylab(NULL)
@@ -232,7 +242,10 @@ function(type, sp, locale = "fi") {
     plot <-
       plot +
       ggplot2::geom_line(
-        ggplot2::aes(day, .data[[type]]), plot_data, lwd = 2, col = "#1f78b4"
+        ggplot2::aes(day, .data[[type]]),
+        plot_data,
+        linewidth = 2,
+        col = "#1f78b4"
       ) +
       ggplot2::scale_y_continuous(
         limits = c(0, NA), expand = ggplot2::expansion(mult = c(0, 1 / 3))
@@ -288,6 +301,21 @@ function(type, sp, locale = "fi") {
       legend.key =ggplot2::element_rect(fill = "transparent", color = NA),
       plot.background = ggplot2::element_rect(fill = "transparent", color = NA)
     )
+
+  if (type == "phen") {
+
+    plot <-
+      plot +
+      ggplot2::theme(
+      axis.text.y = ggplot2::element_text(
+        margin = ggplot2::margin(0, 12, 0, 0),
+        colour = "#666666",
+        size = 20,
+        vjust = -3
+      )
+    )
+
+  }
 
   print(plot)
 
