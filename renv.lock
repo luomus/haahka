@@ -1595,7 +1595,7 @@
     },
     "xts": {
       "Package": "xts",
-      "Version": "0.13.1",
+      "Version": "0.13.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1603,7 +1603,7 @@
         "methods",
         "zoo"
       ],
-      "Hash": "b8aa1235fd8b0ff10756150b792dc60f"
+      "Hash": "7a7e2b2f6ef5fa41fb766d2a885af39e"
     },
     "yaml": {
       "Package": "yaml",
