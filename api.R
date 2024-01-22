@@ -228,7 +228,6 @@ function(type, sp, locale = "fi") {
         limits = c(0, 4),
         expand = c(0, .01)
       ) +
-      +
       ggplot2::guides(
         colour = ggplot2::guide_legend(override.aes = list(size = 10))
       ) +
