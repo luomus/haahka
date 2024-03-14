@@ -1,4 +1,4 @@
-FROM ghcr.io/luomus/base-r-image@sha256:0f9cc984724cfc5a268ecc9bfea057fc8f6ef2251f7dcf96baa173de4579e711
+FROM ghcr.io/luomus/base-r-image@sha256:b274fdd5ea06de31652330f805ea75e4ecdfb054399a2da812088fde11e3e309
 
 ENV FINBIF_USER_AGENT=https://github.com/luomus/haahka
 ENV STATUS_DIR="var/status"
