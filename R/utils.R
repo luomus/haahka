@@ -202,8 +202,6 @@ tile_observations <- function(x, value) {
     na.rm = TRUE
   )
 
-  avgs <- round(avgs, 2)
-
   ans <- data.frame(day = days)
 
   ans[[value]] <- as.vector(avgs)
