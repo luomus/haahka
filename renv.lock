@@ -44,20 +44,8 @@
     },
     "Matrix": {
       "Package": "Matrix",
-      "Version": "1.6-3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "grDevices",
-        "graphics",
-        "grid",
-        "lattice",
-        "methods",
-        "stats",
-        "utils"
-      ],
-      "Hash": "1d1b6901cf9b6b1b446bc56a7d47efa4"
+      "Version": "1.7-0",
+      "Source": "Repository"
     },
     "R6": {
       "Package": "R6",
