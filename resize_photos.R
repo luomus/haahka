@@ -9,7 +9,7 @@ resize_photo <- function(x, path = ".") {
 
   if (path != "." && !file.exists(path)) {
 
-    dir.create(path)
+    dir.create(path, recursive = TRUE)
 
   }
 

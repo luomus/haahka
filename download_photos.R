@@ -67,7 +67,12 @@ download_file <- function(taxon, path = "var/data/sp_images/org") {
 
 }
 
-if (!dir.exists("var/data/sp_images/org")) dir.create("var/data/sp_images/org")
+if (!dir.exists("var/data/sp_images/org")) {
+
+  dir.create("var/data/sp_images/org", recursive = TRUE)
+
+}
+
 taxa <- haahka::haahka_taxa()
 taxa <- taxa[["Species_Abb"]]
 meta_data <- lapply(taxa, download_file)
