@@ -12,41 +12,27 @@ parameters:
   - name: PAGE_TITLE
     required: true
     value: Haahka
-  - name: API_PORT
-    required: true
-    value: "8000"
-  - name: APP_CMD
-    required: true
-    value: '[
-      "R",
-      "-s",
-      "-e",
-      "options(shiny.autoload.r = FALSE, shiny.port = 3838);
-        library(shiny, warn.conflicts = FALSE, quietly = TRUE);
-          shiny::runApp(\"app.R\", host = \"0.0.0.0\", quiet = TRUE)"
-    ]'
   - name: DB
     required: true
     value: postgres
-  - name: DB_IMAGE
+  - name: DB_PATH
     required: true
-    value: crunchydata/crunchy-postgres:centos8-13.6-4.7.5
+    value: /var/lib/postgresql/data
+  - name: DB_DATA
+    required: true
+    value: /pgdata
   - name: DB_HEALTHCHECK
     required: true
     value: '[
       "sh",
       "-c",
-      "PGPASSWORD=$PG_PASSWORD
-        psql -h 0.0.0.0 -U $PG_USER -d $PG_DATABASE -c \"SELECT 1\""
+      "PGPASSWORD=$POSTGRES_PASSWORD
+        psql -h 0.0.0.0 -U postgres -d postgres -c \"SELECT 1\""
     ]'
   - name: DB_PORT
     required: true
     value: "5432"
-  - name: DB_USER_PASSWORD
-    required: true
-  - name: DB_PRIMARY_PASSWORD
-    required: true
-  - name: DB_SUPER_PASSWORD
+  - name: DB_PASSWORD
     required: true
   - name: STORAGE
     required: true
@@ -54,32 +40,12 @@ parameters:
   - name: SMALL_STORAGE
     required: true
     value: "3Gi"
+  - name: ACCESS_MODE
+    required: true
+    value: ReadWriteOnce
   - name: STORAGE_CLASS
     required: true
-    value: "standard-rwo"
-  - name: CRON
-    required: true
-    value: job
-  - name: CRON_IMAGE
-    required: true
-    value: docker.io/redhat/ubi9:9.3-1476
-  - name: CRON_SCHEDULE
-    required: true
-    value: "0 20 * * *"
-  - name: CRON_CMD
-    required: true
-    value: '[
-      "sh",
-      "-c",
-      "curl -s -w \"%{stderr} Code: %{response_code} URL: %{url_effective}\n\"
-        $API_HOSTNAME:$API_PORT/api/job?secret=$JOB_SECRET"
-    ]'
-  - name: CRON_LIMIT
-    required: true
-    value: "7"
-  - name: CRON_CONCURRENCY
-    required: true
-    value: "Forbid"
+    value: standard-csi
   - name: FINBIF_ACCESS_TOKEN
     required: true
   - name: FINBIF_API_URL
@@ -91,24 +57,40 @@ parameters:
   - name: APP_PORT
     required: true
     value: "3838"
+  - name: API_PORT
+    required: true
+    value: "8000"
+  - name: APP_HEALTH
+    required: true
+    value: /robots.txt
+  - name: API_HEALTH
+    required: true
+    value: /api/healthz
+  - name: LIVENESS_PERIOD
+    required: true
+    value: "30"
+  - name: FAILURE_THRESHOLD
+    required: true
+    value: "5"
+  - name: READINESS_PERIOD
+    required: true
+    value: "5"
   - name: SMTP_SERVER
     required: true
   - name: SMTP_PORT
-    required: true
-  - name: ERROR_EMAIL_TO
     required: true
   - name: ERROR_EMAIL_FROM
     required: true
   - name: HOST
     required: true
-  - name: GITHUB_SECRET
-    required: true
-    generate: expression
-    from: "[a-zA-Z0-9]{64}"
   - name: JOB_SECRET
     required: true
-    generate: expression
-    from: "[a-zA-Z0-9]{64}"
+  - name: RCLONE_ACCESS_KEY_ID
+    required: true
+  - name: RCLONE_SECRET_ACCESS_KEY
+    required: true
+  - name: OBJECT_STORE
+    required: true
 metadata:
   name: ${APP}
 objects:
@@ -119,8 +101,7 @@ objects:
   spec:
     storageClassName: ${STORAGE_CLASS}
     accessModes:
-    - ReadWriteOnce
-    persistentVolumeReclaimPolicy: Retain
+    - ${ACCESS_MODE}
     resources:
       requests:
         storage: ${STORAGE}
@@ -131,45 +112,32 @@ objects:
   spec:
     storageClassName: ${STORAGE_CLASS}
     accessModes:
-    - ReadWriteOnce
-    persistentVolumeReclaimPolicy: Retain
+    - ${ACCESS_MODE}
     resources:
       requests:
         storage: ${SMALL_STORAGE}
-- kind: ImageStream
+- kind: ConfigMap
   apiVersion: v1
   metadata:
     name: ${APP}-${BRANCH}
-    labels:
-      app: ${APP}
-  spec:
-    lookupPolicy:
-      local: true
-- kind: BuildConfig
+  data:
+    branch: ${BRANCH}
+    db_port: ${DB_PORT}
+    app_port: ${APP_PORT}
+    api_port: ${API_PORT}
+- kind: Secret
   apiVersion: v1
   metadata:
     name: ${APP}-${BRANCH}
-    labels:
-      app: ${APP}
-  spec:
-    output:
-      to:
-        kind: ImageStreamTag
-        name: ${APP}-${BRANCH}:latest
-    source:
-      type: Git
-      git:
-        uri: https://github.com/luomus/${APP}.git
-        ref: ${BRANCH}
-    strategy:
-      type: Docker
-    triggers:
-    - type: ConfigChange
-    - type: GitHub
-      github:
-        secret: ${GITHUB_SECRET}
-- kind: DeploymentConfig
-  apiVersion: v1
+  type: Opaque
+  data:
+    db_password: ${DB_PASSWORD}
+    finbif_access_token: ${FINBIF_ACCESS_TOKEN}
+    rclone_access_key_id: ${RCLONE_ACCESS_KEY_ID}
+    rclone_secret_access_key: ${RCLONE_SECRET_ACCESS_KEY}
+    job_secret: ${JOB_SECRET}
+- kind: Deployment
+  apiVersion: apps/v1
   metadata:
     name: ${APP}-${BRANCH}
     labels:
@@ -177,61 +145,83 @@ objects:
   spec:
     replicas: 1
     selector:
-      app: ${APP}
-      deploymentconfig: ${APP}-${BRANCH}
+      matchLabels:
+        app: ${APP}
+    strategy:
+      type: Recreate
     template:
       metadata:
         labels:
           app: ${APP}
-          deploymentconfig: ${APP}-${BRANCH}
+          branch: ${BRANCH}
+          port: ${APP_PORT}
       spec:
         containers:
-        - image: ${APP}-${BRANCH}:latest
+        - image: ghcr.io/luomus/${APP}:${BRANCH}
+          imagePullPolicy: Always
           name: ${APP}-${BRANCH}
-          command: ${{APP_CMD}}
+          command:
+          - 'R'
+          - '-s'
+          - '-e'
+          - >-
+            options(shiny.autoload.r = FALSE, shiny.port = 3838);
+            library(shiny, warn.conflicts = FALSE, quietly = TRUE);
+            runApp("app.R", host = "0.0.0.0", quiet = TRUE)
           env:
           - name: PGHOST
             value: ${DB}-${BRANCH}
           - name: PGPORT
-            value: ${DB_PORT}
+            valueFrom:
+              configMapKeyRef:
+                name: ${APP}-${BRANCH}
+                key: db_port
           - name: PGUSER
             value: ${DB}
           - name: PGPASSWORD
-            value: ${DB_SUPER_PASSWORD}
+            valueFrom:
+              secretKeyRef:
+                name: ${APP}-${BRANCH}
+                key: db_password
           - name: DB_NAME
-            value: ${APP}
+            value: ${DB}
           - name: API_HOSTNAME
             value: ${API}-${BRANCH}
           - name: API_PORT
-            value: ${API_PORT}
+            valueFrom:
+              configMapKeyRef:
+                name: ${APP}-${BRANCH}
+                key: api_port
           - name: BRANCH
-            value: ${BRANCH}
+            valueFrom:
+              configMapKeyRef:
+                name: ${APP}-${BRANCH}
+                key: branch
           ports:
           - containerPort: ${{APP_PORT}}
+          startupProbe:
+            httpGet:
+              path: ${APP_HEALTH}
+              port: ${{APP_PORT}}
+            failureThreshold: ${{FAILURE_THRESHOLD}}
+            periodSeconds: ${{LIVENESS_PERIOD}}
           livenessProbe:
             httpGet:
-              path: /robots.txt
+              path: ${APP_HEALTH}
               port: ${{APP_PORT}}
-            failureThreshold: 5
-            periodSeconds: 30
+            failureThreshold: ${{FAILURE_THRESHOLD}}
+            periodSeconds: ${{LIVENESS_PERIOD}}
           readinessProbe:
             httpGet:
-              path: /robots.txt
+              path: ${APP_HEALTH}
               port: ${{APP_PORT}}
-            initialDelaySeconds: 5
-            periodSeconds: 5
-    triggers:
-    - type: ConfigChange
-    - type: ImageChange
-      imageChangeParams:
-        automatic: true
-        containerNames:
-        - ${APP}-${BRANCH}
-        from:
-          kind: ImageStreamTag
-          name: ${APP}-${BRANCH}:latest
-- kind: DeploymentConfig
-  apiVersion: v1
+            periodSeconds: ${{READINESS_PERIOD}}
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "2Gi"
+- kind: Deployment
+  apiVersion: apps/v1
   metadata:
     name: ${API}-${BRANCH}
     labels:
@@ -239,25 +229,30 @@ objects:
   spec:
     replicas: 1
     selector:
-      app: ${APP}
-      deploymentconfig: ${API}-${BRANCH}
+      matchLabels:
+        app: ${APP}
     strategy:
       type: Recreate
     template:
       metadata:
         labels:
           app: ${APP}
-          deploymentconfig: ${API}-${BRANCH}
+          branch: ${BRANCH}
+          port: ${API_PORT}
       spec:
         containers:
-        - image: ${APP}-${BRANCH}:latest
+        - image: ghcr.io/luomus/${APP}:${BRANCH}
+          imagePullPolicy: Always
           name: ${API}-${BRANCH}
           volumeMounts:
           - mountPath: /home/user/var
             name: ${API}-${BRANCH}
           env:
           - name: FINBIF_ACCESS_TOKEN
-            value: ${FINBIF_ACCESS_TOKEN}
+            valueFrom:
+              secretKeyRef:
+                name: ${APP}-${BRANCH}
+                key: finbif_access_token
           - name: FINBIF_API_URL
             value: ${FINBIF_API_URL}
           - name: FINBIF_WAREHOUSE
@@ -265,59 +260,82 @@ objects:
           - name: FINBIF_EMAIL
             value: ${FINBIF_EMAIL}
           - name: JOB_SECRET
-            value: ${JOB_SECRET}
+            valueFrom:
+              secretKeyRef:
+                name: ${APP}-${BRANCH}
+                key: job_secret
           - name: PGHOST
             value: ${DB}-${BRANCH}
           - name: PGPORT
-            value: ${DB_PORT}
+            valueFrom:
+              configMapKeyRef:
+                name: ${APP}-${BRANCH}
+                key: db_port
           - name: PGUSER
             value: ${DB}
           - name: PGPASSWORD
-            value: ${DB_SUPER_PASSWORD}
+            valueFrom:
+              secretKeyRef:
+                name: ${APP}-${BRANCH}
+                key: db_password
           - name: DB_NAME
-            value: ${APP}
+            value: ${DB}
           - name: PAGE_TITLE
             value: ${PAGE_TITLE}
           - name: BRANCH
-            value: ${BRANCH}
+            valueFrom:
+              configMapKeyRef:
+                name: ${APP}-${BRANCH}
+                key: branch
           - name: SMTP_SERVER
             value: ${SMTP_SERVER}
           - name: SMTP_PORT
             value: ${SMTP_PORT}
           - name: ERROR_EMAIL_TO
-            value: ${ERROR_EMAIL_TO}
+            value: ${FINBIF_EMAIL}
           - name: ERROR_EMAIL_FROM
             value: ${ERROR_EMAIL_FROM}
+          - name: OBJECT_STORE
+            value: ${OBJECT_STORE}
+          - name: RCLONE_CONFIG_DEFAULT_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: ${APP}-${BRANCH}
+                key: rclone_access_key_id
+          - name: RCLONE_CONFIG_DEFAULT_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: ${APP}-${BRANCH}
+                key: rclone_secret_access_key
           ports:
           - containerPort: ${{API_PORT}}
+          startupProbe:
+            httpGet:
+              path: ${API_HEALTH}
+              port: ${{API_PORT}}
+            failureThreshold: ${{FAILURE_THRESHOLD}}
+            periodSeconds: ${{LIVENESS_PERIOD}}
           livenessProbe:
             httpGet:
-              path: /api/healthz
+              path: ${API_HEALTH}
               port: ${{API_PORT}}
-            failureThreshold: 5
-            periodSeconds: 30
+            failureThreshold: ${{FAILURE_THRESHOLD}}
+            periodSeconds: ${{LIVENESS_PERIOD}}
           readinessProbe:
             httpGet:
-              path: /api/healthz
+              path: ${API_HEALTH}
               port: ${{API_PORT}}
-            initialDelaySeconds: 5
-            periodSeconds: 5
+            periodSeconds: ${{READINESS_PERIOD}}
         volumes:
         - name: ${API}-${BRANCH}
           persistentVolumeClaim:
             claimName: ${API}-${BRANCH}
-    triggers:
-    - type: ConfigChange
-    - type: ImageChange
-      imageChangeParams:
-        automatic: true
-        containerNames:
-        - ${API}-${BRANCH}
-        from:
-          kind: ImageStreamTag
-          name: ${APP}-${BRANCH}:latest
-- kind: DeploymentConfig
-  apiVersion: v1
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "2Gi"
+- kind: Deployment
+  apiVersion: apps/v1
   metadata:
     name: ${DB}-${BRANCH}
     labels:
@@ -325,59 +343,65 @@ objects:
   spec:
     replicas: 1
     selector:
-      app: ${APP}
-      deploymentconfig: ${DB}-${BRANCH}
+      matchLabels:
+        app: ${APP}
     strategy:
       type: Recreate
     template:
       metadata:
         labels:
           app: ${APP}
-          deploymentconfig: ${DB}-${BRANCH}
+          branch: ${BRANCH}
+          port: ${DB_PORT}
       spec:
         containers:
-        - image: ${DB_IMAGE}
+        - image: ghcr.io/luomus/postgis-image:main
+          imagePullPolicy: Always
           name: ${DB}-${BRANCH}
           volumeMounts:
-          - mountPath: /pgdata
+          - mountPath: ${DB_PATH}
             name: ${DB}-${BRANCH}
           ports:
             - containerPort: ${{DB_PORT}}
+          startupProbe:
+            exec:
+              command: ${{DB_HEALTHCHECK}}
+            failureThreshold: ${{FAILURE_THRESHOLD}}
+            periodSeconds: ${{LIVENESS_PERIOD}}
           livenessProbe:
             exec:
               command: ${{DB_HEALTHCHECK}}
-            failureThreshold: 5
-            periodSeconds: 30
+            failureThreshold: ${{FAILURE_THRESHOLD}}
+            periodSeconds: ${{LIVENESS_PERIOD}}
           readinessProbe:
             exec:
               command: ${{DB_HEALTHCHECK}}
-            initialDelaySeconds: 5
-            periodSeconds: 5
+            periodSeconds: ${{READINESS_PERIOD}}
           env:
-          - name: MODE
+          - name: PGDATA
+            value: ${DB_PATH}${DB_DATA}
+          - name: POSTGRES_DB
             value: ${DB}
-          - name: PG_MODE
-            value: primary
-          - name: PG_PRIMARY_PORT
-            value: ${DB_PORT}
-          - name: PG_DATABASE
-            value: ${APP}
-          - name: PG_USER
-            value: ${APP}
-          - name: PG_PRIMARY_USER
-            value: primaryuser
-          - name: PG_PASSWORD
-            value: ${DB_USER_PASSWORD}
-          - name: PG_PRIMARY_PASSWORD
-            value: ${DB_PRIMARY_PASSWORD}
-          - name: PG_ROOT_PASSWORD
-            value: ${DB_SUPER_PASSWORD}
+          - name: POSTGRES_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: ${APP}-${BRANCH}
+                key: db_port
+          - name: POSTGRES_USER
+            value: ${DB}
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ${APP}-${BRANCH}
+                key: db_password
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
         volumes:
         - name: ${DB}-${BRANCH}
           persistentVolumeClaim:
             claimName: ${DB}-${BRANCH}
-    triggers:
-    - type: ConfigChange
 - kind: Service
   apiVersion: v1
   metadata:
@@ -391,7 +415,8 @@ objects:
       targetPort: ${{APP_PORT}}
     selector:
       app: ${APP}
-      deploymentconfig: ${APP}-${BRANCH}
+      branch: ${BRANCH}
+      port: ${APP_PORT}
 - kind: Service
   apiVersion: v1
   metadata:
@@ -405,7 +430,8 @@ objects:
       targetPort: ${{API_PORT}}
     selector:
       app: ${APP}
-      deploymentconfig: ${API}-${BRANCH}
+      branch: ${BRANCH}
+      port: ${API_PORT}
 - kind: Service
   apiVersion: v1
   metadata:
@@ -419,7 +445,8 @@ objects:
       targetPort: ${{DB_PORT}}
     selector:
       app: ${APP}
-      deploymentconfig: ${DB}-${BRANCH}
+      branch: ${BRANCH}
+      port: ${DB_PORT}
 - kind: Route
   apiVersion: v1
   metadata:
@@ -431,7 +458,7 @@ objects:
     port:
       targetPort: ${{APP_PORT}}
     tls:
-      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
     to:
       kind: Service
       name: ${APP}-${BRANCH}
@@ -448,20 +475,20 @@ objects:
     port:
       targetPort: ${{API_PORT}}
     tls:
-      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
     to:
       kind: Service
       name: ${API}-${BRANCH}
     wildcardPolicy: None
 - kind: CronJob
-  apiVersion: batch/v1beta1
+  apiVersion: batch/v1
   metadata:
     name: ${APP}-${BRANCH}
   spec:
-    schedule: ${CRON_SCHEDULE}
-    concurrencyPolicy: ${CRON_CONCURRENCY}
-    successfulJobsHistoryLimit: ${{CRON_LIMIT}}
-    failedJobsHistoryLimit: ${{CRON_LIMIT}}
+    schedule:  "0 20 * * *"
+    concurrencyPolicy: "Forbid"
+    successfulJobsHistoryLimit: 1
+    failedJobsHistoryLimit: 3
     jobTemplate:
       spec:
         template:
@@ -470,14 +497,27 @@ objects:
               app: ${APP}
           spec:
             containers:
-            - name: ${APP}-${BRANCH}-${CRON}
-              image: ${CRON_IMAGE}
-              command: ${{CRON_CMD}}
+            - name: ${APP}-${BRANCH}
+              # docker manifest inspect docker.io/redhat/ubi9:9.4 -v | jq '.[0].Descriptor.digest'
+              image: docker.io/redhat/ubi9:9.4@sha256:c532187e38fcf6849fae56decd0c58b5ef87b47bfaf24ad9e092cf4c9106f577
+              command:
+                - 'sh'
+                - '-c'
+                - >-
+                  curl -s -w '%{stderr} Code: %{response_code} URL: %{url_effective}\n'
+                  $API_HOSTNAME:$API_PORT/job?secret=$JOB_SECRET
               env:
               - name: JOB_SECRET
-                value: ${JOB_SECRET}
+                valueFrom:
+                  secretKeyRef:
+                    name: ${APP}-${BRANCH}
+                    key: job_secret
               - name: API_HOSTNAME
-                value: ${API}-${BRANCH}.${APP}.svc
+                value: ${API}-${BRANCH}
               - name: API_PORT
                 value: ${API_PORT}
+              resources:
+                limits:
+                  cpu: "100m"
+                  memory: "100Mi"
             restartPolicy: Never
