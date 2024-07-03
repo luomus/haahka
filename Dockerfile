@@ -1,5 +1,5 @@
 # docker manifest inspect ghcr.io/luomus/base-r-image:main -v | jq '.Descriptor.digest'
-FROM ghcr.io/luomus/base-r-image@sha256:19a4ab18e6d63f9cf4051bfb7c1f770fbf3878ba4b32fa7d52ef885d9f53809b
+FROM ghcr.io/luomus/base-r-image@sha256:fe208061e35234991fa0221b0b684ec49a978de7c9a1e5cd02c18ad777ff9c8a
 
 ENV FINBIF_USER_AGENT=https://github.com/luomus/haahka
 ENV STATUS_DIR="var/status"
