@@ -197,6 +197,10 @@ objects:
               configMapKeyRef:
                 name: ${APP}-${BRANCH}
                 key: branch
+          - name: STATUS_DIR
+            value: var/status
+          - name: LOG_DIR
+            value: var/logs
           ports:
           - containerPort: ${{APP_PORT}}
           startupProbe:
@@ -287,6 +291,12 @@ objects:
               configMapKeyRef:
                 name: ${APP}-${BRANCH}
                 key: branch
+          - name: FINBIF_USER_AGENT
+            value: https://github.com/luomus/${APP}.git
+          - name: STATUS_DIR
+            value: var/status
+          - name: LOG_DIR
+            value: var/logs
           - name: SMTP_SERVER
             value: ${SMTP_SERVER}
           - name: SMTP_PORT

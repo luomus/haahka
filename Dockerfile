@@ -1,10 +1,6 @@
 # docker manifest inspect ghcr.io/luomus/base-r-image:main -v | jq '.Descriptor.digest'
 FROM ghcr.io/luomus/base-r-image@sha256:fe208061e35234991fa0221b0b684ec49a978de7c9a1e5cd02c18ad777ff9c8a
 
-ENV FINBIF_USER_AGENT=https://github.com/luomus/haahka
-ENV STATUS_DIR="var/status"
-ENV LOG_DIR="var/logs"
-
 COPY renv.lock /home/user/renv.lock
 
 RUN R -s -e "renv::restore()"
