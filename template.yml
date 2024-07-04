@@ -472,7 +472,6 @@ objects:
     to:
       kind: Service
       name: ${APP}-${BRANCH}
-    wildcardPolicy: None
 - kind: Route
   apiVersion: v1
   metadata:
@@ -489,7 +488,6 @@ objects:
     to:
       kind: Service
       name: ${API}-${BRANCH}
-    wildcardPolicy: None
 - kind: CronJob
   apiVersion: batch/v1
   metadata:
