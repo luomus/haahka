@@ -292,7 +292,7 @@ objects:
                 name: ${APP}-${BRANCH}
                 key: branch
           - name: FINBIF_USER_AGENT
-            value: https://github.com/luomus/${APP}.git
+            value: https://github.com/luomus/${APP}:${BRANCH}
           - name: STATUS_DIR
             value: var/status
           - name: LOG_DIR
