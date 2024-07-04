@@ -515,7 +515,7 @@ objects:
                 - '-c'
                 - >-
                   curl -s -w '%{stderr} Code: %{response_code} URL: %{url_effective}\n'
-                  $API_HOSTNAME:$API_PORT/job?secret=$JOB_SECRET
+                  $API_HOSTNAME:$API_PORT/api/job?secret=$JOB_SECRET
               env:
               - name: JOB_SECRET
                 valueFrom:
