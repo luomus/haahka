@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .env
+tls.crt
+tls.key

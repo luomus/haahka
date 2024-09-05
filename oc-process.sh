@@ -40,45 +40,53 @@ elif [ $i = "config" ]; then
 
   ITEM=".items[2]"
 
-elif [ $i = "secrets" ]; then
+elif [ $i = "nginx-config" ]; then
 
   ITEM=".items[3]"
 
-elif [ $i = "deploy-app" ]; then
+elif [ $i = "secrets" ]; then
 
   ITEM=".items[4]"
 
-elif [ $i = "deploy-api" ]; then
+elif [ $i = "nginx-secrets" ]; then
 
   ITEM=".items[5]"
 
-elif [ $i = "deploy-db" ]; then
+elif [ $i = "deploy-app" ]; then
 
   ITEM=".items[6]"
 
-elif [ $i = "service-app" ]; then
+elif [ $i = "deploy-api" ]; then
 
   ITEM=".items[7]"
 
-elif [ $i = "service-api" ]; then
+elif [ $i = "deploy-db" ]; then
 
   ITEM=".items[8]"
 
-elif [ $i = "service-db" ]; then
+elif [ $i = "service-app" ]; then
 
   ITEM=".items[9]"
 
-elif [ $i = "route-app" ]; then
+elif [ $i = "service-api" ]; then
 
   ITEM=".items[10]"
 
-elif [ $i = "route-api" ]; then
+elif [ $i = "service-db" ]; then
 
   ITEM=".items[11]"
 
-elif [ $i = "job" ]; then
+elif [ $i = "route-app" ]; then
 
   ITEM=".items[12]"
+
+elif [ $i = "route-api" ]; then
+
+  ITEM=".items[13]"
+
+elif [ $i = "job" ]; then
+
+  ITEM=".items[14]"
 
 elif [ $i = "all" ]; then
 
@@ -96,6 +104,9 @@ FINBIF_ACCESS_TOKEN=$(echo -n $FINBIF_ACCESS_TOKEN | base64)
 RCLONE_ACCESS_KEY_ID=$(echo -n $RCLONE_ACCESS_KEY_ID | base64)
 RCLONE_SECRET_ACCESS_KEY=$(echo -n $RCLONE_SECRET_ACCESS_KEY | base64)
 JOB_SECRET=$(echo -n $JOB_SECRET | base64)
+NGINX_TEMPLATE=$(cat default.conf.template)
+TLS_CRT=$(cat tls.crt | base64)
+TLS_KEY=$(cat tls.key | base64)
 
 echo "# $(oc project haahka)"
 
@@ -114,4 +125,7 @@ oc process -f $f \
   -p RCLONE_ACCESS_KEY_ID="$RCLONE_ACCESS_KEY_ID" \
   -p RCLONE_SECRET_ACCESS_KEY="$RCLONE_SECRET_ACCESS_KEY" \
   -p JOB_SECRET="$JOB_SECRET" \
+  -p NGINX_TEMPLATE="$NGINX_TEMPLATE" \
+  -p TLS_CRT="$TLS_CRT" \
+  -p TLS_KEY="$TLS_KEY" \
   | jq $ITEM

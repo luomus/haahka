@@ -60,12 +60,21 @@ parameters:
   - name: API_PORT
     required: true
     value: "8000"
+  - name: PROXY_PORT
+    required: true
+    value: "8080"
+  - name: PROXY_HEALTH_PORT
+    required: true
+    value: "8081"
   - name: APP_HEALTH
     required: true
     value: /robots.txt
   - name: API_HEALTH
     required: true
     value: /api/healthz
+  - name: PROXY_HEALTH
+    required: true
+    value: /healthz
   - name: LIVENESS_PERIOD
     required: true
     value: "30"
@@ -75,6 +84,12 @@ parameters:
   - name: READINESS_PERIOD
     required: true
     value: "5"
+  - name: NGINX_TEMPLATE
+    required: true
+  - name: TLS_CRT
+    required: true
+  - name: TLS_KEY
+    required: true
   - name: SMTP_SERVER
     required: true
   - name: SMTP_PORT
@@ -125,6 +140,12 @@ objects:
     db_port: ${DB_PORT}
     app_port: ${APP_PORT}
     api_port: ${API_PORT}
+- kind: ConfigMap
+  apiVersion: v1
+  metadata:
+    name: nginx-template-${BRANCH}
+  data:
+    default.conf.template: ${NGINX_TEMPLATE}
 - kind: Secret
   apiVersion: v1
   metadata:
@@ -136,6 +157,14 @@ objects:
     rclone_access_key_id: ${RCLONE_ACCESS_KEY_ID}
     rclone_secret_access_key: ${RCLONE_SECRET_ACCESS_KEY}
     job_secret: ${JOB_SECRET}
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    name: tls-${BRANCH}
+  type: kubernetes.io/tls
+  data:
+    tls.crt: ${TLS_CRT}
+    tls.key: ${TLS_KEY}
 - kind: Deployment
   apiVersion: apps/v1
   metadata:
@@ -148,15 +177,60 @@ objects:
       matchLabels:
         app: ${APP}
     strategy:
-      type: Recreate
+      type: RollingUpdate
     template:
       metadata:
         labels:
           app: ${APP}
           branch: ${BRANCH}
-          port: ${APP_PORT}
+          port: ${PROXY_PORT}
       spec:
+        volumes:
+        - name: tls-${BRANCH}
+          secret:
+            secretName: tls-${BRANCH}
+        - name: nginx-template-${BRANCH}
+          configMap:
+            name: nginx-template-${BRANCH}
         containers:
+        - image: nginxinc/nginx-unprivileged:1.27.1
+          imagePullPolicy: Always
+          name: nginx-${BRANCH}
+          env:
+          - name: PROXY_PORT
+            value: ${PROXY_PORT}
+          - name: APP_PORT
+            value: ${APP_PORT}
+          startupProbe:
+            httpGet:
+              path: ${PROXY_HEALTH}
+              port: ${{PROXY_HEALTH_PORT}}
+            failureThreshold: ${{FAILURE_THRESHOLD}}
+            periodSeconds: ${{LIVENESS_PERIOD}}
+          livenessProbe:
+            httpGet:
+              path: ${PROXY_HEALTH}
+              port: ${{PROXY_HEALTH_PORT}}
+            failureThreshold: ${{FAILURE_THRESHOLD}}
+            periodSeconds: ${{LIVENESS_PERIOD}}
+          readinessProbe:
+            httpGet:
+              path: ${PROXY_HEALTH}
+              port: ${{PROXY_HEALTH_PORT}}
+            periodSeconds: ${{READINESS_PERIOD}}
+          ports:
+          - containerPort: ${{PROXY_PORT}}
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "500Mi"
+          volumeMounts:
+          - name: tls-${BRANCH}
+            mountPath: /etc/ssl
+            readOnly: true
+          - name: nginx-template-${BRANCH}
+            mountPath: /etc/nginx/templates
+            readOnly: true
         - image: ghcr.io/luomus/${APP}:${BRANCH}
           imagePullPolicy: Always
           name: ${APP}-${BRANCH}
@@ -201,8 +275,6 @@ objects:
             value: var/status
           - name: LOG_DIR
             value: var/logs
-          ports:
-          - containerPort: ${{APP_PORT}}
           startupProbe:
             httpGet:
               path: ${APP_HEALTH}
@@ -220,10 +292,10 @@ objects:
               path: ${APP_HEALTH}
               port: ${{APP_PORT}}
             periodSeconds: ${{READINESS_PERIOD}}
-        resources:
-          limits:
-            cpu: "500m"
-            memory: "1Gi"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "2Gi"
 - kind: Deployment
   apiVersion: apps/v1
   metadata:
@@ -420,13 +492,13 @@ objects:
       app: ${APP}
   spec:
     ports:
-    - name: ${APP_PORT}
-      port: ${{APP_PORT}}
-      targetPort: ${{APP_PORT}}
+    - name: ${PROXY_PORT}
+      port: ${{PROXY_PORT}}
+      targetPort: ${{PROXY_PORT}}
     selector:
       app: ${APP}
       branch: ${BRANCH}
-      port: ${APP_PORT}
+      port: ${PROXY_PORT}
 - kind: Service
   apiVersion: v1
   metadata:
@@ -466,8 +538,9 @@ objects:
   spec:
     host: ${HOST}
     port:
-      targetPort: ${{APP_PORT}}
+      targetPort: ${{PROXY_PORT}}
     tls:
+      termination: passthrough
       insecureEdgeTerminationPolicy: Redirect
     to:
       kind: Service
