@@ -19,7 +19,7 @@ suppressPackageStartupMessages({
 })
 
 api <- paste0(
-  "http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT"),
+  "http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT")
 )
 
 logger::log_layout(layout_simple)
