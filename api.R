@@ -46,7 +46,7 @@ function(req, res) {
 
 }
 
-#* @get /api/job
+#* @get /job
 #* @serializer unboxedJSON
 function() {
 
@@ -62,8 +62,8 @@ function() {
 }
 
 #* Check the liveness of the API
-#* @head /api/healthz
-#* @get /api/healthz
+#* @head /healthz
+#* @get /healthz
 #* @response 200 A json object
 #* @serializer unboxedJSON
 function() {
@@ -72,7 +72,7 @@ function() {
 
 #* Get graphics for a species
 #* @tag graphics
-#* @get /api/plot/<type:str>/<sp:str>
+#* @get /plot/<type:str>/<sp:str>
 #* @param type:str migration, local, change or medians
 #* @param sp:str Taxon code
 #* @param locale:str Locale
@@ -320,45 +320,25 @@ function(type, sp, locale = "fi") {
 
 }
 
-#* Get API spec
-#* @get /api/__docs__/openapi.json
-#* @serializer unboxedJSON
-function(req) {
+#* @plumber
+function(pr) {
 
-  spec <- req[["pr"]][["getApiSpec"]]()
+  plumber::pr_set_api_spec(
+    pr,
+    function(spec) {
 
-  spec[[c("info", "version")]] <- version
+      spec$info$version <- version
 
-  spec[[c("paths", "/__docs__/")]] <- NULL
-  spec[[c("paths", "/__docs__/index.html")]] <- NULL
-  spec[[c("paths", "/api/__docs__/")]] <- NULL
-  spec[[c("paths", "/api/__docs__/openapi.json")]] <- NULL
-  spec[[c("paths", "/api/healthz")]] <- NULL
-  spec[[c("paths", "/api/job")]] <- NULL
-  spec[[c("paths", "/api/")]] <- NULL
-  spec[[c("paths", "/api")]] <- NULL
-  spec[[c("paths", "/openapi.json")]] <- NULL
-  spec[[c("paths", "/__swagger__/")]] <- NULL
-  spec[[c("paths", "/__swagger__/index.html")]] <- NULL
-  spec[[c("paths", "/__swagger__/openapi.json")]] <- NULL
+      spec[[c("paths", "/healthz")]] <- NULL
+      spec[[c("paths", "/job")]] <- NULL
 
-  spec
+      spec
 
-}
-
-#* Get API docs
-#* @get /api/__docs__/
-#* @serializer html
-function() {
-
-  suffix <- switch(Sys.getenv("BRANCH"), dev = "-dev", "")
-
-  spec_url <- sprintf(
-    "https://haahka%s.laji.fi/api/__docs__/openapi.json", suffix
+    }
   )
 
-  rapidoc::rapidoc_spec(
-    spec_url = spec_url,
+  pr$setDocs(
+    "rapidoc",
     bg_color = "#141B15",
     text_color = "#FFFFFF",
     primary_color = "#55AAE2",
@@ -381,30 +361,11 @@ function() {
 
 }
 
-#* @get /api
-function(res) {
-
-  res$status <- 303L
-  res$setHeader("Location", "/api/__docs__/")
-
-}
-
-#* @get /api/
-function(res) {
-
-  res$status <- 303L
-  res$setHeader("Location", "/api/__docs__/")
-
-}
-
-#* @assets ./var/data /api/data
+#* @assets ./var/data /data
 list()
 
-#* @assets ./var/logs /api/logs
+#* @assets ./var/logs /logs
 list()
 
-#* @assets ./var/status /api/status
-list()
-
-#* @assets /usr/local/lib/R/site-library/rapidoc/dist /api/__docs__/
+#* @assets ./var/status /status
 list()

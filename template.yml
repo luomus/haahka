@@ -71,7 +71,7 @@ parameters:
     value: /robots.txt
   - name: API_HEALTH
     required: true
-    value: /api/healthz
+    value: /healthz
   - name: PROXY_HEALTH
     required: true
     value: /healthz
@@ -552,8 +552,7 @@ objects:
     labels:
       app: ${APP}
   spec:
-    host: ${HOST}
-    path: /api
+    host: api-${HOST}
     port:
       targetPort: ${{API_PORT}}
     tls:
@@ -586,7 +585,7 @@ objects:
                 - '-c'
                 - >-
                   curl -s -w '%{stderr} Code: %{response_code} URL: %{url_effective}\n'
-                  $API_HOSTNAME:$API_PORT/api/job?secret=$JOB_SECRET
+                  $API_HOSTNAME:$API_PORT/job?secret=$JOB_SECRET
               env:
               - name: JOB_SECRET
                 valueFrom:

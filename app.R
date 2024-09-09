@@ -19,14 +19,14 @@ suppressPackageStartupMessages({
 })
 
 api <- paste0(
-  "http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT"), "/api"
+  "http://", Sys.getenv("API_HOSTNAME"), ":", Sys.getenv("API_PORT"),
 )
 
 logger::log_layout(layout_simple)
 
 logger::log_threshold(TRACE)
 
-api_status <- paste0(api, "/healthz")
+api_status <- "/healthz"
 
 while (inherits(try(curlGetHeaders(api_status), silent = TRUE), "try-error")) {
 
