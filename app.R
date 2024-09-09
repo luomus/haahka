@@ -26,7 +26,7 @@ logger::log_layout(layout_simple)
 
 logger::log_threshold(TRACE)
 
-api_status <- paste(api, "/healthz")
+api_status <- paste0(api, "/healthz")
 
 while (inherits(try(curlGetHeaders(api_status), silent = TRUE), "try-error")) {
 
