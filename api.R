@@ -331,6 +331,8 @@ function(pr) {
 
       spec[[c("paths", "/healthz")]] <- NULL
       spec[[c("paths", "/job")]] <- NULL
+      spec[[c("paths", "/")]] <- NULL
+
 
       spec
 
@@ -358,6 +360,14 @@ function(pr) {
     allow_server_selection = "false",
     allow_authentication = "false"
   )
+
+}
+
+#* @get /
+function(res) {
+
+  res$status <- 303L
+  res$setHeader("Location", "/__docs__/")
 
 }
 
