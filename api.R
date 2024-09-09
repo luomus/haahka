@@ -348,7 +348,7 @@ function(pr) {
     slots = paste0(
       "<img ",
       "slot=\"logo\" ",
-      "src=\"../../img/halias_logo.gif\" ",
+      "src=\"../public/halias_logo.gif\" ",
       "width=36px style=\"margin-left:7px\"/>"
     ),
     heading_text = paste("Haahka", version),
@@ -370,6 +370,9 @@ function(res) {
   res$setHeader("Location", "/__docs__/")
 
 }
+
+#* @assets ./www/
+list()
 
 #* @assets ./var/data /data
 list()
