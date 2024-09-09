@@ -332,7 +332,8 @@ function(pr) {
       spec[[c("paths", "/healthz")]] <- NULL
       spec[[c("paths", "/job")]] <- NULL
       spec[[c("paths", "/")]] <- NULL
-
+      spec[[c("paths", "/favicon.ico")]] <- NULL
+      spec[[c("paths", "/robots.txt")]] <- NULL
 
       spec
 
@@ -368,6 +369,22 @@ function(res) {
 
   res$status <- 303L
   res$setHeader("Location", "/__docs__/")
+
+}
+
+#* @get /favicon.ico
+#* @serializer contentType list(type="image/x-icon")
+function() {
+
+  readBin("www/favicon.ico", "raw", n = file.info("www/favicon.ico")$size)
+
+}
+
+#* @get /robots.txt
+#* @serializer contentType list(type="text/plain")
+function() {
+
+  readBin("robots.txt", "raw", n = file.info("robots.txt")$size)
 
 }
 
