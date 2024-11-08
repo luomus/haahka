@@ -18,7 +18,7 @@ download_file <- function(taxon, path = "var/data/sp_images/org") {
   taxon_id <- httr::RETRY(
     "GET",
     url = "https://laji.fi",
-    path = file.path("taxa", "search"),
+    path = file.path("api", "taxa", "search"),
     query = list(query = taxon)
   )
 
@@ -31,7 +31,7 @@ download_file <- function(taxon, path = "var/data/sp_images/org") {
   res <- httr::RETRY(
     "GET",
     url = "https://laji.fi",
-    path = file.path("taxa", taxon_id, "media")
+    path = file.path("api", "taxa", taxon_id, "media")
   )
 
   res <- httr::content(res)

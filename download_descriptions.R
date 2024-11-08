@@ -10,7 +10,7 @@ download_descriptions <- function(taxon) {
   taxon_id <- httr::RETRY(
     "GET",
     url = "https://laji.fi",
-    path = file.path("taxa", "search"),
+    path = file.path("api", "taxa", "search"),
     query = list(query = taxon)
   )
 
@@ -23,7 +23,7 @@ download_descriptions <- function(taxon) {
   res <- httr::RETRY(
     "GET",
     url = "https://laji.fi",
-    path = file.path("taxa", taxon_id, "descriptions"),
+    path = file.path("api", "taxa", taxon_id, "descriptions"),
     query = list(lang = "multi")
   )
 
