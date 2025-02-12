@@ -6,6 +6,6 @@ expect_identical(haahka_taxa()[[1, 1]], "CYGOLO")
 
 Sys.setenv("BRANCH" = "main")
 
-expect_identical(haahka_taxa()[[11, 1]], "BRALEU")
+expect_identical(haahka_taxa()[[11, 1]], "BRACAN")
 
 Sys.setenv("BRANCH" = branch)
