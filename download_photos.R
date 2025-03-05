@@ -44,7 +44,7 @@ download_file <- function(taxon, path = "var/data/sp_images/org") {
       res[["largeURL"]],
       file.path(
         path,
-        paste(taxon, tools::file_ext(res[["largeURL"]]), sep = ".")
+        paste(taxon, "jpg", sep = ".")
       ),
       quiet = TRUE
     )
