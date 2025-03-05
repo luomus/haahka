@@ -498,7 +498,9 @@ server <- function(input, output, session) {
 
     if (cond) {
 
-      caption <- current_meta[["caption"]]
+      copyrightOwner <- current_meta[["copyrightOwner"]]
+
+      licenseAbbreviation <- current_meta[["licenseAbbreviation"]]
 
       file_basename <- basename(img_file)
 
@@ -508,7 +510,9 @@ server <- function(input, output, session) {
           width = "90%",
           class = "description"
         ),
-        shiny::p(shiny::HTML(caption), class = "description"),
+        shiny::p(
+          paste(copyrightOwner, licenseAbbreviation), class = "description"
+        ),
         shiny::br()
       )
 
