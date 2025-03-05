@@ -436,9 +436,7 @@ server <- function(input, output, session) {
       "Helsingin Seudun Lintutieteellinen Yhdistys Tringa ry. ",
       "Hangon lintuaseman aineisto: päiväsummat.",
       paste0("[", data_url, "]"),
-      "[Viitattu",
-      now,
-      "]"
+      paste0("[Viitattu ", now, "]")
     )
 
     text_se <- paste(
@@ -446,9 +444,7 @@ server <- function(input, output, session) {
       "Helsingforstraktens Ornitologiska Förening Tringa rf.",
       "Dataset från Hangö fågelstation: dagliga totalantal.",
       paste0("[", data_url, "]"),
-      "[Citerad",
-      now,
-      "]"
+      paste0("[Citerad ", now, "]")
     )
 
     text_en <- paste(
@@ -456,9 +452,7 @@ server <- function(input, output, session) {
       "Ornithological society of Helsinki Tringa ry.",
       "Data of the Hanko Bird Observatory: Day counts.",
       paste0("[", data_url, "]"),
-      "[Cited",
-      now,
-      "]"
+      paste0("[Cited ", now, "]")
     )
 
     payload <- switch(
