@@ -599,7 +599,8 @@ server <- function(input, output, session) {
         hc,
         crosshairs = TRUE,
         backgroundColor = "#FCFFC5",
-        xDateFormat = "%b %d"
+        xDateFormat = "%b %d",
+        valueDecimals = 2
       )
       hc <- highcharter::hc_exporting(hc, enabled = TRUE)
 
@@ -653,7 +654,8 @@ server <- function(input, output, session) {
         hc,
         crosshairs = TRUE,
         backgroundColor = "#FCFFC5",
-        xDateFormat = "%b %d"
+        xDateFormat = "%b %d",
+        valueDecimals = 2
       )
       hc <- highcharter::hc_exporting(hc, enabled = TRUE)
 
@@ -730,7 +732,8 @@ server <- function(input, output, session) {
         crosshairs = TRUE,
         backgroundColor = "#FCFFC5",
         shared = TRUE,
-        xDateFormat = "%b %d"
+        xDateFormat = "%b %d",
+        valueDecimals = 2
       )
       hc <- highcharter::hc_exporting(hc, enabled = TRUE)
 
@@ -1012,7 +1015,8 @@ server <- function(input, output, session) {
         tolower(i18n()[["t"]]("Muuton ajoittumisen mediaanipäivämäärä")),
         ":",
         "<br> {point.date_print}"
-      )
+      ),
+      valueDecimals = 2
     )
     hc <- highcharter::hc_exporting(hc, enabled = TRUE)
 
