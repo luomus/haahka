@@ -3,7 +3,7 @@ Title: Haahka bird migration browser
 Author: William Morris & Joona Lehtomaki
 Authors@R: c(
     person(given = "Joona",
-           famil = "Lehtomaki",
+           family = "Lehtomaki",
            role = "aut"),
     person(given = "William K.",
            family = "Morris",
