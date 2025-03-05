@@ -505,7 +505,8 @@ server <- function(input, output, session) {
           class = "description"
         ),
         shiny::p(
-          paste(copyrightOwner, licenseAbbreviation), class = "description"
+          shiny::HTML(paste(copyrightOwner, licenseAbbreviation)),
+          class = "description"
         ),
         shiny::br()
       )
