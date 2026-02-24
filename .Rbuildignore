@@ -29,3 +29,4 @@
 ^logs$
 ^stage$
 ^tmp$
+^\.github$
