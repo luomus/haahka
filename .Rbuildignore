@@ -30,3 +30,5 @@
 ^stage$
 ^tmp$
 ^\.github$
+^\.positai$
+^\.claude$
