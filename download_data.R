@@ -19,7 +19,8 @@ options(
   finbif_rate_limit = Inf,
   finbif_hide_progress = TRUE,
   finbif_use_cache = FALSE,
-  finbif_use_cache_metadata = TRUE
+  finbif_use_cache_metadata = TRUE,
+  finbif_use_dwc = FALSE
 )
 
 taxa <- haahka::haahka_taxa()
